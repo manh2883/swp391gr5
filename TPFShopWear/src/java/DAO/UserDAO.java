@@ -28,8 +28,7 @@ public class UserDAO extends DBContext{
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             ResultSet rs = stm.executeQuery();
-            
-            
+
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
                 User user = new User();
@@ -51,26 +50,29 @@ public class UserDAO extends DBContext{
             rs.close();
             stm.close();
             con.close();
-
            
         } catch (SQLException e) {
             e.printStackTrace();
         }
          return userList;
     }
+    public boolean checkEmailIsExist(String userName){
+        return false;
+    }
+    public boolean checkPhoneNumberIsExist(String userName){
+        return false;
+    }
+    
+    
+    
+    
+    
+    
+ 
     public static void main(String[] args) {
         List<User> userList = getAllUser();
               for (User user  : userList) {
-                System.out.println(user.getUserId() + " | " +
-                                   user.getFirstName() + " " + user.getLastName() + " | " +
-                                   user.getEmail() + " | " +
-                                   user.getPhoneNumber() + " | " +
-                                   user.getAvtLink() + " | " +
-                                   user.getDoB() + " | " +
-                                   user.getAddress() + " | " +
-                                   user.getGender() + " | " +
-                                   user.getCreatedAt() + " | " +
-                                   user.getUpdatedAt());
+                  System.out.println(user);
             }
     }
 }

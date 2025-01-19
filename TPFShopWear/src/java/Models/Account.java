@@ -11,14 +11,16 @@ package Models;
 import java.util.Date;
 
 public class Account {
+
     private int accountId;
-    private int userId;
     private int roleId;
     private String username;
     private String password;
     private String passwordResetToken;
     private Date lastPasswordChange;
     private Date lastLoginTime;
+    private int wrongLoginCount;
+    private int status;
 
     // Getters and Setters
     public int getAccountId() {
@@ -29,12 +31,12 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getWrongLoginCount() {
+        return wrongLoginCount;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setWrongLoginCount(int wrongLoginCount) {
+        this.wrongLoginCount = wrongLoginCount;
     }
 
     public int getRoleId() {
@@ -84,5 +86,13 @@ public class Account {
     public void setLastLoginTime(Date lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
-}
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+}

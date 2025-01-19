@@ -4,23 +4,18 @@
  */
 package Controller;
 
-import DAO.AccountDAO;
-import DAO.UserDAO;
-import Models.Account;
-import Models.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author Acer
  */
-public class LoginServlet extends HttpServlet {
+public class ForgotPasswordServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,10 +34,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet ForgotPasswordServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ForgotPasswordServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,8 +55,8 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-
+        request.setAttribute("message", "Forgot Password");
+        request.getRequestDispatcher("test.jsp").forward(request, response);
     }
 
     /**
@@ -75,31 +70,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String userName = request.getParameter("userName");
-        String passWord = request.getParameter("passWord");
-
-        // Tạo đối tượng DAO và thực hiện truy vấn tài khoản
-        AccountDAO aDAO = new AccountDAO();
-//        Account acc = aDAO.login(userName,passWord);
-        boolean check = true;
-        // Kiểm tra tài khoản và mật khẩu
-        if (check ) {
-            // Nếu đăng nhập thành công, lưu thông tin vào session
-            HttpSession session = request.getSession();
-//            session.setAttribute("userName", acc.getUsername());
-            request.setAttribute("message", "Login successful!");
-
-            // Chuyển hướng tới trang test.jsp
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        } else {
-            // Nếu đăng nhập thất bại, thông báo lỗi
-            request.setAttribute("message", "Invalid username or password");
-            request.getRequestDispatcher("test.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
-    // Hàm kiểm tra mật khẩu bằng cách so sánh mật khẩu băm
     /**
      * Returns a short description of the servlet.
      *

@@ -56,7 +56,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setAttribute("message", "Forgot Password");
-        request.getRequestDispatcher("test.jsp").forward(request, response);
+        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
     }
 
     /**

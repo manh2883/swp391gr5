@@ -91,11 +91,11 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("message", "Login successful!");
 
             // Chuyển hướng tới trang test.jsp
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
         } else {
             // Nếu đăng nhập thất bại, thông báo lỗi
             request.setAttribute("message", "Invalid username or password");
-            request.getRequestDispatcher("test.jsp").forward(request, response);
+            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         }
     }
 

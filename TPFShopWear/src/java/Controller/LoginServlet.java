@@ -78,23 +78,28 @@ public class LoginServlet extends HttpServlet {
 
         String userName = request.getParameter("userName");
         String passWord = request.getParameter("passWord");
-
+        
+        System.out.println(userName);
+        System.out.println(passWord);
         // Tạo đối tượng DAO và thực hiện truy vấn tài khoản
         AccountDAO aDAO = new AccountDAO();
 //        Account acc = aDAO.login(userName,passWord);
-        boolean check = true;
+        Account acc = aDAO.login(userName, passWord);
         // Kiểm tra tài khoản và mật khẩu
-        if (check ) {
+        
+        if (acc != null) {
             // Nếu đăng nhập thành công, lưu thông tin vào session
             HttpSession session = request.getSession();
+            session.setAttribute(userName, acc.getUsername());
 //            session.setAttribute("userName", acc.getUsername());
-            request.setAttribute("message", "Login successful!");
+            String message = "Login successful! with account " + acc.getUsername();
+            request.setAttribute("message",message);
 
             // Chuyển hướng tới trang test.jsp
             request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
         } else {
             // Nếu đăng nhập thất bại, thông báo lỗi
-            request.setAttribute("message", "Invalid username or password");
+            request.setAttribute("message", " Username or Password is not correct! ");
             request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         }
     }

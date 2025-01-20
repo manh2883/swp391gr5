@@ -16,12 +16,21 @@ public class Account {
     private int roleId;
     private String username;
     private String password;
-    private String passwordResetToken;
     private Date lastPasswordChange;
     private Date lastLoginTime;
     private int wrongLoginCount;
     private int status;
 
+    public Account(int accountId, String username) {
+        this.accountId = accountId;
+        this.username = username;
+    }
+
+    public Account() {
+    }
+    
+
+    
     // Getters and Setters
     public int getAccountId() {
         return accountId;
@@ -63,14 +72,6 @@ public class Account {
         this.password = password;
     }
 
-    public String getPasswordResetToken() {
-        return passwordResetToken;
-    }
-
-    public void setPasswordResetToken(String passwordResetToken) {
-        this.passwordResetToken = passwordResetToken;
-    }
-
     public Date getLastPasswordChange() {
         return lastPasswordChange;
     }
@@ -93,6 +94,11 @@ public class Account {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" + "accountId=" + accountId + ", roleId=" + roleId + ", username=" + username + ", status=" + status + '}';
     }
 
 }

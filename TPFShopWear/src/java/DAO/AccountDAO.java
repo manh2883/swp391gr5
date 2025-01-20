@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -22,8 +23,9 @@ public class AccountDAO extends DBContext {
 
     public String checkUserNameExist(String userName) {
 
-        String query = "SELECT top 1 from Account "
-                + "where Account.username = ? ";
+        String query = "SELECT * from Account "
+                + "where Account.username = ?"
+                + "limit 1 ";
         Account account = new Account();
         try {
             DBContext db = new DBContext();
@@ -52,9 +54,10 @@ public class AccountDAO extends DBContext {
 
     public String checkEmailExist(String email) {
 
-        String query = "SELECT top 1 from Account"
-                + "join User on Account.user_id = User.user_id "
-                + "where User.email = ? ";
+        String query = "SELECT email FROM Account "
+                + "JOIN User ON Account.user_id = User.user_id "
+                + "WHERE User.email = ? LIMIT 1";
+
         User user = new User();
         try {
             DBContext db = new DBContext();
@@ -84,9 +87,12 @@ public class AccountDAO extends DBContext {
     }
 
     public String checkPhoneNumberExist(String phoneNumber) {
-        String query = "SELECT top 1 from Account"
-                + "join User on Account.user_id = User.user_id "
-                + "where User.email = ? ";
+        String query = """
+                       SELECT phone_number
+                       FROM Account 
+                       JOIN User ON User.user_id = Account.user_id 
+                       WHERE User.phone_number = ?
+                       LIMIT 1;""";
         User user = new User();
         try {
             DBContext db = new DBContext();
@@ -94,11 +100,12 @@ public class AccountDAO extends DBContext {
 
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, phoneNumber);
+ 
             ResultSet rs = stm.executeQuery();
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                user.setEmail(rs.getString("phone_number"));
+                user.setPhoneNumber(rs.getString("phone_number"));
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -115,14 +122,103 @@ public class AccountDAO extends DBContext {
     }
 
     public Account loginWithUsername(String userName, String passWord) {
+        String query = "SELECT * from Account "
+                + "where Account.username = ? and Account.password = ? "
+                + "limit 1";
+        Account account = new Account();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, userName);
+            stm.setString(2, passWord);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUsername(rs.getString("username"));
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (account.getUsername() != null && !account.getUsername().isEmpty()) {
+            return account;
+        }
         return null;
     }
 
     public Account loginWithEmail(String email, String passWord) {
+        String query = "SELECT * from Account "
+                + "join User on User.user_id = Account.user_id "
+                + "where User.email = ? and Account.password = ? "
+                + "limit 1";
+        Account account = new Account();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, email);
+            stm.setString(2, passWord);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUsername(rs.getString("username"));
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (account.getUsername() != null && !account.getUsername().isEmpty()) {
+            return account;
+        }
         return null;
     }
 
     public Account loginWithPhone(String phoneNumber, String passWord) {
+        String query = "SELECT * from Account "
+                + "join User on User.user_id = Account.user_id "
+                + "where User.phone_number = ? and Account.password = ? "
+                + "limit 1";
+        Account account = new Account();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, phoneNumber);
+            stm.setString(2, passWord);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUsername(rs.getString("username"));
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (account.getUsername() != null && !account.getUsername().isEmpty()) {
+            return account;
+        }
         return null;
     }
 
@@ -132,17 +228,20 @@ public class AccountDAO extends DBContext {
 
     public Account verifyAccount(String userName, String passWord) {
         int loginMethod = 0;
-        if (checkEmailExist(userName) != null && !checkEmailExist(userName).isEmpty()) {
+        String checkResult = null;
+
+        // Kiểm tra tồn tại theo thứ tự ưu tiên
+        if ((checkResult = checkEmailExist(userName)) != null && !checkResult.isEmpty()) {
             loginMethod = 1;
-        }
-        if (checkPhoneNumberExist(userName) != null && !checkPhoneNumberExist(userName).isEmpty()) {
+        } else if ((checkResult = checkPhoneNumberExist(userName)) != null && !checkResult.isEmpty()) {
             loginMethod = 2;
-        }
-        if (checkUserNameExist(userName) != null && !checkUserNameExist(userName).isEmpty()) {
+        } else if ((checkResult = checkUserNameExist(userName)) != null && !checkResult.isEmpty()) {
             loginMethod = 3;
         }
 
-        Account account = new Account();
+        Account account = null;
+
+        // Xử lý đăng nhập theo phương thức tương ứng
         switch (loginMethod) {
             case 1:
                 account = loginWithEmail(userName, passWord);
@@ -154,16 +253,21 @@ public class AccountDAO extends DBContext {
                 account = loginWithUsername(userName, passWord);
                 break;
             default:
-                throw new AssertionError();
+                account = null;
         }
+
+        // Debugging thông tin
+        System.out.println("Login method: " + loginMethod);
+        System.out.println("Account: " + account);
 
         return account;
     }
-    
-    public int getwrongLoginCount(String id){
+
+    public int getwrongLoginCount(String id) {
         Account account = getAccountById(id);
         return account.getWrongLoginCount();
     }
+
     public int changeAccountStatus() {
         return 0;
     }
@@ -192,5 +296,15 @@ public class AccountDAO extends DBContext {
 
     public List<Account> getAccountList() {
         return null;
+    }
+
+    public static void main(String[] args) {
+        AccountDAO aDAO = new AccountDAO();
+        Account acc = aDAO.login("0987654321", "12345678");
+        if (acc != null) {
+            System.out.println(acc);
+        } else {
+            System.out.println("null");
+        }
     }
 }

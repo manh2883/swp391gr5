@@ -12,6 +12,7 @@
         <title>Test</title>
     </head>
     <body>
+        <div> abc </div>
         <h1>${message}</h1>
     </body>
 </html>

@@ -15,7 +15,7 @@ import java.sql.PreparedStatement;
  */
 public class DBContext {
         public Connection getConnection(){
-        String db = "TPFShopWear";
+        String db = "TPFShopWearv2";
         String url = "jdbc:mysql://localhost:3306/"+db;
         String user = "root";
         String password = "12345678";

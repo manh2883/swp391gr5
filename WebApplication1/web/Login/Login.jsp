@@ -9,52 +9,71 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login</title>
-    </head>
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hello</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script>
+            function validateInput() {
+                let userName = document.getElementById("userNameInput");
+                let passWord = document.getElementById("passWordInput");
+                let userError = document.getElementById("userError");
+                let passError = document.getElementById("passError");
+                let isValid = true;
 
+                if (userName.value.trim() === "") {
+                    userError.textContent = "Username cannot be empty.";
+                    isValid = false;
+                } else if (userName.value.length > 255) {
+                    userError.textContent = "Username cannot exceed 255 characters.";
+                    isValid = false;
+                } else {
+                    userError.textContent = "";
+                }
+
+                if (passWord.value.trim() === "") {
+                    passError.textContent = "Password cannot be empty.";
+                    isValid = false;
+                } else if (passWord.value.length > 255) {
+                    passError.textContent = "Password cannot exceed 255 characters.";
+                    isValid = false;
+                } else {
+                    passError.textContent = "";
+                }
+
+                return isValid;
+            }
+        </script>
     </head>
     <body>
-        <div class="login-form" >
+        <div class="login-form">
             <h3 class="login-heading">Welcome back!</h3>
-            <form method="post" action="Login">
+            <form method="post" action="Login" onsubmit="return validateInput();">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="userNameInput" name = "userName"placeholder="name@example.com">
-                    <label for="floatingInput">Email address</label>
+                    <input type="text" class="form-control" id="userNameInput" name="userName" placeholder="name@example.com" value="${userName}">
+                    <label for="userNameInput">Email address</label>
+                    <div class="text-danger" id="userError"></div>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="passWordInput" name = "passWord" placeholder="Password">
-                    <label for="floatingPassword">Password</label>
+                    <input type="password" class="form-control" id="passWordInput" name="passWord" placeholder="Password">
+                    <label for="passWordInput">Password</label>
+                    <div class="text-danger" id="passError" >${passError}</div>
                 </div>
-
-                <div class="form-check mb-3">
+<!--                
+                <div class="form-check mb-3" >
                     <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">
-                    <label class="form-check-label" for="rememberPasswordCheck">
-                        Remember password
-                    </label>
-                </div>          
+                    <label class="form-check-label" for="rememberPasswordCheck">Remember password</label>
+                </div>-->
+                
                 <div class="d-grid">
                     <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Sign in</button>
                     <div class="text-center">
                         <a class="small" href="${pageContext.request.contextPath}/ForgotPassword">Forgot password?</a>
-                        <div>
-                             Haven't have an account? Sign up 
-                             <a href="${pageContext.request.contextPath}/Register">here</a><!-- comment -->
-                        </div>
-                         
+                        <div>Haven't have an account? Sign up <a href="${pageContext.request.contextPath}/Register">here</a></div>
                     </div>
                 </div>
             </form>
         </div>
     </body>
-</html>
-
 </html>

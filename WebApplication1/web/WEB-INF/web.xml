@@ -2,31 +2,31 @@
 <web-app version="5.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd">
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>Controller.LoginServlet</servlet-class>
+        <servlet-class>controllers.LoginServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
-        <servlet-class>Controller.HomeServlet</servlet-class>
+        <servlet-class>controllers.HomeServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ForgotPasswordServlet</servlet-name>
-        <servlet-class>Controller.ForgotPasswordServlet</servlet-class>
+        <servlet-class>controllers.ForgotPasswordServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RegisterServlet</servlet-name>
-        <servlet-class>Controller.RegisterServlet</servlet-class>
+        <servlet-class>controllers.RegisterServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ProductDetailServlet</servlet-name>
-        <servlet-class>Controller.ProductDetailServlet</servlet-class>
+        <servlet-class>controllers.ProductDetailServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ViewPostServlet</servlet-name>
-        <servlet-class>Controller.ViewPostServlet</servlet-class>
+        <servlet-class>controllers.ViewPostServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>Controller.LogoutServlet</servlet-class>
+        <servlet-class>controllers.LogoutServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>

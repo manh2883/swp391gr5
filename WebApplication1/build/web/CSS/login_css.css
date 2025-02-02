@@ -12,7 +12,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .bg-image {
-    background-image: url('https://source.unsplash.com/WEQbe2jBg40/600x1200');
+
     background-size: cover;
     background-position: center;
 }
@@ -30,14 +30,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 
 /* Khung và căn chỉnh form */
 .form-container {
-    background-color: #ffffff; /* Màu nền trắng cho form */
-    border: 1px solid #ddd; /* Khung nhẹ màu xám */
-    border-radius: 8px; /* Bo góc cho form */
-    padding: 2rem; /* Khoảng cách trong form */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
-    max-width: 500px; /* Giữ kích thước chiều ngang cũ */
-    width: 100%; /* Đảm bảo form không vượt quá màn hình nhỏ */
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
 }
+
 
 /* Tiêu đề form */
 .login-heading {
@@ -45,14 +46,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     font-weight: bold;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #f8f9fa;
-}
 .login-form {
     width: 100%;
     max-width: 400px;
@@ -66,4 +59,21 @@ body {
     text-align: center;
     font-weight: bold;
     margin-bottom: 20px;
+}
+body, html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    min-height:  450px;
+
 }

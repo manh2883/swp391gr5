@@ -10,15 +10,20 @@ package Models;
  */
 import java.util.Date;
 
+// Done
 public class Account {
 
     private int accountId;
+    private int userId;
     private int roleId;
     private String username;
     private String password;
+    private String passwordResetToken;
+    private Date lastOptSend;
     private Date lastPasswordChange;
     private Date lastLoginTime;
     private int wrongLoginCount;
+    private Date lastWrongLogin;
     private int status;
 
     public Account(int accountId, String username) {
@@ -28,10 +33,22 @@ public class Account {
 
     public Account() {
     }
-    
 
-    
-    // Getters and Setters
+    public Account(int accountId, int userId, int roleId, String username, String password, String password_reset_token, Date lastOptSend, Date lastPasswordChange, Date lastLoginTime, int wrongLoginCount, Date last_wrong_login, int status) {
+        this.accountId = accountId;
+        this.userId = userId;
+        this.roleId = roleId;
+        this.username = username;
+        this.password = password;
+        this.passwordResetToken = password_reset_token;
+        this.lastOptSend = lastOptSend;
+        this.lastPasswordChange = lastPasswordChange;
+        this.lastLoginTime = lastLoginTime;
+        this.wrongLoginCount = wrongLoginCount;
+        this.lastWrongLogin = last_wrong_login;
+        this.status = status;
+    }
+
     public int getAccountId() {
         return accountId;
     }
@@ -40,12 +57,12 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public int getWrongLoginCount() {
-        return wrongLoginCount;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setWrongLoginCount(int wrongLoginCount) {
-        this.wrongLoginCount = wrongLoginCount;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getRoleId() {
@@ -72,6 +89,30 @@ public class Account {
         this.password = password;
     }
 
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public Date getLastWrongLogin() {
+        return lastWrongLogin;
+    }
+
+    public void setLastWrongLogin(Date lastWrongLogin) {
+        this.lastWrongLogin = lastWrongLogin;
+    }
+
+    public Date getLastOptSend() {
+        return lastOptSend;
+    }
+
+    public void setLastOptSend(Date lastOptSend) {
+        this.lastOptSend = lastOptSend;
+    }
+
     public Date getLastPasswordChange() {
         return lastPasswordChange;
     }
@@ -88,6 +129,14 @@ public class Account {
         this.lastLoginTime = lastLoginTime;
     }
 
+    public int getWrongLoginCount() {
+        return wrongLoginCount;
+    }
+
+    public void setWrongLoginCount(int wrongLoginCount) {
+        this.wrongLoginCount = wrongLoginCount;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -98,7 +147,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" + "accountId=" + accountId + ", roleId=" + roleId + ", username=" + username + ", status=" + status + '}';
+        return "Account{" + "accountId=" + accountId + ", userId=" + userId + ", roleId=" + roleId + ", username=" + username + ", password=" + password + ", passwordResetToken=" + passwordResetToken + ", lastOptSend=" + lastOptSend + ", lastPasswordChange=" + lastPasswordChange + ", lastLoginTime=" + lastLoginTime + ", wrongLoginCount=" + wrongLoginCount + ", lastWrongLogin=" + lastWrongLogin + ", status=" + status + '}';
     }
 
 }

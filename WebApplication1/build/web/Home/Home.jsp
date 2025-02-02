@@ -18,7 +18,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
               integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
         <style>
             .carousel {
@@ -36,6 +36,12 @@
         </style>
     </head>
     <body>
+        <header>
+            <c:import url="/Template/header1.jsp" />
+             <c:import url="/Template/header2.jsp" />
+        </header>
+
+
         <div>
             <h1>${message}</h1>
             <c:choose>
@@ -62,7 +68,7 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <a href="${pageContext.request.contextPath}/ViewPost">
-                        <img src="${pageContext.request.contextPath}/Images/RUN.jpg" 
+                        <img src="${pageContext.request.contextPath}/Images/Default_avt.jpg" 
                              class="d-block w-100" alt="...">
                     </a>
                 </div>
@@ -74,13 +80,13 @@
                 </div>
                 <div class="carousel-item ">
                     <a href="${pageContext.request.contextPath}/ViewPost">
-                        <img src="${pageContext.request.contextPath}/Images/RUN.jpg" 
+                        <img src="${pageContext.request.contextPath}/Images/tpfv1_reverse.png" 
                              class="d-block w-100" alt="...">
                     </a>
                 </div>
                 <div class="carousel-item ">
                     <a href="${pageContext.request.contextPath}/ViewPost">
-                        <img src="${pageContext.request.contextPath}/Images/RUN.jpg" 
+                        <img src="${pageContext.request.contextPath}/Images/ico/search_icon.jpg" 
                              class="d-block w-100" alt="...">
                     </a>
                 </div>
@@ -94,6 +100,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+        <c:import url="/Template/footer1.jsp" />
     </body>
 
 </html>

@@ -10,6 +10,7 @@ package Models;
  */
 import java.util.Date;
 
+//Done
 public class User {
     private int userId;
     private String email;
@@ -22,7 +23,10 @@ public class User {
     private String lastName;
     private Date createdAt;
     private Date updatedAt;
-
+      
+    
+    
+    
     // Getters and Setters
     public int getUserId() {
         return userId;

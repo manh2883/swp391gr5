@@ -7,6 +7,7 @@ package DAO;
 import DBContext.DBContext;
 import Models.Account;
 import Models.User;
+import java.lang.annotation.Annotation;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.sql.Timestamp;
 
 /**
  *
@@ -100,7 +102,7 @@ public class AccountDAO extends DBContext {
 
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, phoneNumber);
- 
+
             ResultSet rs = stm.executeQuery();
 
             // Lấy dữ liệu từ resultSet
@@ -173,6 +175,7 @@ public class AccountDAO extends DBContext {
             while (rs.next()) {
                 account.setAccountId(rs.getInt("account_id"));
                 account.setUsername(rs.getString("username"));
+
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -263,9 +266,51 @@ public class AccountDAO extends DBContext {
         return account;
     }
 
-    public int getwrongLoginCount(String id) {
+    public int getwrongLoginCount(int id) {
         Account account = getAccountById(id);
         return account.getWrongLoginCount();
+    }
+
+    public void changeWrongLoginCount(String userName, boolean method) {
+        String selectQuery = "SELECT wrong_login_count FROM Account WHERE username = ?";
+        String updateQuery = "UPDATE Account SET wrong_login_count = ? WHERE username = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement selectStm = con.prepareStatement(selectQuery);
+            PreparedStatement updateStm = con.prepareStatement(updateQuery);
+
+            // Lấy giá trị hiện tại
+            selectStm.setString(1, userName);
+            ResultSet rs = selectStm.executeQuery();
+
+            int currentCount = 0;
+            if (rs.next()) {
+                currentCount = rs.getInt("wrong_login_count");
+            }
+            rs.close();
+
+            // Tăng lên 1 và cập nhật
+            if (method) {
+                updateStm.setInt(1, currentCount + 1);
+            } else {
+                updateStm.setInt(1, 0);
+            }
+
+            updateStm.setString(2, userName);
+            int rowsUpdated = updateStm.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Wrong login count updated successfully for user: " + userName);
+            } else {
+                System.out.println("No account found for user: " + userName);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public int changeAccountStatus() {
@@ -273,8 +318,17 @@ public class AccountDAO extends DBContext {
     }
 
     public Account login(String userName, String passWord) {
-
-        return verifyAccount(userName, passWord);
+        Account account = verifyAccount(userName, passWord);
+        if (account == null) {
+            changeWrongLoginCount(userName, true);
+            if (getAccountByUserName(userName).getWrongLoginCount() >= 5) {
+                updateLastWrongLogin(userName);
+            }
+        } else {
+            changeWrongLoginCount(userName, false);
+            updateLastLogin(userName);
+        }
+        return account;
 
     }
 
@@ -287,10 +341,88 @@ public class AccountDAO extends DBContext {
     }
 
     public Account getAccountByUserName(String userName) {
+        String query = "SELECT * from Account "
+                + "where Account.username = ?";
+
+        Account account = new Account();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, userName);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUserId(rs.getInt("user_id"));
+                account.setRoleId(rs.getInt("role_id"));
+                account.setUsername(rs.getString("username"));
+                account.setPasswordResetToken(rs.getString("password_reset_token"));
+                account.setLastOptSend(rs.getTimestamp("last_opt_send"));
+                account.setLastPasswordChange(rs.getTimestamp("password_last_change"));
+                account.setLastLoginTime(rs.getTimestamp("last_login_time"));
+                account.setWrongLoginCount(rs.getInt("wrong_login_count"));
+                account.setLastWrongLogin(rs.getTimestamp("last_wrong_login"));
+                account.setStatus(rs.getInt(10));
+                System.out.println("3:" + account);
+                break;
+            }
+
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (account.getUsername() != null && !account.getUsername().isEmpty()) {
+            System.out.println("1: " + account);
+            return account;
+        }
         return null;
     }
 
-    public Account getAccountById(String id) {
+    public Account getAccountById(int id) {
+        String query = "SELECT * from Account "
+                + "where Account.user_id = ?";
+
+        Account account = new Account();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUserId(rs.getInt("user_id"));
+                account.setRoleId(rs.getInt("role_id"));
+                account.setUsername(rs.getString("username"));
+                account.setPasswordResetToken(rs.getString("password_reset_token"));
+                account.setLastOptSend(rs.getTimestamp("last_opt_send"));
+                account.setLastPasswordChange(rs.getTimestamp("password_last_change"));
+                account.setLastLoginTime(rs.getTimestamp("last_login_time"));
+                account.setWrongLoginCount(rs.getInt("wrong_login_count"));
+                account.setLastWrongLogin(rs.getTimestamp("last_wrong_login"));
+                account.setStatus(rs.getInt(10));
+                System.out.println("3:" + account);
+                break;
+            }
+
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (account.getUsername() != null && !account.getUsername().isEmpty()) {
+            System.out.println("1: " + account);
+            return account;
+        }
         return null;
     }
 
@@ -298,13 +430,71 @@ public class AccountDAO extends DBContext {
         return null;
     }
 
+    public void updateLastLogin(String userName) {
+        String updateQuery = "UPDATE Account SET last_login_time = ? WHERE username = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement updateStm = con.prepareStatement(updateQuery);
+
+            // Lấy thời gian hiện tại
+//            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            // Cập nhật vào database
+            updateStm.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+
+            updateStm.setString(2, userName);
+
+            int rowsUpdated = updateStm.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Last login time updated successfully for user: " + userName);
+            } else {
+                System.out.println("No account found for user: " + userName);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateLastWrongLogin(String userName) {
+        String updateQuery = "UPDATE Account SET last_wrong_login = ? WHERE username = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement updateStm = con.prepareStatement(updateQuery);
+
+            // Lấy thời gian hiện tại
+//            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            // Cập nhật vào database
+            updateStm.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+
+            updateStm.setString(2, userName);
+
+            int rowsUpdated = updateStm.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Last login time updated successfully for user: " + userName);
+            } else {
+                System.out.println("No account found for user: " + userName);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         AccountDAO aDAO = new AccountDAO();
-        Account acc = aDAO.login("0987654321", "12345678");
+        Account acc = aDAO.login("admin", "12345678");
         if (acc != null) {
-            System.out.println(acc);
+            System.out.println("Test: " + aDAO.getAccountById(aDAO.getAccountByUserName(acc.getUsername()).getUserId()));
+            System.out.println("Test: " + aDAO.getAccountById(aDAO.getAccountByUserName(acc.getUsername()).getUserId()).getWrongLoginCount());
         } else {
             System.out.println("null");
         }
+
     }
 }

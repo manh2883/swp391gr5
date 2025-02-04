@@ -35,9 +35,9 @@ public class DBContext {
         Connection connection = dbContext.getConnection();
 
         if (connection != null) {
-            System.out.println("Kết nối thành công!");
+            System.out.println("Kết nối thành côkoling!");
         } else {
-            System.out.println("Kết nối thất bại!");
+            System.out.println("Kết nối thất bạkoli!");
         }
     }
 }

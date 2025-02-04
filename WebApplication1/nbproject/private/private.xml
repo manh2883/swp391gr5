@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/Account.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Login/Login.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/header2.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/header1.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/AccountDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/dbcontext/DBContext.java</file>
+            <file>file:/C:/Users/Dell/OneDrive/Tài%20liệu/GitHub/swp391gr5/WebApplication1/web/CSS/template/main.css</file>
+            <file>file:/C:/Users/Dell/OneDrive/Tài%20liệu/GitHub/swp391gr5/WebApplication1/src/java/controllers/ProductDetailServlet.java</file>
+            <file>file:/C:/Users/Dell/OneDrive/Tài%20liệu/GitHub/swp391gr5/WebApplication1/src/java/controllers/ForgotPasswordServlet.java</file>
+            <file>file:/C:/Users/Dell/OneDrive/Tài%20liệu/GitHub/swp391gr5/WebApplication1/src/java/DBContext/DBContext.java</file>
         </group>
     </open-files>
 </project-private>

@@ -45,6 +45,12 @@
                 return isValid;
             }
         </script>
+        <style>
+            .form-control{
+                height:50px;
+            }
+
+        </style>
     </head>
     <body >
         <c:import url="/Template/header1.jsp" />
@@ -54,12 +60,14 @@
                     <h3 class="text-center">Welcome back!</h3>
                     <form method="post" action="Login" onsubmit="return validateInput();">
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="userNameInput" name="userName" placeholder="name@example.com" value="${userName}">
+                            <input type="text" class="form-control " id="userNameInput" 
+                                   name="userName" placeholder="name@example.com" value="${userName}" style="height:45px">
                             <label for="userNameInput">Email address</label>
                             <div class="text-danger" id="userError"></div>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="passWordInput" name="passWord" placeholder="Password">
+                            <input type="password" class="form-control " id="passWordInput" 
+                                   name="passWord" placeholder="Password" style="height:45px">
                             <label for="passWordInput">Password</label>
                             <div class="text-danger" id="passError">${passError}</div>
                         </div>

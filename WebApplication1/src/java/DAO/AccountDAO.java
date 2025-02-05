@@ -141,6 +141,7 @@ public class AccountDAO extends DBContext {
             while (rs.next()) {
                 account.setAccountId(rs.getInt("account_id"));
                 account.setUsername(rs.getString("username"));
+                account.setRoleId(rs.getInt("role_id"));
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -175,6 +176,7 @@ public class AccountDAO extends DBContext {
             while (rs.next()) {
                 account.setAccountId(rs.getInt("account_id"));
                 account.setUsername(rs.getString("username"));
+                account.setRoleId(rs.getInt("role_id"));
 
             }
             // Đóng kết nối và tài nguyên
@@ -210,6 +212,7 @@ public class AccountDAO extends DBContext {
             while (rs.next()) {
                 account.setAccountId(rs.getInt("account_id"));
                 account.setUsername(rs.getString("username"));
+                account.setRoleId(rs.getInt("role_id"));
             }
             // Đóng kết nối và tài nguyên
             rs.close();

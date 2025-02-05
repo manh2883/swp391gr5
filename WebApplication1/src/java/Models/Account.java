@@ -49,6 +49,13 @@ public class Account {
         this.status = status;
     }
 
+    public Account(int id, String userName, int role){
+        this.accountId = id;
+        this.username = userName;
+        this.roleId = role;
+    }
+    
+    
     public int getAccountId() {
         return accountId;
     }

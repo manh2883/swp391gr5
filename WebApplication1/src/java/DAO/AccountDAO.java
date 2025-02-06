@@ -335,8 +335,41 @@ public class AccountDAO extends DBContext {
 
     }
 
-    public void createAccount(Account account) {
+    public static void createAccount(Account account) {
 
+        String sql = "INSERT INTO `account` ( `user_id`, `role_id`, `username`, "
+                + "`password`, `password_reset_token`, `password_last_change`, `last_login_time`, "
+                + "`wrong_login_count`, `status`, `last_wrong_login`, `last_opt_send`) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(sql);
+            // update query
+            stm.setInt(1, account.getUserId());
+            stm.setInt(2, account.getRoleId());
+            stm.setString(3, account.getUsername());
+            stm.setString(4, account.getPassword());
+            stm.setString(5, null);
+            stm.setTimestamp(6, null);
+            stm.setTimestamp(7, null);
+            stm.setInt(8, 0);
+            stm.setInt(9, 1);
+            stm.setTimestamp(10, null);
+            stm.setTimestamp(11, null);
+
+            int rowsUpdated = stm.executeUpdate();
+            // Đóng kết nối và tài nguyên
+            System.out.println(rowsUpdated + " row(s) updated.");
+            System.out.println("------------------");
+
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void editAccount(Account oldAcc, Account newAcc) {
@@ -491,13 +524,8 @@ public class AccountDAO extends DBContext {
 
     public static void main(String[] args) {
         AccountDAO aDAO = new AccountDAO();
-        Account acc = aDAO.login("admin", "12345678");
-        if (acc != null) {
-            System.out.println("Test: " + aDAO.getAccountById(aDAO.getAccountByUserName(acc.getUsername()).getUserId()));
-            System.out.println("Test: " + aDAO.getAccountById(aDAO.getAccountByUserName(acc.getUsername()).getUserId()).getWrongLoginCount());
-        } else {
-            System.out.println("null");
-        }
-
+        Account account = new Account(1, 2, "manhhehe", "12345678", 0, 1);
+        createAccount(account);
+        
     }
 }

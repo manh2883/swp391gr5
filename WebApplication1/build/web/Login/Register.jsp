@@ -8,6 +8,21 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="${pageContext.request.contextPath}/CSS/style.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/bootstrap.min.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/font-awesome.min.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/prettyPhoto.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/price-range.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/animate.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/main.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/CSS/template/responsive.css" rel="stylesheet">  
+
+        <link rel="shortcut icon" href="images/ico/favicon.ico">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57-precomposed.png">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <script>
             function validateInput() {
                 let isValid = true;
@@ -38,16 +53,30 @@
                 }
 
                 // Kiểm tra Email hoặc Số điện thoại
-                const contact = document.getElementById('contactInput').value.trim();
+                const email = document.getElementById('emailInput').value.trim();
+                const phone = document.getElementById('phoneInput').value.trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 const phoneRegex = /^(0|\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/;
-                if (contact === '') {
-                    document.getElementById('contactError').innerText = 'Email or Phone Number is required.';
+
+                if (email === '') {
+                    document.getElementById('emailError').innerText = 'Email is required.';
                     isValid = false;
-                } else if (!emailRegex.test(contact) && !phoneRegex.test(contact)) {
-                    document.getElementById('contactError').innerText = 'Invalid Email or Phone Number format.';
+                } else if (!emailRegex.test(email)) {
+                    document.getElementById('emailError').innerText = 'Invalid Email format.';
                     isValid = false;
                 }
+
+                if (phone === '') {
+                    document.getElementById('phoneError').innerText = 'Phone is required.';
+                    isValid = false;
+                } else if (!phoneRegex.test(phone)) {
+                    document.getElementById('phoneError').innerText = 'Invalid phone format.';
+                    isValid = false;
+                }
+
+
+
+
 
                 // Kiểm tra Giới tính
                 const gender = document.getElementById('gender').value;
@@ -141,11 +170,15 @@
 
                         <!-- Email or Phone Number -->
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="contactInput" name="contact" placeholder="Email or Phone Number" style="height:45px">
-                            <label for="contactInput">Email or Phone Number</label>
-                            <div class="text-danger" id="contactError"></div>
+                            <input type="text" class="form-control" id="emailInput" name="emailInput" placeholder="Email" style="height:45px">
+                            <label for="emailInput">Email</label>
+                            <div class="text-danger" id="emailError"></div>
                         </div>
-
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="phoneInput" name="phoneInput" placeholder="phone" style="height:45px">
+                            <label for="phoneInput">Phone Number</label>
+                            <div class="text-danger" id="phoneError"></div>
+                        </div>
                         <!-- Gender Dropdown -->
                         <div class="form-floating mb-3">
                             <select class="form-select form-control" id="gender" name="gender" style="height:45px" >

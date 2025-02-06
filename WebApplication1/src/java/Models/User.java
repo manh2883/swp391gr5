@@ -8,25 +8,55 @@ package Models;
  *
  * @author Acer
  */
+import java.sql.Timestamp;
 import java.util.Date;
 
 //Done
 public class User {
+
     private int userId;
     private String email;
     private String phoneNumber;
     private String avtLink;
     private Date doB;
     private String address;
-    private String gender;
+    private int gender;
     private String firstName;
     private String lastName;
-    private Date createdAt;
-    private Date updatedAt;
-      
-    
-    
-    
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+
+    public User() {
+    }
+
+    public User(int userId, String email, String phoneNumber, String avtLink, Date doB, String address, int gender, String firstName, String lastName, Timestamp createdAt, Timestamp updatedAt) {
+        this.userId = userId;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.avtLink = avtLink;
+        this.doB = doB;
+        this.address = address;
+        this.gender = gender;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public User(String email, String phoneNumber, String avtLink, Date doB, String address, int gender, String firstName, String lastName) {
+        this.userId = 0;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.avtLink = avtLink;
+        this.doB = doB;
+        this.address = address;
+        this.gender = gender;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+    }
+
     // Getters and Setters
     public int getUserId() {
         return userId;
@@ -76,11 +106,11 @@ public class User {
         this.address = address;
     }
 
-    public String getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
@@ -104,7 +134,7 @@ public class User {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -112,7 +142,13 @@ public class User {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB + ", address=" + address + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+    }
+
 }

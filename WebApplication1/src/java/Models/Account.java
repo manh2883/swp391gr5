@@ -34,6 +34,23 @@ public class Account {
     public Account() {
     }
 
+    public Account(int userId, int roleId, String username, String password, int wrongLoginCount, int status) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.username = username;
+        this.password = password;
+        this.wrongLoginCount = wrongLoginCount;
+        this.status = status;
+
+        this.accountId = 0;
+        this.passwordResetToken = null;
+        this.lastLoginTime = null;
+        this.lastOptSend = null;
+        this.lastWrongLogin = null;
+        this.lastPasswordChange = null;
+
+    }
+
     public Account(int accountId, int userId, int roleId, String username, String password, String password_reset_token, Date lastOptSend, Date lastPasswordChange, Date lastLoginTime, int wrongLoginCount, Date last_wrong_login, int status) {
         this.accountId = accountId;
         this.userId = userId;
@@ -49,13 +66,12 @@ public class Account {
         this.status = status;
     }
 
-    public Account(int id, String userName, int role){
+    public Account(int id, String userName, int role) {
         this.accountId = id;
         this.username = userName;
         this.roleId = role;
     }
-    
-    
+
     public int getAccountId() {
         return accountId;
     }

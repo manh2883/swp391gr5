@@ -1,8 +1,4 @@
-<%-- 
-    Document   : header1
-    Created on : Feb 2, 2025, 2:16:17 AM
-    Author     : Acer
---%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
@@ -69,9 +65,8 @@
                             </ul>
                         </div>
                     </div>
-                    <form class="col-sm-4" 
-                          method="Search" action="post">
-                        <div class="search_box d-flex flex-row pull-right align-items-center  " ">
+                    <form class="col-sm-4" method="Search" action="post">
+                        <div class="search_box d-flex flex-row pull-right align-items-center  " >
                             <input type="text" placeholder="Search" />
                             <button type="button" class="btn btn-default get-manh" >Search</button>
                         </div>

@@ -106,7 +106,7 @@
                                                 <a href="${pageContext.request.contextPath}/Login" >
                                                     <i class="fa fa-user-circle"></i> Login</a></li>
                                             <li class="nav-item">
-                                                <a href="${pageContext.request.contextPath}/SignUp" >
+                                                <a href="${pageContext.request.contextPath}/Register" >
                                                     <i class="fa fa-suitcase"></i> Sign Up</a></li>        
 
                                         </c:otherwise>

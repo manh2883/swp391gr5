@@ -54,14 +54,14 @@
                 </div>
             </div><!--/header_top-->
 
-            <div class="header-middle"><!--header-middle-->
+            <div class="header-middle" ><!--header-middle-->
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="logo pull-left ">
                                 <a href="${pageContext.request.contextPath}/Home">
                                     <img src="Images/logo.png" alt="" />
-                                                                    </a>
+                                </a>
                             </div>
 
                         </div>
@@ -104,9 +104,13 @@
                                         <c:otherwise>
                                             <li class="nav-item">
                                                 <a href="${pageContext.request.contextPath}/Login" >
-                                                    <i class="fa fa-lock"></i> Login</a></li>
-                                                </c:otherwise>
-                                            </c:choose>
+                                                    <i class="fa fa-user-circle"></i> Login</a></li>
+                                            <li class="nav-item">
+                                                <a href="${pageContext.request.contextPath}/SignUp" >
+                                                    <i class="fa fa-suitcase"></i> Sign Up</a></li>        
+
+                                        </c:otherwise>
+                                    </c:choose>
                                 </ul>
                             </div>
                         </div>

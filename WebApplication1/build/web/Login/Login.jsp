@@ -1,8 +1,4 @@
-<%-- 
-    Document   : Login
-    Created on : Jan 19, 2025, 3:29:26 AM
-    Author     : Acer
---%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -57,7 +53,7 @@
         <section>
             <div class="main-container">
                 <div class="login-form">
-                    <h3 class="text-center">Welcome back!</h3>
+                    <h3 class="text-center" style="margin-bottom: 40px;">Welcome back!</h3>
                     <form method="post" action="Login" onsubmit="return validateInput();">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control " id="userNameInput" 

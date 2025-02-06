@@ -73,7 +73,9 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
-    min-height:  450px;
+    background-color: transparent;
+    min-height:  550px;
+    margin-bottom: 25vh;
+    margin-top: 25vh;
 
 }

@@ -1,5 +1,11 @@
+<%-- 
+    Document   : Home
+    Created on : Jan 19, 2025, 2:28:48 PM
+    Author     : Acer
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -202,38 +208,39 @@
 
                         <!-- Date of Birth -->
                         <div class="row mb-3">
+                            <!-- Ngày -->
                             <div class="col">
                                 <select class="form-select form-control" id="dobDay" name="dobDay" style="height:45px">
                                     <option value="">Day</option>
-                                    <% for (int i = 1; i <= 31; i++) { %>
-                                    <option value="<%=i%>" ${dobDay != null && dobDay == i ? "selected" : ""}><%=i%></option>
-                                    <% } %>
+                                    <c:forEach var="i" begin="1" end="31">
+                                        <option value="${i}" ${not empty dobDay and dobDay == i ? 'selected' : ''}>${i}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
 
+                            <!-- Tháng -->
                             <div class="col">
                                 <select class="form-select form-control" id="dobMonth" name="dobMonth" style="height:45px">
                                     <option value="">Month</option>
-                                    <% String[] months = {"January", "February", "March", "April", 
-                                        "May", "June", "July", "August", "September", 
-                                        "October", "November", "December"};
-               for (int i = 0; i < months.length; i++) { %>
-                                    <option value="<%=i+1%>" ${dobMonth != null && dobMonth == (i+1) ? "selected" : ""}><%=months[i]%></option>
-                                    <% } %>
+                                    <c:forEach var="i" begin="1" end="12">
+                                        <c:set var="monthNames" value="January,February,March,April,May,June,July,August,September,October,November,December"/>
+                                        <c:set var="monthName" value="${fn:split(monthNames, ',')[i-1]}" />
+                                        <option value="${i}" ${not empty dobMonth and dobMonth == i ? 'selected' : ''}>${monthName}</option>
+                                    </c:forEach>
                                 </select>
-                            </div> 
+                            </div>
 
+                            <!-- Năm -->
                             <div class="col">
                                 <select class="form-select form-control" id="dobYear" name="dobYear" style="height:45px">
                                     <option value="">Year</option>
-                                    <% for (int i = 2025; i >= 1950; i--) { %>
-                                    <option value="<%=i%>" ${dobYear != null && dobYear == i ? "selected" : ""}><%=i%></option>
-                                    <% } %>
+                                    <c:forEach var="i" begin="1950" end="2025">
+                                        <option value="${2025 - i + 1950}" ${not empty dobYear and dobYear == (2025 - i + 1950) ? 'selected' : ''}>${2025 - i + 1950}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
                             <div class="text-danger" id="dobError"></div>
                         </div>
-
 
                         <!-- Password -->
                         <div class="form-floating mb-3">
@@ -254,6 +261,7 @@
             </div>
 
         </section>
+        <div>${dobDay}, ${dobMonth}, ${dobYear}</div>
         <c:import url="/Template/footer1.jsp" />
     </body>
 

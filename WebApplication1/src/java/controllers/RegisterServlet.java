@@ -100,23 +100,26 @@ public class RegisterServlet extends HttpServlet {
 
         int gender = Integer.parseInt(request.getParameter("gender"));
 
-        if (aDAO.checkUserNameExist(userName) != null) {
+        boolean checkUserNameExist = aDAO.checkUserNameExist(userName) != null;
+        boolean checkPhoneNumberExist = aDAO.checkPhoneNumberExist(phone) != null;
+        boolean checkEmailExist = aDAO.checkEmailExist(email) != null;
+
+        if (checkUserNameExist) {
             request.setAttribute("userNameError", "This User Name has been used");
-            successful = false;
         }
 
-        if (aDAO.checkPhoneNumberExist(phone) != null) {
+        if (checkPhoneNumberExist) {
             request.setAttribute("phoneError", "This Phone Number has been used");
-            successful = false;
         }
 
-        if (aDAO.checkEmailExist(email) != null) {
+        if (checkEmailExist) {
             request.setAttribute("emailError", "This Email has been used");
-            successful = false;
         }
 
         System.out.println(dob);
 
+        successful = !(checkEmailExist || checkPhoneNumberExist || checkUserNameExist);
+        System.out.println(checkEmailExist + ", " + checkPhoneNumberExist + ", " + checkUserNameExist);
         if (successful) {
             User user = new User(email, phone, null, dob, null, gender, firstName, lastName);
 
@@ -137,15 +140,16 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
         } else {
             // Giả sử `dob` là java.sql.Date
-            if (dob != null) {
-
-                cal.setTime(dob);
-
-                dobDay = cal.get(Calendar.DAY_OF_MONTH);
-                dobMonth = cal.get(Calendar.MONTH) + 1; // Tháng trong Java bắt đầu từ 0
-                dobYear = cal.get(Calendar.YEAR);
-
-            }
+//            if (dob.toString() == null) {
+//
+//                cal.setTime(dob);
+//
+//                dobDay = cal.get(Calendar.DAY_OF_MONTH);
+//                dobMonth = cal.get(Calendar.MONTH) + 1; // Tháng trong Java bắt đầu từ 0
+//                dobYear = cal.get(Calendar.YEAR);
+//                System.out.println(dobDay + ", " + dobMonth + ", " + dobYear);
+//            }
+            System.out.println(dobDay + ", " + dobMonth + ", " + dobYear);
             request.setAttribute("gender", gender);
             request.setAttribute("firstName", firstName);
             request.setAttribute("lastName", lastName);

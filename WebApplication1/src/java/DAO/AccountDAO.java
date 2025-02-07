@@ -107,15 +107,13 @@ public class AccountDAO extends DBContext {
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                user.setPhoneNumber(rs.getString("1"));
+                user.setPhoneNumber(rs.getString("phone_number"));
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
-                return user.getPhoneNumber();
-            }
+          
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -198,8 +196,8 @@ public class AccountDAO extends DBContext {
     }
 
     public Account loginWithPhone(String phoneNumber, String passWord) {
-        String query = "SELECT * from Account "
-                + "join User on User.user_id = Account.user_id "
+        String query = "SELECT * from User "
+                + "join Account on User.user_id = Account.user_id "
                 + "where User.phone_number = ? and Account.password = ? "
                 + "limit 1";
         Account account = new Account();
@@ -230,10 +228,6 @@ public class AccountDAO extends DBContext {
             return account;
         }
         return null;
-    }
-
-    public int increaseWrongLoginTime(int accountId) {
-        return 0;
     }
 
     public Account verifyAccount(String userName, String passWord) {
@@ -326,11 +320,10 @@ public class AccountDAO extends DBContext {
 
     public Account login(String userName, String passWord) {
         Account account = verifyAccount(userName, passWord);
-        if (account == null) {
+        if (account == null && getAccountByUserName(userName) != null) {
             changeWrongLoginCount(userName, true);
-            if (getAccountByUserName(userName) != null) {
-                updateLastWrongLogin(userName);
-            }
+            updateLastWrongLogin(userName);
+
         } else {
             changeWrongLoginCount(userName, false);
             updateLastLogin(userName);

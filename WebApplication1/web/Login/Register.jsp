@@ -25,6 +25,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <script>
             function validateInput() {
+
                 let isValid = true;
 
                 // Xóa các thông báo lỗi cũ
@@ -37,20 +38,29 @@
                     document.getElementById('firstNameError').innerText = 'First and Last Name are required.';
                     isValid = false;
                 } else if (!/^[\p{L}\p{M}\s'-]+$/u.test(firstName) || !/^[\p{L}\p{M}\s'-]+$/u.test(lastName)) {
-                    document.getElementById('firstNameError').innerText = 'Names cannot contain numbers or invalid symbols.';
+                    if (/\s/.test(firstName) || /\s/.test(lastName)) {
+                        document.getElementById('firstNameError').innerText = 'Names cannot contain space.';
+                    } else
+                        document.getElementById('firstNameError').innerText = 'Names cannot contain numbers or invalid symbols.';
                     isValid = false;
                 }
 
 
                 // Kiểm tra Username
                 const username = document.getElementById('userNameInput').value.trim();
+                const usernameRegex = /^[A-Za-z0-9]+$/; // Chỉ cho phép chữ cái và số
+
                 if (username === '') {
                     document.getElementById('userNameError').innerText = 'Username is required.';
                     isValid = false;
                 } else if (username.length < 4) {
                     document.getElementById('userNameError').innerText = 'Username must be at least 4 characters.';
                     isValid = false;
+                } else if (!usernameRegex.test(username)) {
+                    document.getElementById('userNameError').innerText = 'Username can only contain letters and numbers.';
+                    isValid = false;
                 }
+
 
                 // Kiểm tra Email hoặc Số điện thoại
                 const email = document.getElementById('emailInput').value.trim();
@@ -73,10 +83,6 @@
                     document.getElementById('phoneError').innerText = 'Invalid phone format.';
                     isValid = false;
                 }
-
-
-
-
 
                 // Kiểm tra Giới tính
                 const gender = document.getElementById('gender').value;
@@ -132,7 +138,7 @@
     </head>
     <body >
         <c:import url="/Template/header1.jsp" />
-        <section style="padding-bottom: 60px; padding-top: 60px">
+        <section>
             <div class="main-container">
                 <div class="login-form">
                     <h3 class="text-center" style="margin-bottom: 40px;">Sign Up</h3>
@@ -143,7 +149,7 @@
                             <div class="col">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="firstNameInput" name="firstNameInput" 
-                                           placeholder="firstNameInput" style="height:45px">
+                                           placeholder="firstNameInput" style="height:45px" value="${firstName}">
                                     <label for="firstNameInput">First Name</label>
 
                                 </div>
@@ -152,7 +158,7 @@
                             <div class="col">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="lastNameInput" name="lastNameInput" 
-                                           placeholder="lastNameInput" style="height:45px">
+                                           placeholder="lastNameInput" style="height:45px" value="${lastName}">
                                     <label for="lastNameInput">Last Name</label>
 
                                 </div>
@@ -162,34 +168,37 @@
 
                         <!-- Username -->
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="userNameInput" name="userName" 
-                                   placeholder="Username" style="height:45px">
+                            <input type="text" class="form-control" id="userNameInput" name="userNameInput" 
+                                   placeholder="Username" style="height:45px" value="${userName}">
                             <label for="userNameInput">Username</label>
-                            <div class="text-danger" id="userNameError"></div>
+                            <div class="text-danger" id="userNameError">${userNameError}</div>
                         </div>
 
                         <!-- Email or Phone Number -->
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="emailInput" name="emailInput" placeholder="Email" style="height:45px">
+                            <input type="text" class="form-control" id="emailInput" name="emailInput" 
+                                   placeholder="Email" style="height:45px" value="${email}">
                             <label for="emailInput">Email</label>
-                            <div class="text-danger" id="emailError"></div>
+                            <div class="text-danger" id="emailError">${emailError}</div>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="phoneInput" name="phoneInput" placeholder="phone" style="height:45px">
+                            <input type="text" class="form-control" id="phoneInput" name="phoneInput" 
+                                   placeholder="phone" style="height:45px" value="${phone}">
                             <label for="phoneInput">Phone Number</label>
-                            <div class="text-danger" id="phoneError"></div>
+                            <div class="text-danger" id="phoneError">${phoneError}</div>
                         </div>
                         <!-- Gender Dropdown -->
                         <div class="form-floating mb-3">
-                            <select class="form-select form-control" id="gender" name="gender" style="height:45px" >
-
-                                <option value="1">Male</option>
-                                <option value="0">Female</option>
-                                <option value="2">Other</option>
+                            <select class="form-select form-control" id="gender" name="gender" style="height:45px">
+                                <option value="1" ${gender != null && gender == 1 ? "selected" : ""}>Male</option>
+                                <option value="0" ${gender != null && gender == 0 ? "selected" : ""}>Female</option>
+                                <option value="2" ${gender != null && gender == 2 ? "selected" : ""}>Other</option>
                             </select>
                             <label for="gender">Gender</label>
                             <div class="text-danger" id="genderError"></div>
                         </div>
+
+
 
                         <!-- Date of Birth -->
                         <div class="row mb-3">
@@ -197,33 +206,38 @@
                                 <select class="form-select form-control" id="dobDay" name="dobDay" style="height:45px">
                                     <option value="">Day</option>
                                     <% for (int i = 1; i <= 31; i++) { %>
-                                    <option value="<%=i%>"><%=i%></option>
+                                    <option value="<%=i%>" ${dobDay != null && dobDay == i ? "selected" : ""}><%=i%></option>
                                     <% } %>
                                 </select>
                             </div>
+
                             <div class="col">
                                 <select class="form-select form-control" id="dobMonth" name="dobMonth" style="height:45px">
                                     <option value="">Month</option>
-                                    <% String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-                       for (int i = 0; i < months.length; i++) { %>
-                                    <option value="<%=i+1%>"><%=months[i]%></option>
+                                    <% String[] months = {"January", "February", "March", "April", 
+                                        "May", "June", "July", "August", "September", 
+                                        "October", "November", "December"};
+               for (int i = 0; i < months.length; i++) { %>
+                                    <option value="<%=i+1%>" ${dobMonth != null && dobMonth == (i+1) ? "selected" : ""}><%=months[i]%></option>
                                     <% } %>
                                 </select>
                             </div> 
+
                             <div class="col">
                                 <select class="form-select form-control" id="dobYear" name="dobYear" style="height:45px">
                                     <option value="">Year</option>
-                                    <% for (int i = 2025; i >= 1925; i--) { %>
-                                    <option value="<%=i%>"><%=i%></option>
+                                    <% for (int i = 2025; i >= 1950; i--) { %>
+                                    <option value="<%=i%>" ${dobYear != null && dobYear == i ? "selected" : ""}><%=i%></option>
                                     <% } %>
                                 </select>
                             </div>
-                            <div class="text-danger" id="dobError"></div> <!-- Thông báo lỗi cho DoB -->
+                            <div class="text-danger" id="dobError"></div>
                         </div>
+
 
                         <!-- Password -->
                         <div class="form-floating mb-3">
-                            <input type="password" class="form-control" id="passWordInput" name="passWord" placeholder="Password" style="height:45px">
+                            <input type="password" class="form-control" id="passWordInput" name="passWordInput" placeholder="Password" style="height:45px">
                             <label for="passWordInput">Password</label>
                             <div class="text-danger" id="passError"></div>
                         </div>

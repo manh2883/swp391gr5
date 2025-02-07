@@ -63,7 +63,7 @@
                         </div>
                         <div class="form-floating mb-3">
                             <input type="password" class="form-control " id="passWordInput" 
-                                   name="passWord" placeholder="Password" style="height:45px">
+                                   name="passWord" placeholder="Password" style="height:45px" value="${passWord}">
                             <label for="passWordInput">Password</label>
                             <div class="text-danger" id="passError">${passError}</div>
                         </div>

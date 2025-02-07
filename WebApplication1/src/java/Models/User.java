@@ -29,7 +29,9 @@ public class User {
     public User() {
     }
 
-    public User(int userId, String email, String phoneNumber, String avtLink, Date doB, String address, int gender, String firstName, String lastName, Timestamp createdAt, Timestamp updatedAt) {
+    public User(int userId, String email, String phoneNumber, String avtLink,
+            Date doB, String address, int gender, String firstName, String lastName,
+            Timestamp createdAt, Timestamp updatedAt) {
         this.userId = userId;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -43,7 +45,8 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public User(String email, String phoneNumber, String avtLink, Date doB, String address, int gender, String firstName, String lastName) {
+    public User(String email, String phoneNumber, String avtLink, Date doB,
+            String address, int gender, String firstName, String lastName) {
         this.userId = 0;
         this.email = email;
         this.phoneNumber = phoneNumber;

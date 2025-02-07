@@ -59,12 +59,114 @@ public class UserDAO extends DBContext {
         return userList;
     }
 
-    public boolean checkEmailIsExist(String userName) {
-        return false;
+    public static User getUserById(int id) {
+        String query = "SELECT * FROM User where User.user_id = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setAvtLink(rs.getString("avt_link"));
+                user.setDoB(rs.getDate("DoB"));
+                user.setAddress(rs.getString("address"));
+                user.setGender(rs.getInt("gender"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setUpdatedAt(rs.getTimestamp("updated_at"));
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public boolean checkPhoneNumberIsExist(String userName) {
-        return false;
+    public static User getUserByEmail(String email) {
+        String query = "SELECT * FROM User where User.email = ? limit 1 ";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, email);
+            ResultSet rs = stm.executeQuery();
+            User user = new User();
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                
+                user.setUserId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setAvtLink(rs.getString("avt_link"));
+                user.setDoB(rs.getDate("DoB"));
+                user.setAddress(rs.getString("address"));
+                user.setGender(rs.getInt("gender"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setUpdatedAt(rs.getTimestamp("updated_at"));
+                break;
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+            return user;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static User getUserByPhone(String phone) {
+        String query = "SELECT * FROM User where User.phone_number = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, phone);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setAvtLink(rs.getString("avt_link"));
+                user.setDoB(rs.getDate("DoB"));
+                user.setAddress(rs.getString("address"));
+                user.setGender(rs.getInt("gender"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setUpdatedAt(rs.getTimestamp("updated_at"));
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void createUser(User user) {
@@ -77,7 +179,10 @@ public class UserDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(sql);
 
-            stm.setDate(1, (Date) user.getDoB());
+            java.util.Date utilDate = user.getDoB();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+            stm.setDate(1, sqlDate);
             stm.setInt(2, user.getGender());
             stm.setString(3, user.getFirstName());
             stm.setString(4, user.getLastName());
@@ -90,6 +195,31 @@ public class UserDAO extends DBContext {
             // Đóng kết nối và tài nguyên
             System.out.println(rowsUpdated + " row(s) updated.");
             System.out.println("------------------");
+            stm.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void deleteUserAndAccountById(int id) {
+
+        String query = "delete from account where Account.user_id = ?; "
+                + " Delete FROM User where User.user_id = ?; ";
+                
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, id);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+
+            // Đóng kết nối và tài nguyên
+            rs.close();
             stm.close();
             con.close();
 

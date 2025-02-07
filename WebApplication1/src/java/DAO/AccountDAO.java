@@ -26,7 +26,7 @@ public class AccountDAO extends DBContext {
     public String checkUserNameExist(String userName) {
 
         String query = "SELECT * from Account "
-                + "where Account.username = ?"
+                + "where Account.username like ?"
                 + "limit 1 ";
         Account account = new Account();
         try {
@@ -56,8 +56,8 @@ public class AccountDAO extends DBContext {
 
     public String checkEmailExist(String email) {
 
-        String query = "SELECT email FROM Account "
-                + "JOIN User ON Account.user_id = User.user_id "
+        String query = "SELECT email FROM user "
+                + "left JOIN Account ON Account.user_id = User.user_id "
                 + "WHERE User.email = ? LIMIT 1";
 
         User user = new User();
@@ -91,8 +91,8 @@ public class AccountDAO extends DBContext {
     public String checkPhoneNumberExist(String phoneNumber) {
         String query = """
                        SELECT phone_number
-                       FROM Account 
-                       JOIN User ON User.user_id = Account.user_id 
+                       FROM user 
+                       left JOIN Account ON User.user_id = Account.user_id 
                        WHERE User.phone_number = ?
                        LIMIT 1;""";
         User user = new User();
@@ -107,19 +107,23 @@ public class AccountDAO extends DBContext {
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setPhoneNumber(rs.getString("1"));
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-
+            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
+                return user.getPhoneNumber();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
             return user.getPhoneNumber();
         }
+
         return null;
     }
 
@@ -324,7 +328,7 @@ public class AccountDAO extends DBContext {
         Account account = verifyAccount(userName, passWord);
         if (account == null) {
             changeWrongLoginCount(userName, true);
-            if (getAccountByUserName(userName).getWrongLoginCount() >= 5) {
+            if (getAccountByUserName(userName) != null) {
                 updateLastWrongLogin(userName);
             }
         } else {
@@ -526,6 +530,6 @@ public class AccountDAO extends DBContext {
         AccountDAO aDAO = new AccountDAO();
         Account account = new Account(1, 2, "manhhehe", "12345678", 0, 1);
         createAccount(account);
-        
+
     }
 }

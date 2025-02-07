@@ -4,14 +4,14 @@
  */
 package Models;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 /**
  *
  * @author nguye
  */
 public class CartDetail {
-    private int cartDetialID;
+    private int cartDetailID;
     private int cartID;
     private String productID;
     private int productVariantID;
@@ -21,8 +21,8 @@ public class CartDetail {
     public CartDetail() {
     }
 
-    public CartDetail(int cartDetialID, int cartID, String productID, int productVariantID, int quantity, Timestamp updatedDate) {
-        this.cartDetialID = cartDetialID;
+    public CartDetail(int cartDetailID, int cartID, String productID, int productVariantID, int quantity, Timestamp updatedDate) {
+        this.cartDetailID = cartDetailID;
         this.cartID = cartID;
         this.productID = productID;
         this.productVariantID = productVariantID;
@@ -30,12 +30,12 @@ public class CartDetail {
         this.updatedDate = updatedDate;
     }
 
-    public int getCartDetialID() {
-        return cartDetialID;
+    public int getCartDetailID() {
+        return cartDetailID;
     }
 
-    public void setCartDetialID(int cartDetialID) {
-        this.cartDetialID = cartDetialID;
+    public void setCartDetailID(int cartDetailID) {
+        this.cartDetailID = cartDetailID;
     }
 
     public int getCartID() {
@@ -80,8 +80,11 @@ public class CartDetail {
 
     @Override
     public String toString() {
-        return "CartDetail{" + "cartDetialID=" + cartDetialID + ", cartID=" + cartID + ", productID=" + productID + ", productVariantID=" + productVariantID + ", quantity=" + quantity + ", updatedDate=" + updatedDate + '}';
+        return "CartDetail{" + "cartDetailID=" + cartDetailID + ", cartID=" + cartID + ", productID=" + productID + ", productVariantID=" + productVariantID + ", quantity=" + quantity + ", updatedDate=" + updatedDate + '}';
     }
+
+    
+
     
     
 }

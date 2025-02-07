@@ -103,6 +103,8 @@
 							<td class="cart_description">
 								<h4><a href="">Colorblock Scuba</a></h4>
 								<p>Web ID: 1089772</p>
+                                                                <p>Variant: Black</p>
+                                                                <p>Size: L</p>
 							</td>
 							<td class="cart_price">
 								<p>$59</p>
@@ -128,6 +130,7 @@
 							<td class="cart_description">
 								<h4><a href="">Colorblock Scuba</a></h4>
 								<p>Web ID: 1089772</p>
+                                                                <p>Variant: Black</p>
 							</td>
 							<td class="cart_price">
 								<p>$59</p>

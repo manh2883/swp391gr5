@@ -82,7 +82,7 @@
                                                 </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="cart.html">
+                                                <a href="${pageContext.request.contextPath}/ViewCart">
                                                     <i class="fa fa-shopping-cart"></i> Cart
                                                 </a>
                                             </li>

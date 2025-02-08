@@ -261,7 +261,6 @@
             </div>
 
         </section>
-        <div>${dobDay}, ${dobMonth}, ${dobYear}</div>
         <c:import url="/Template/footer1.jsp" />
     </body>
 

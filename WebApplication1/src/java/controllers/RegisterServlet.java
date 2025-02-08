@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.AccountDAO;
+import DAO.CartDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.User;
@@ -130,6 +131,9 @@ public class RegisterServlet extends HttpServlet {
                 Account newAcc = new Account(user1.getUserId(), 1, userName, passWord, 0, 1);
                 newAcc.setPassword(passWord);
                 aDAO.createAccount(newAcc);
+                CartDAO cDAO = new CartDAO();
+                cDAO.createCartForUserID(user1.getUserId());
+                
             } else {
 //                uDAO.deleteUserAndAccountById(user1.getUserId());
                 request.getRequestDispatcher("Home/test.jsp").forward(request, response);

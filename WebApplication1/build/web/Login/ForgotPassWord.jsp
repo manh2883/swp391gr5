@@ -1,3 +1,8 @@
+<%-- 
+    Document   : ForgotPassWord
+    Created on : Feb 1, 2025, 5:24:08 AM
+    Author     : Acer
+--%>
 
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -5,7 +10,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Login</title>
+        <title>Forgot Password</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -62,12 +67,14 @@
                             <label for="userNameInput">Email address</label>
                             <div class="text-danger" id="userError"></div>
                         </div>
+                            
                         <div class="form-floating mb-3">
                             <input type="password" class="form-control " id="passWordInput" 
                                    name="passWord" placeholder="Password" style="height:45px" value="${passWord}">
                             <label for="passWordInput">Password</label>
                             <div class="text-danger" id="passError">${passError}</div>
                         </div>
+                        
                         <div class="d-grid">
                             <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Sign in</button>
                             <div class="text-center">
@@ -82,3 +89,4 @@
         <c:import url="/Template/footer1.jsp" />
     </body>
 </html>
+

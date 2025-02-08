@@ -63,7 +63,7 @@ public class CartDAO extends DBContext {
                 + "FROM cart_detail cd "
                 + "JOIN cart c ON cd.cart_id = c.cart_id "
                 + "WHERE c.user_id = ?";
-        try{
+        try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
@@ -89,14 +89,72 @@ public class CartDAO extends DBContext {
         return cartDetails;
     }
 
-    public void editCartDetailByID(int userID, int cartDetailID) {
-
-    }
+//    public void editCartDetailByID(int userID, int cartDetailID,) throws Exception{
+//        String query = "UPDATE cart_detail cd "
+//                + "JOIN cart c ON cd.cart_id = c.cart_id "
+//                + "SET cd.quantity = ?, cd.updated_date = NOW() "
+//                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+//        if (newQuantity > 0) {
+//            try {
+//                DBContext db = new DBContext();
+//                java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+//                PreparedStatement stm = con.prepareStatement(query);
+//                stm.setInt(1, newQuantity);
+//                stm.setInt(2, cartDetailID);
+//                stm.setInt(3, userID);
+//
+//                int affectedRows = stm.executeUpdate();
+//
+//                if (affectedRows == 0) {
+//                    throw new Exception("Cập nhật cart detail thất bại, không có hàng nào bị ảnh hưởng. "
+//                            + "Đảm bảo cartDetailID thuộc về userID cung cấp.");
+//                } else {
+//                    System.out.println("Cập nhật cart detail thành công.");
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                // Xử lý ngoại lệ tùy theo yêu cầu của ứng dụng, ví dụ ghi log hoặc thông báo lỗi cho người dùng
+//            }
+//        } else {
+//            deleteCartDetailByID(userID, cartDetailID);
+//        }
+//
+//    }
+//
+//    private void deleteCartDetailByID(int userID, int cartDetailID) throws Exception {
+//        String query = "DELETE cd FROM cart_detail cd "
+//                + "JOIN cart c ON cd.cart_id = c.cart_id "
+//                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+//
+//        // Thông tin kết nối cơ sở dữ liệu
+//        // ...
+//        try {
+//            DBContext db = new DBContext();
+//            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+//            PreparedStatement stm = con.prepareStatement(query);
+//            stm.setInt(1, cartDetailID);
+//            stm.setInt(2, userID);
+//
+//            int affectedRows = stm.executeUpdate();
+//
+//            if (affectedRows == 0) {
+//                throw new Exception("Xóa cart detail thất bại, không có hàng nào bị ảnh hưởng.");
+//            } else {
+//                System.out.println("Xóa cart detail thành công.");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            // Xử lý ngoại lệ
+//        }
+//    }
 
     public static void main(String[] args) {
         CartDAO cDAO = new CartDAO();
-        System.out.println(cDAO.getCartIDByUserID(1));
-        cDAO.createCartForUserID(1);
-        System.out.println(cDAO.getCartIDByUserID(1));
+//        System.out.println(cDAO.getCartIDByUserID(1));
+//        cDAO.createCartForUserID(1);
+//        System.out.println(cDAO.getCartIDByUserID(1));
+        for(CartDetail c : cDAO.getAllCartDetailByUserID(4)){
+            System.out.println(c);
+        }
     }
 }

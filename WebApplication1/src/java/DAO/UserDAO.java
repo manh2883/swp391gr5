@@ -229,6 +229,33 @@ public class UserDAO extends DBContext {
 
     }
 
+     public static int getUserIDByAccountID(int accountID){
+         String query = "SELECT * FROM User left join account"
+                 + "on account.user_id = user.user_id"
+                 + " where account.account_id = ?";
+          int userID = -1;
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, accountID);
+            ResultSet rs = stm.executeQuery();
+            
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                userID = rs.getInt("user_id");
+                
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userID;
+     }
     public static void main(String[] args) {
         List<User> userList = getAllUser();
         for (User user : userList) {

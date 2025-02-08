@@ -68,10 +68,10 @@ public class UserDAO extends DBContext {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, id);
             ResultSet rs = stm.executeQuery();
-            User user = new User();
+
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-
+                User user = new User();
                 user.setUserId(rs.getInt("user_id"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
@@ -83,12 +83,13 @@ public class UserDAO extends DBContext {
                 user.setLastName(rs.getString("last_name"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
                 user.setUpdatedAt(rs.getTimestamp("updated_at"));
+                return user;
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-            return user;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -104,10 +105,10 @@ public class UserDAO extends DBContext {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, email);
             ResultSet rs = stm.executeQuery();
-            User user = new User();
+
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-
+                User user = new User();
                 user.setUserId(rs.getInt("user_id"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
@@ -119,13 +120,12 @@ public class UserDAO extends DBContext {
                 user.setLastName(rs.getString("last_name"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
                 user.setUpdatedAt(rs.getTimestamp("updated_at"));
-                break;
+                return user;
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-            return user;
 
         } catch (SQLException e) {
             e.printStackTrace();

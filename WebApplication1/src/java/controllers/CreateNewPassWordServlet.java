@@ -4,7 +4,6 @@
  */
 package controllers;
 
-import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Acer
  */
-public class ForgotPasswordServlet extends HttpServlet {
+public class CreateNewPassWordServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +34,10 @@ public class ForgotPasswordServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ForgotPasswordServlet</title>");
+            out.println("<title>Servlet CreateNewPassWordServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ForgotPasswordServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CreateNewPassWordServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,10 +55,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean availOTP = true;
-        request.setAttribute("step", "Continue");
-        request.setAttribute("availOTP", availOTP);
-        request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -73,10 +69,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        
-//        String 
-//        
-//        processRequest(request, response);
+         request.getRequestDispatcher("Login/CreateNewPassWord.jsp").forward(request, response);
     }
 
     /**

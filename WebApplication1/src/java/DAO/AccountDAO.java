@@ -113,7 +113,7 @@ public class AccountDAO extends DBContext {
             rs.close();
             stm.close();
             con.close();
-          
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -519,10 +519,125 @@ public class AccountDAO extends DBContext {
         }
     }
 
+    public static boolean checkAvailbleOTP(String email) {
+        return false;
+    }
+
+    public static String getOtpByEmail(String email) {
+        return null;
+    }
+
+    public static void setOtpByEmail(String email, boolean method) {
+
+    }
+
+    public static Timestamp getOtpLastSendTimeByEmail(String email) {
+
+        String query = """
+                       select last_opt_send from account 
+                       left join user 
+                       on account.user_id = user.user_id
+                       where user.email = ? limit 1;""";
+
+        Timestamp lastSend = null;
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, email);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                lastSend = rs.getTimestamp(1);
+                System.out.println(lastSend);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lastSend;
+    }
+
+    public static Account getAccountByUserId(int userID) {
+
+        String query = """
+                       select * from account 
+                       left join user 
+                       on account.user_id = user.user_id
+                       where user.user_id = ? limit 1;""";
+        Account account = new Account();
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userID);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                account.setAccountId(rs.getInt("account_id"));
+                account.setUserId(rs.getInt("user_id"));
+                account.setRoleId(rs.getInt("role_id"));
+                account.setUsername(rs.getString("username"));
+                account.setPassword(rs.getString("password"));
+                account.setPasswordResetToken(rs.getString("password_reset_token"));
+                account.setLastLoginTime(rs.getTimestamp("last_login_time"));
+                account.setLastOptSend(rs.getTimestamp("last_opt_send"));
+                account.setLastPasswordChange(rs.getTimestamp("password_last_change"));
+                account.setStatus(rs.getInt("status"));
+                account.setLastLoginTime(rs.getTimestamp("last_login_time"));
+                account.setWrongLoginCount(rs.getInt("wrong_login_count"));
+                System.out.println(account);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return account;
+    }
+
+    public static void setOtpLastSendTimeByEmail(String email) {
+
+        String updateQuery = "UPDATE `account` "
+                + "SET `last_opt_send` = ? WHERE (`account_id` = ?);";
+
+        int userID = UserDAO.getUserByEmail(email).getUserId();
+        int accountID = -1;
+        System.out.println("userID: " + userID);
+        if (userID != -1) {
+            accountID = getAccountByUserId(userID).getAccountId();
+        }
+        Timestamp lastSend = new Timestamp(System.currentTimeMillis());
+        if (accountID != -1) {
+
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection con = db.getConnection();
+
+                PreparedStatement updateStm = con.prepareStatement(updateQuery);
+
+                updateStm.setTimestamp(1, lastSend);
+                updateStm.setInt(1, accountID);
+                int rowsUpdated = updateStm.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                    System.out.println("Last Send Time updated successfully for user: " + accountID);
+                } else {
+                    System.out.println("No account found for user: " + accountID);
+                }
+            } catch (SQLException e) {
+            }
+        }
+    }
+
     public static void main(String[] args) {
-        AccountDAO aDAO = new AccountDAO();
-        Account account = new Account(1, 2, "manhhehe", "12345678", 0, 1);
-        createAccount(account);
+        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
+        AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");
+        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
 
     }
 }

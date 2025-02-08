@@ -5,6 +5,8 @@
 package controllers;
 
 import DAO.CartDAO;
+import DAO.UserDAO;
+import Models.Account;
 import Models.CartDetail;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,20 +64,36 @@ public class ViewCartServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Lấy userID từ session (giả sử user đăng nhập rồi)
-        Integer userID = (Integer) session.getAttribute("account.id");
+        Account account = (Account) session.getAttribute("account");
+        int accountId = -1;
+        if (account == null) {
+            request.setAttribute("userName", "hehe");
+            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
 
-        if (userID == null) {
-            response.sendRedirect("Login/Login.jsp"); // Chuyển hướng nếu chưa đăng nhập
-            return;
+        } else {
+            accountId = account.getAccountId();
         }
 
-        // Lấy danh sách giỏ hàng từ database
+        UserDAO uDAO = new UserDAO();
+        int userId = -1;
+        userId = uDAO.getUserIDByAccountID(accountId);
+
+        System.out.println(userId + ", " + accountId);
+// Lấy danh sách giỏ hàng từ database
+        if (userId == -1) {
+            request.setAttribute("userName", "hoho");
+            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+        }
         CartDAO cartDAO = new CartDAO();
-        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userID);
+        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
 
         // Gửi danh sách cartDetails lên trang JSP
-        request.setAttribute("cartDetails", cartDetails);
-        request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
+        if (cartDetails != null) {
+            request.setAttribute("cartDetails", cartDetails);
+            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("Home/home.jsp").forward(request, response);
+        }
     }
 
     /**

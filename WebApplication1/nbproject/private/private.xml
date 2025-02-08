@@ -12,12 +12,8 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Login/Register.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/RegisterServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/UserDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/User.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/AccountDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/LoginServlet.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/PostDetail.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/Post.jsp</file>
         </group>
     </open-files>
 </project-private>

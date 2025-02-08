@@ -54,12 +54,14 @@
                                         <li><a href="login.html" class="active">Login</a></li> 
                                     </ul>
                                 </li> 
-                                <li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
+                                <li class="dropdown">
+                                    <a href="#">Post <i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="blog.html">Blog List</a></li>
-                                        <li><a href="blog-single.html">Blog Single</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/ViewPost"><i class="fa fa-list"></i> All Posts</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/ViewPostDetail"><i class="fa fa-file-text"></i> Post Detail</a></li>
                                     </ul>
-                                </li> 
+                                </li>
+
                                 <li><a href="404.html">404</a></li>
                                 <li><a href="contact-us.html">Contact</a></li>
                             </ul>

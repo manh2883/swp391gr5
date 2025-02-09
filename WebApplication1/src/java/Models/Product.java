@@ -34,6 +34,29 @@ public class Product {
         this.createAt = createAt;
     }
 
+    public Product(String productId, String name, String description, String brandName, double price, int categoryId) {
+        this.productId = productId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.brandName = brandName;
+        this.categoryId = categoryId;
+        this.createAt = null;
+
+    }
+
+    public Product(int variantId, String color, String size, int stock) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Product(String productId, String color, String size, int stock) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public Product(String productId, int variantId, String color, String size, int stock) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     
     
     public String getProductId() {

@@ -24,14 +24,14 @@ import java.sql.Timestamp;
  */
 public class ProductDAO extends DBContext{
     
-public Product getProductById(int id) throws IOException {
+public static Product getProductById(String id) throws IOException {
         String query = "SELECT * FROM Product WHERE product_id = ?";
         Product product = new Product();
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setInt(1, id);
+            stm.setString(1, id);
             ResultSet rs = stm.executeQuery();
             
             if (rs.next()) {
@@ -50,7 +50,7 @@ public Product getProductById(int id) throws IOException {
         return product;
     }
     
-    public List<Product> getAllProducts(){
+    public static List<Product> getAllProducts(){
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM Product";
         try {
@@ -78,7 +78,7 @@ public Product getProductById(int id) throws IOException {
         return products;
     }
     
-    public void addProduct(Product product){
+    public static void addProduct(Product product){
         String query = "INSERT INTO Product (name, price, description, stock, category_id) VALUES (?, ?, ?, ?, ?)";
         try {
             DBContext db = new DBContext();
@@ -96,7 +96,7 @@ public Product getProductById(int id) throws IOException {
         }
     }
     
-    public void updateProduct(Product product){
+    public static void updateProduct(Product product){
         String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, category_id = ? WHERE product_id = ?";
         try {
             DBContext db = new DBContext();
@@ -115,7 +115,7 @@ public Product getProductById(int id) throws IOException {
         }
     }
     
-    public void deleteProduct(int id){
+    public static void deleteProduct(int id){
         String query = "DELETE FROM Product WHERE product_id = ?";
         try {
             DBContext db = new DBContext();
@@ -136,4 +136,35 @@ public Product getProductById(int id) throws IOException {
             System.out.println(p);
         }
     }
+
+    public static Product getVariantById(int parseInt) {
+        String query = "SELECT * FROM Variant WHERE variant_id = ?";
+    Product variant = null; // Assuming a Variant is still a type of Product
+    
+    try {
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        PreparedStatement stm = con.prepareStatement(query);
+            String variantId = null;
+        stm.setString(1, variantId);
+        ResultSet rs = stm.executeQuery();
+
+        if (rs.next()) {
+            variant = new Product();
+            variant.setProductId(rs.getString("variant_id"));  // Assuming variant_id is treated as product_id
+            variant.setName(rs.getString("name"));
+            variant.setPrice(rs.getDouble("price"));
+            variant.setDescription(rs.getString("description"));
+            variant.setCategoryId(rs.getInt("category_id"));
+            variant.setCreateAt(rs.getTimestamp("created_at"));
+        }
+        rs.close();
+        stm.close();
+        con.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return variant;
+    }
 }
+    

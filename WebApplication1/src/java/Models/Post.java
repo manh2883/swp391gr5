@@ -111,4 +111,12 @@ public class Post {
     public String toString() {
         return "Post{" + "postId=" + postId + ", title='" + title + '\'' + ", status=" + status + ", viewCount=" + viewCount + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + ", publishedAt=" + publishedAt + '}';
     }
+
+    public String getContent() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public int getUserId() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

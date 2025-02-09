@@ -1,5 +1,7 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -172,12 +174,39 @@
                     </div><!--/shipping-->
                 </div>
             </div>
+
             <div class="col-sm-9">
                 <div class="blog-post-area">
                     <h2 class="title text-center">Latest From our Blog</h2>
+
+                    <div id="postContainer">
+                        <c:forEach items="${latestPosts}" var="post">
+                            <div class="single-blog-post">
+                                <h3>${post.title}</h3>
+                                <div class="post-meta">
+                                    <ul>
+                                        <li><i class="fa fa-calendar"></i> 
+                                            <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy"/>
+                                        </li>
+                                        <li><i class="fa fa-eye"></i> ${post.viewCount} Views</li>
+                                    </ul>
+                                </div>
+                                <a href="ViewPostServlet?action=view&postId=${post.postId}" class="btn btn-primary">Read More</a>
+                            </div>
+                        </c:forEach>
+                    </div>
+
+                    <c:if test="${empty latestPosts}">
+                        <div class="alert alert-info">
+                            No blog posts available at the moment.
+                        </div>
+                    </c:if>
+
                     
                 </div>
             </div>
+
+
         </div>
     </div>
 </div>

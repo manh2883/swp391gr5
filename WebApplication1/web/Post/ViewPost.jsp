@@ -29,6 +29,21 @@
     </head>
     <body>
         <c:import url="/Template/header1.jsp" />
+        <li class="nav-item">
+                                                <a href="${pageContext.request.contextPath}/AddPostServlet">
+                                                    <i class="fa fa-shopping-cart"></i> Add
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="${pageContext.request.contextPath}/ViewCart">
+                                                    <i class="fa fa-shopping-cart"></i> Delete
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="${pageContext.request.contextPath}/ViewCart">
+                                                    <i class="fa fa-shopping-cart"></i> Edit
+                                                </a>
+                                            </li>
         <c:import url="/Template/header2.jsp" />
     </body>
 </html>

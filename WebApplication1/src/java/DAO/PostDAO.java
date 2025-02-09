@@ -127,4 +127,71 @@ public class PostDAO extends DBContext {
         }
         return null;
     }
+    
+public boolean createPost(Post post, PostDetail postDetail) {
+    String postQuery = "INSERT INTO Post (title, status, view_count, created_at, updated_at, created_by, updated_by, published_at) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String detailQuery = "INSERT INTO post_detail (post_id, content) VALUES (?, ?)";
+    
+    try {
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        con.setAutoCommit(false);
+        
+        try {
+            // Insert Post
+            PreparedStatement postStm = con.prepareStatement(postQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            postStm.setString(1, post.getTitle());
+            postStm.setInt(2, post.getStatus());
+            postStm.setInt(3, post.getViewCount());
+            postStm.setTimestamp(4, new Timestamp(post.getCreatedAt().getTime()));
+            postStm.setTimestamp(5, new Timestamp(post.getUpdatedAt().getTime()));
+            postStm.setInt(6, post.getCreatedBy());
+            postStm.setInt(7, post.getUpdatedBy());
+            postStm.setTimestamp(8, new Timestamp(post.getPublishedAt().getTime()));
+            
+            int postRows = postStm.executeUpdate();
+            
+            if (postRows > 0) {
+                ResultSet rs = postStm.getGeneratedKeys();
+                if (rs.next()) {
+                    int postId = rs.getInt(1);
+                    
+                    // Insert PostDetail
+                    PreparedStatement detailStm = con.prepareStatement(detailQuery);
+                    detailStm.setInt(1, postId);
+                    detailStm.setString(2, postDetail.getContent());
+                    
+                    int detailRows = detailStm.executeUpdate();
+                    
+                    if (detailRows > 0) {
+                        con.commit();
+                        rs.close();
+                        postStm.close();
+                        detailStm.close();
+                        return true;
+                    }
+                    detailStm.close();
+                }
+                rs.close();
+            }
+            postStm.close();
+            
+            con.rollback();
+            return false;
+            
+        } catch (SQLException e) {
+            con.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            con.setAutoCommit(true);
+            con.close();
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 }

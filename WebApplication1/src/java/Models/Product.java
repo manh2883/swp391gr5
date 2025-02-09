@@ -22,8 +22,6 @@ public class Product {
     public Product() {
     }
 
-    
-    
     public Product(String productId, String name, String description, double price, String brandName, int categoryId, Timestamp createAt) {
         this.productId = productId;
         this.name = name;
@@ -34,8 +32,6 @@ public class Product {
         this.createAt = createAt;
     }
 
-    
-    
     public String getProductId() {
         return productId;
     }
@@ -92,22 +88,12 @@ public class Product {
         this.createAt = createAt;
     }
 
-    
-    
     @Override
     public String toString() {
         return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryId=" + categoryId + ", createAt=" + createAt + '}';
     }
 
-
-    public void setproductId(int aInt) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public int getproductId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
+   
     
     
     

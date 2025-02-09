@@ -3,18 +3,38 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <title>${post.title}</title>
-        <!-- Thêm các CSS cần thiết -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Post</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/bootstrap.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/font-awesome.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/prettyPhoto.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/price-range.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/animate.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/main.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/responsive.css">
+        <!--[if lt IE 9]>
+        <script src="${pageContext.request.contextPath}/js/html5shiv.js"></script>
+        <script src="${pageContext.request.contextPath}/js/respond.min.js"></script>
+        <![endif]-->
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/ico/favicon.ico">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="${pageContext.request.contextPath}/images/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="${pageContext.request.contextPath}/images/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="${pageContext.request.contextPath}/images/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="${pageContext.request.contextPath}/images/ico/apple-touch-icon-57-precomposed.png">
     </head>
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
+    </body>
+</html>
 
-        <section>
-            <div class="container">
+<section>
+    <div class="container">
         <div class="row">
             <div class="col-sm-3">
                 <div class="left-sidebar">
@@ -153,40 +173,55 @@
                         <img src="images/home/shipping.jpg" alt="" />
                     </div><!--/shipping-->
                 </div>
-            </div>          
-                    <div class="col-sm-9">
-                        <div class="blog-post-area">
-                            <h2 class="title text-center">Post Details</h2>
+            </div>
 
+            <div class="col-sm-9">
+                <div class="blog-post-area">
+                    <h2 class="title text-center">Latest From our Blog</h2>
+
+                    <div id="postContainer">
+                        <c:forEach items="${latestPosts}" var="post">
                             <div class="single-blog-post">
                                 <h3>${post.title}</h3>
                                 <div class="post-meta">
                                     <ul>
-                                        <li><i class="fa fa-calendar"></i>
+                                        <li><i class="fa fa-calendar"></i> 
                                             <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy"/>
                                         </li>
                                         <li><i class="fa fa-eye"></i> ${post.viewCount} Views</li>
+                                        <a href="ViewPost?action=view&postId=${post.postId}" >Read More</a>
+
                                     </ul>
                                 </div>
-
-                                <div class="post-content">
-                                    <c:choose>
-                                        <c:when test="${not empty postContent}">
-                                            ${postContent}
-                                        </c:when>
-                                        <c:otherwise>
-                                            <p>No content available for this post.</p>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
                             </div>
-                        </div>
+                        </c:forEach>
                     </div>
- 
-        </section>
 
-        <c:import url="/Template/footer1.jsp" />
+                    <c:if test="${empty latestPosts}">
+                        <div class="alert alert-info">
+                            No blog posts available at the moment.
+                        </div>
+                    </c:if>
 
-        <!-- Thêm các JavaScript cần thiết -->
-    </body>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</section>
+
+<c:import url="/Template/footer1.jsp" />
+
+
+
+<script src="js/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/js/price-range.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.scrollUp.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.prettyPhoto.js"></script>
+<script src="${pageContext.request.contextPath}/js/main.js"></script>
+</body>
 </html>

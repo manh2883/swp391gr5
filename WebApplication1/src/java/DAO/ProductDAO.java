@@ -6,17 +6,12 @@ package DAO;
 
 import DBContext.DBContext;
 import Models.Product;
-import com.sun.jdi.connect.spi.Connection;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 /**
  *
@@ -24,18 +19,18 @@ import java.sql.Timestamp;
  */
 public class ProductDAO extends DBContext{
     
-public Product getProductById(int id) throws IOException {
+public static Product getProductById(String id){
         String query = "SELECT * FROM Product WHERE product_id = ?";
         Product product = new Product();
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setInt(1, id);
+            stm.setString(1, id);
             ResultSet rs = stm.executeQuery();
             
             if (rs.next()) {
-                product.setproductId(rs.getInt("product_Id"));
+                product.setProductId(rs.getString("product_Id"));
                 product.setName(rs.getString("name"));
                 product.setPrice(rs.getDouble("price"));
                 product.setDescription(rs.getString("description"));
@@ -106,7 +101,7 @@ public Product getProductById(int id) throws IOException {
             stm.setDouble(2, product.getPrice());
             stm.setString(3, product.getDescription());
             stm.setInt(5, product.getCategoryId());
-            stm.setInt(6, product.getproductId());
+            stm.setString(6, product.getProductId());
             stm.executeUpdate();
             stm.close();
             con.close();
@@ -130,10 +125,11 @@ public Product getProductById(int id) throws IOException {
         }
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args){
         ProductDAO pDAO = new ProductDAO();
         for(Product p: pDAO.getAllProducts()){
-            System.out.println(p);
+            System.out.println(getProductById(p.getProductId()));
         }
+        
     }
 }

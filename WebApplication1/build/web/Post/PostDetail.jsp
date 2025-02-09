@@ -1,15 +1,18 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%-- 
+    Document   : PostDetail.jsp
+    Created on : Jan 26, 2025, 4:32:44 AM
+    Author     : Acer
+--%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8">
-        <title>${post.title}</title>
-        <!-- Thêm các CSS cần thiết -->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Post</title>
     </head>
     <body>
+<<<<<<< HEAD
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
 
@@ -200,3 +203,8 @@
                     <!-- Thêm các JavaScript cần thiết -->
                     </body>
                     </html>
+=======
+        <h1>Hello World!</h1>
+    </body>
+</html>
+>>>>>>> 71cbc66272c764e086105c19f9cf46d0ba766a1a

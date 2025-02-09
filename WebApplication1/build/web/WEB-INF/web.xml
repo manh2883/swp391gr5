@@ -33,8 +33,17 @@
         <servlet-class>controllers.ViewCartServlet</servlet-class>
     </servlet>
     <servlet>
+<<<<<<< HEAD
         <servlet-name>AddPostServlet</servlet-name>
         <servlet-class>controllers.AddPostServlet</servlet-class>
+=======
+        <servlet-name>CreateNewPassWordServlet</servlet-name>
+        <servlet-class>controllers.CreateNewPassWordServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SendOtpServlet</servlet-name>
+        <servlet-class>controllers.SendOtpServlet</servlet-class>
+>>>>>>> 71cbc66272c764e086105c19f9cf46d0ba766a1a
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -69,8 +78,17 @@
         <url-pattern>/ViewCart</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+<<<<<<< HEAD
         <servlet-name>AddPostServlet</servlet-name>
         <url-pattern>/AddPostServlet</url-pattern>
+=======
+        <servlet-name>CreateNewPassWordServlet</servlet-name>
+        <url-pattern>/CreateNewPassWord</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SendOtpServlet</servlet-name>
+        <url-pattern>/SendOtp</url-pattern>
+>>>>>>> 71cbc66272c764e086105c19f9cf46d0ba766a1a
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>

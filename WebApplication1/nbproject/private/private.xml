@@ -13,24 +13,16 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/PostDetail.jsp</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Home/Home.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/Models/User.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/AddPost.jsp</file>
             <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ViewCartServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/LogoutServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/ViewPost.jsp</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Home/test.jsp</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DAO/PostDAO.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/Models/Post.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ViewPostServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DBContext/DBContext.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DAO/UserDAO.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Template/header1.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/CreateNewPassWordServlet.java</file>
             <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ProductDetailServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/Models/PostDetail.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/HomeServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/LoginServlet.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/ViewPost.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/AddPostServlet.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DAO/PostDAO.java</file>
             <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ForgotPasswordServlet.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DAO/CartDAO.java</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Home/Index.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ViewPostServlet.java</file>
         </group>
     </open-files>
 </project-private>

@@ -11,23 +11,26 @@ import java.sql.Timestamp;
  * @author nguye
  */
 public class CartDetail {
+
     private int cartDetailID;
     private int cartID;
     private String productID;
     private int productVariantID;
     private int quantity;
     private Timestamp updatedDate;
+    private Product product;
 
     public CartDetail() {
     }
 
-    public CartDetail(int cartDetailID, int cartID, String productID, int productVariantID, int quantity, Timestamp updatedDate) {
+    public CartDetail(int cartDetailID, int cartID, String productID, int productVariantID, int quantity, Timestamp updatedDate, Product product) {
         this.cartDetailID = cartDetailID;
         this.cartID = cartID;
         this.productID = productID;
         this.productVariantID = productVariantID;
         this.quantity = quantity;
         this.updatedDate = updatedDate;
+        this.product = product;
     }
 
     public int getCartDetailID() {
@@ -78,13 +81,18 @@ public class CartDetail {
         this.updatedDate = updatedDate;
     }
 
-    @Override
-    public String toString() {
-        return "CartDetail{" + "cartDetailID=" + cartDetailID + ", cartID=" + cartID + ", productID=" + productID + ", productVariantID=" + productVariantID + ", quantity=" + quantity + ", updatedDate=" + updatedDate + '}';
+    public Product getProduct() {
+        return product;
     }
 
-    
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
+    @Override
+    public String toString() {
+        return "CartDetail{" + "cartDetailID=" + cartDetailID + ", cartID=" + cartID + ", productID=" + productID + ", productVariantID=" + productVariantID + ", quantity=" + quantity + ", updatedDate=" + updatedDate + ", product=" + product + '}';
+    }
     
     
 }

@@ -6,6 +6,11 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%!
+    public String formatCurrency(double amount) {
+        return String.format("%.2f", amount);
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -72,6 +77,7 @@
                         <tbody>
                             <c:choose>
                                 <c:when test="${not empty cartDetails}">
+                                    <c:set var="totalPrice" value="0" scope="page" />
                                     <c:forEach var="cart" items="${cartDetails}">
                                         <tr>
                                             <td class="cart_product">
@@ -85,23 +91,53 @@
                                                 </c:if>
                                             </td>
                                             <td class="cart_price">
-                                                <p>$59</p> <!-- Thay bằng giá từ DB nếu có -->
+                                                <p>${cart.product.price}</p>
                                             </td>
                                             <td class="cart_quantity">
                                                 <div class="cart_quantity_button">
                                                     <a class="cart_quantity_up" href="#"> + </a>
-                                                    <input class="cart_quantity_input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2">
-                                                    <a class="cart_quantity_down" href="#"> - </a>
+                                                    <!-- Nút giảm số lượng (-) -->
+                                                    <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
+                                                        <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
+                                                        <input type="hidden" name="action" value="decrement">
+                                                        <button type="submit" class="cart_quantity_down"> - </button>
+                                                    </form>
+
+                                                    <!-- Hiển thị số lượng -->
+                                                    <input class="cart_quantity_input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
+
+                                                    <!-- Nút tăng số lượng (+) -->
+                                                    <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
+                                                        <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
+                                                        <input type="hidden" name="action" value="increment">
+                                                        <button type="submit" class="cart_quantity_up"> + </button>
+                                                    </form>
                                                 </div>
                                             </td>
+                                            <!-- Tính và hiển thị tổng giá cho sản phẩm này -->
                                             <td class="cart_total">
-                                                <p class="cart_total_price">$${cart.quantity * 59}</p>
+                                                <c:set var="itemTotal" value="${cart.quantity * cart.product.price}" />
+                                                <p class="cart_total_price">${itemTotal}</p>
                                             </td>
                                             <td class="cart_delete">
-                                                <a class="cart_quantity_delete" href="#"><i class="fa fa-times"></i></a>
+                                                <form action="${pageContext.request.contextPath}/ViewCart" method="get">
+                                                    <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <button type="submit" class="cart_quantity_delete"><i class="fa fa-times"></i></button>
+                                                </form>
                                             </td>
                                         </tr>
+                                        <!-- Cộng dồn tổng giá trị giỏ hàng -->
+                                        <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
                                     </c:forEach>
+                                    <!-- Hiển thị tổng giá trị giỏ hàng -->
+                                    <tr>
+                                        <td colspan="4" style="text-align: right;">Tổng cộng:</td>
+                                        <td class="cart_total">
+                                            <p class="cart_total_price">${totalPrice}</p>
+                                        </td>
+                                        <td></td> <!-- Ô trống hoặc sử dụng để hiển thị nút thanh toán -->
+                                    </tr>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>

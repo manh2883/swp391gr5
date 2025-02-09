@@ -6,14 +6,9 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%!
-    public String formatCurrency(double amount) {
-        return String.format("%.2f", amount);
-    }
-%>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
         <title>Cart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,7 +46,6 @@
         </style>
     </head>
 
-<<<<<<< HEAD
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
@@ -78,7 +72,6 @@
                         <tbody>
                             <c:choose>
                                 <c:when test="${not empty cartDetails}">
-                                    <c:set var="totalPrice" value="0" scope="page" />
                                     <c:forEach var="cart" items="${cartDetails}">
                                         <tr>
                                             <td class="cart_product">
@@ -91,54 +84,24 @@
                                                     <p>Variant: ${cart.productVariantID}</p>
                                                 </c:if>
                                             </td>
-
                                             <td class="cart_price">
-                                                <p>$${cart.product.price}</p>
+                                                <p>$59</p> <!-- Thay bằng giá từ DB nếu có -->
                                             </td>
-
                                             <td class="cart_quantity">
                                                 <div class="cart_quantity_button">
-                                                    <!-- Nút giảm số lượng (-) -->
-                                                    <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
-                                                        <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
-                                                        <input type="hidden" name="action" value="decrement">
-                                                        <button type="submit" class="cart_quantity_down"> - </button>
-                                                    </form>
-
-                                                    <!-- Hiển thị số lượng -->
-                                                    <input class="cart_quantity_input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
-
-                                                    <!-- Nút tăng số lượng (+) -->
-                                                    <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
-                                                        <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
-                                                        <input type="hidden" name="action" value="increment">
-                                                        <button type="submit" class="cart_quantity_up"> + </button>
-                                                    </form>
+                                                    <a class="cart_quantity_up" href="#"> + </a>
+                                                    <input class="cart_quantity_input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2">
+                                                    <a class="cart_quantity_down" href="#"> - </a>
                                                 </div>
                                             </td>
-                                            <!-- Tính và hiển thị tổng giá cho sản phẩm này -->
                                             <td class="cart_total">
-                                                <c:set var="itemTotal" value="${cart.quantity * cart.product.price}" />
-                                                <p class="cart_total_price">${itemTotal}</p>
+                                                <p class="cart_total_price">$${cart.quantity * 59}</p>
                                             </td>
                                             <td class="cart_delete">
-                                                <form action="${pageContext.request.contextPath}/ViewCart" method="get">
-                                                    <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <button type="submit" class="cart_quantity_delete"><i class="fa fa-times"></i></button>
-                                                </form>
+                                                <a class="cart_quantity_delete" href="#"><i class="fa fa-times"></i></a>
                                             </td>
-                                            <!-- Cộng dồn tổng giá trị giỏ hàng -->
-                                            <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
-                                        </c:forEach>
-                                        <!-- Hiển thị tổng giá trị giỏ hàng -->
-                                    <tr>
-                                        <td colspan="4" style="text-align: right;">Tổng cộng:</td>
-                                        <td class="cart_total">
-                                            <p class="cart_total_price">${totalPrice}</p>
-                                        </td>
-                                        <td></td> <!-- Ô trống hoặc sử dụng để hiển thị nút thanh toán -->
-                                    </tr>
+                                        </tr>
+                                    </c:forEach>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
@@ -149,123 +112,16 @@
                         </tbody>
                     </table>
                 </div>
-=======
-<body>
-    <c:import url="/Template/header1.jsp" />
-    <c:import url="/Template/header2.jsp" />
-	<section id="cart_items">
-		<div class="container">
-			<div class="breadcrumbs">
-				<ol class="breadcrumb">
-				  <li><a href="#">Home</a></li>
-				  <li class="active">Shopping Cart</li>
-				</ol>
-			</div>
-			<div class="table-responsive cart_info">
-				<table class="table table-condensed">
-					<thead>
-						<tr class="cart_menu">
-							<td class="image">Item</td>
-							<td class="description"></td>
-							<td class="price">Price</td>
-							<td class="quantity">Quantity</td>
-							<td class="total">Total</td>
-							<td></td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="cart_product">
-								<a href=""><img src="${pageContext.request.contextPath}/Images/cart/one.png" alt=""></a>
-							</td>
-							<td class="cart_description">
-								<h4><a href="">Colorblock Scuba</a></h4>
-								<p>Web ID: 1089772</p>
-							</td>
-							<td class="cart_price">
-								<p>$59</p>
-							</td>
-							<td class="cart_quantity">
-								<div class="cart_quantity_button">
-									<a class="cart_quantity_up" href=""> + </a>
-									<input class="cart_quantity_input" type="text" name="quantity" value="1" autocomplete="off" size="2">
-									<a class="cart_quantity_down" href=""> - </a>
-								</div>
-							</td>
-							<td class="cart_total">
-								<p class="cart_total_price">$59</p>
-							</td>
-							<td class="cart_delete">
-								<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-							</td>
-						</tr>
->>>>>>> 9259ec1fb4c9fa519d4c3dab2a10a7ac6fb42d2d
 
-						<tr>
-							<td class="cart_product">
-								<a href=""><img src="${pageContext.request.contextPath}/Images/cart/two.png" alt=""></a>
-							</td>
-							<td class="cart_description">
-								<h4><a href="">Colorblock Scuba</a></h4>
-								<p>Web ID: 1089772</p>
-                                                                <p>Variant: Black</p>
-                                                                <p>Size: L</p>
-							</td>
-							<td class="cart_price">
-								<p>$59</p>
-							</td>
-							<td class="cart_quantity">
-								<div class="cart_quantity_button">
-									<a class="cart_quantity_up" href=""> + </a>
-									<input class="cart_quantity_input" type="text" name="quantity" value="1" autocomplete="off" size="2">
-									<a class="cart_quantity_down" href=""> - </a>
-								</div>
-							</td>
-							<td class="cart_total">
-								<p class="cart_total_price">$59</p>
-							</td>
-							<td class="cart_delete">
-								<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-							</td>
-						</tr>
-						<tr>
-							<td class="cart_product">
-								<a href=""><img src="${pageContext.request.contextPath}/Images/cart/three.png" alt=""></a>
-							</td>
-							<td class="cart_description">
-								<h4><a href="">Colorblock Scuba</a></h4>
-								<p>Web ID: 1089772</p>
-                                                                <p>Variant: Black</p>
-							</td>
-							<td class="cart_price">
-								<p>$59</p>
-							</td>
-							<td class="cart_quantity">
-								<div class="cart_quantity_button">
-									<a class="cart_quantity_up" href=""> + </a>
-									<input class="cart_quantity_input" type="text" name="quantity" value="1" autocomplete="off" size="2">
-									<a class="cart_quantity_down" href=""> - </a>
-								</div>
-							</td>
-							<td class="cart_total">
-								<p class="cart_total_price">$59</p>
-							</td>
-							<td class="cart_delete">
-								<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</section> <!--/#cart_items-->
+            </div>
+        </section> <!--/#cart_items-->
 
-	
-    <script src="js/jquery.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/jquery.scrollUp.min.js"></script>
-    <script src="js/jquery.prettyPhoto.js"></script>
-    <script src="js/main.js"></script>
-    <c:import url="/Template/footer1.jsp" />
-</body>
+
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.scrollUp.min.js"></script>
+        <script src="js/jquery.prettyPhoto.js"></script>
+        <script src="js/main.js"></script>
+        <c:import url="/Template/footer1.jsp" />
+    </body>
 </html>

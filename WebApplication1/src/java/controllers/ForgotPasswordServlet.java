@@ -4,12 +4,17 @@
  */
 package controllers;
 
+import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+
+
 
 /**
  *
@@ -55,8 +60,10 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("message", "Forgot Password");
-        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        boolean availOTP = true;
+        request.setAttribute("step", "Continue");
+        request.setAttribute("availOTP", availOTP);
+        request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
     }
 
     /**
@@ -70,7 +77,10 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+//        
+//        String 
+//        
+//        processRequest(request, response);
     }
 
     /**

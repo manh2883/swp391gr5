@@ -83,6 +83,7 @@ public class UserDAO extends DBContext {
                 user.setLastName(rs.getString("last_name"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
                 user.setUpdatedAt(rs.getTimestamp("updated_at"));
+                return user;
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -104,10 +105,10 @@ public class UserDAO extends DBContext {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, email);
             ResultSet rs = stm.executeQuery();
-            User user = new User();
+
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                
+                User user = new User();
                 user.setUserId(rs.getInt("user_id"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
@@ -119,13 +120,12 @@ public class UserDAO extends DBContext {
                 user.setLastName(rs.getString("last_name"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
                 user.setUpdatedAt(rs.getTimestamp("updated_at"));
-                break;
+                return user;
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-            return user;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -208,7 +208,6 @@ public class UserDAO extends DBContext {
 
         String query = "delete from account where Account.user_id = ?; "
                 + " Delete FROM User where User.user_id = ?; ";
-                
 
         try {
             DBContext db = new DBContext();
@@ -227,6 +226,34 @@ public class UserDAO extends DBContext {
             e.printStackTrace();
         }
 
+    }
+
+    public static int getUserIDByAccountID(int accountID) {
+        String query = "SELECT User.user_id FROM User left join account"
+                + " on account.user_id = user.user_id"
+                + " where account.account_id = ?";
+        int userID = -1;
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, accountID);
+            ResultSet rs = stm.executeQuery();
+
+            // Lấy dữ liệu từ resultSet
+            while (rs.next()) {
+                userID = rs.getInt("user_id");
+
+            }
+            // Đóng kết nối và tài nguyên
+            rs.close();
+            stm.close();
+            con.close();
+            return userID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userID;
     }
 
     public static void main(String[] args) {

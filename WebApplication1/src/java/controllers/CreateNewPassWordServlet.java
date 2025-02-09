@@ -4,24 +4,18 @@
  */
 package controllers;
 
-import DAO.CartDAO;
-import DAO.UserDAO;
-import Models.Account;
-import Models.CartDetail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  *
- * @author nguye
+ * @author Acer
  */
-public class ViewCartServlet extends HttpServlet {
+public class CreateNewPassWordServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +34,10 @@ public class ViewCartServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewCartServlet</title>");
+            out.println("<title>Servlet CreateNewPassWordServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewCartServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CreateNewPassWordServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,39 +55,7 @@ public class ViewCartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        // Lấy userID từ session (giả sử user đăng nhập rồi)
-        Account account = (Account) session.getAttribute("account");
-        int accountId = -1;
-        if (account == null) {
-            request.setAttribute("userName", "hehe");
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-
-        } else {
-            accountId = account.getAccountId();
-        }
-
-        UserDAO uDAO = new UserDAO();
-        int userId = -1;
-        userId = uDAO.getUserIDByAccountID(accountId);
-
-        System.out.println(userId + ", " + accountId);
-// Lấy danh sách giỏ hàng từ database
-        if (userId == -1) {
-            request.setAttribute("userName", "hoho");
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-        }
-        CartDAO cartDAO = new CartDAO();
-        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
-
-        // Gửi danh sách cartDetails lên trang JSP
-        if (cartDetails != null) {
-            request.setAttribute("cartDetails", cartDetails);
-            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
-        } else {
-            request.getRequestDispatcher("Home/home.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -107,7 +69,7 @@ public class ViewCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         request.getRequestDispatcher("Login/CreateNewPassWord.jsp").forward(request, response);
     }
 
     /**

@@ -13,8 +13,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/PostDetail.jsp</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/Post.jsp</file>
-            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Cart/Cart.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/controllers/ViewPostDetail.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/WEB-INF/web.xml</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/Models/PostDetail.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/web/Post/ViewPost.jsp</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/Models/Post.java</file>
+            <file>file:/D:/Java/swp391gr5/WebApplication1/src/java/DAO/PostDAO.java</file>
         </group>
     </open-files>
 </project-private>

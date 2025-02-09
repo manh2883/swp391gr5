@@ -4,12 +4,14 @@
  */
 package Models;
 
-class PostDetail {
+public class PostDetail {
+
     private int postDetailId;
     private int postId;
     private String content;
 
-    public PostDetail() {}
+    public PostDetail() {
+    }
 
     public PostDetail(int postDetailId, int postId, String content) {
         this.postDetailId = postDetailId;
@@ -46,4 +48,3 @@ class PostDetail {
         return "PostDetail{" + "postDetailId=" + postDetailId + ", postId=" + postId + ", content='" + content + '\'' + '}';
     }
 }
-

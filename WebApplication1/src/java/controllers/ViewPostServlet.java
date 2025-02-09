@@ -2,6 +2,7 @@ package controllers;
 
 import DAO.PostDAO;
 import Models.Post;
+import Models.PostDetail;
 import Models.Account;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -12,18 +13,18 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 public class ViewPostServlet extends HttpServlet {
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            
+
         String action = request.getParameter("action");
         PostDAO postDAO = new PostDAO();
-        
+
         if (action == null || action.equals("list")) {
             // Hiển thị danh sách bài viết mới nhất
             try {
-                List<Post> latestPosts = postDAO.getLatestPosts(Integer.MAX_VALUE); 
+                List<Post> latestPosts = postDAO.getLatestPosts(Integer.MAX_VALUE);
                 request.setAttribute("latestPosts", latestPosts);
                 request.getRequestDispatcher("Post/ViewPost.jsp").forward(request, response);
                 return;
@@ -33,52 +34,25 @@ public class ViewPostServlet extends HttpServlet {
                 return;
             }
         } else if (action.equals("view")) {
-            // Xem chi tiết một bài viết
             try {
-                HttpSession session = request.getSession();
-                Account account = (Account) session.getAttribute("account");
-
                 String postIdStr = request.getParameter("postId");
-                if (postIdStr == null || postIdStr.trim().isEmpty()) {
-                    request.setAttribute("error", "Post ID is required");
-                    request.getRequestDispatcher("Home/Index.jsp").forward(request, response);
-                    return;
-                }
+                System.out.println("PostID received: " + postIdStr);
 
                 int postId = Integer.parseInt(postIdStr);
                 Post post = postDAO.getPostById(postId);
+                PostDetail postDetail = postDAO.getPostDetailByPostId(postId);
 
-                if (post == null) {
-                    request.setAttribute("error", "Post not found");
-                    request.getRequestDispatcher("Home/Index.jsp").forward(request, response);
-                    return;
+                System.out.println("Post found: " + (post != null));
+                System.out.println("PostDetail found: " + (postDetail != null));
+                if (postDetail != null) {
+                    System.out.println("Content: " + postDetail.getContent());
                 }
-
-                // Kiểm tra quyền xem bài viết
-                boolean canView = false;
-                if (account != null) {
-                    if (account.getRoleId() == 1 || post.getStatus() == 1 || 
-                        post.getCreatedBy() == account.getUserId()) {
-                        canView = true;
-                    }
-                } else if (post.getStatus() == 1) {
-                    canView = true;
-                }
-
-                if (!canView) {
-                    request.setAttribute("error", "You don't have permission to view this post");
-                    request.getRequestDispatcher("Home/Index.jsp").forward(request, response);
-                    return;
-                }
-
-                postDAO.incrementViewCount(postId);
-                post = postDAO.getPostById(postId);
 
                 request.setAttribute("post", post);
-                request.getRequestDispatcher("Post/ViewPost.jsp").forward(request, response);
-            } catch (NumberFormatException e) {
-                request.setAttribute("error", "Invalid Post ID format");
-                request.getRequestDispatcher("Home/Index.jsp").forward(request, response);
+                request.setAttribute("postContent", postDetail != null ? postDetail.getContent() : null);
+                request.getRequestDispatcher("Post/PostDetail.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

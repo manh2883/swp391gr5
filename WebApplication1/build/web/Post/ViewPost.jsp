@@ -189,9 +189,10 @@
                                             <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy"/>
                                         </li>
                                         <li><i class="fa fa-eye"></i> ${post.viewCount} Views</li>
+                                        <a href="ViewPost?action=view&postId=${post.postId}" >Read More</a>
+
                                     </ul>
                                 </div>
-                                <a href="ViewPostServlet?action=view&postId=${post.postId}" class="btn btn-primary">Read More</a>
                             </div>
                         </c:forEach>
                     </div>
@@ -202,7 +203,7 @@
                         </div>
                     </c:if>
 
-                    
+
                 </div>
             </div>
 

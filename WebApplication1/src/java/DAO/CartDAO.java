@@ -191,7 +191,27 @@ public void editCartDetailByID(int userID, int cartDetailID, String action) {
             return false;
         }
     }
-    
+    public boolean isCartDetailOwnedByUser(int cartDetailID, int userID) {
+        String query = "SELECT 1 FROM cart_detail cd "
+                + "JOIN cart c ON cd.cart_id = c.cart_id "
+                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, cartDetailID);
+            stm.setInt(2, userID);
+
+            try (ResultSet rs = stm.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Xử lý ngoại lệ nếu cần
+        }
+        return false;
+    }
     public static void main(String[] args) {
         CartDAO cDAO = new CartDAO();
 //        System.out.println(cDAO.getCartIDByUserID(1));

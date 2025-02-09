@@ -62,37 +62,97 @@ public class ViewCartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
-        // Lấy userID từ session (giả sử user đăng nhập rồi)
-        Account account = (Account) session.getAttribute("account");
-        int accountId = -1;
-        if (account == null) {
-            request.setAttribute("userName", "hehe");
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-
-        } else {
-            accountId = account.getAccountId();
-        }
-
-        UserDAO uDAO = new UserDAO();
-        int userId = -1;
-        userId = uDAO.getUserIDByAccountID(accountId);
-
-        System.out.println(userId + ", " + accountId);
-// Lấy danh sách giỏ hàng từ database
-        if (userId == -1) {
-            request.setAttribute("userName", "hoho");
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-        }
+//
+//        // Lấy userID từ session (giả sử user đăng nhập rồi)
+//        Account account = (Account) session.getAttribute("account");
+//        int accountId = -1;
+//        if (account == null) {
+//            request.setAttribute("userName", "hehe");
+//            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+//            
+//        } else {
+//            accountId = account.getAccountId();
+//        }
+//
+//        UserDAO uDAO = new UserDAO();
+//        int userId = -1;
+//        userId = uDAO.getUserIDByAccountID(accountId);
+//
+//        System.out.println(userId + ", " + accountId);
+//// Lấy danh sách giỏ hàng từ database
+//        if (userId == -1) {
+//            request.setAttribute("userName", "hoho");
+//            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+//        }
+//        CartDAO cartDAO = new CartDAO();
+//        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
+//
+//        // Gửi danh sách cartDetails lên trang JSP
+//        if (cartDetails != null) {
+//            request.setAttribute("cartDetails", cartDetails);
+//            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
+//        } else {
+//            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
+//        }
         CartDAO cartDAO = new CartDAO();
+        // Lấy account từ session
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "Login/Login.jsp");
+            return;
+        }
+
+        int accountId = account.getAccountId();
+
+        // Lấy userId từ accountId
+        UserDAO uDAO = new UserDAO();
+        int userId = uDAO.getUserIDByAccountID(accountId);
+
+        if (userId == -1) {
+            response.sendRedirect(request.getContextPath() + "Login/Login.jsp");
+            return;
+        }
+
+        // Xử lý hành động tăng/giảm số lượng hoặc xóa sản phẩm
+        String cartDetailIDParam = request.getParameter("cartDetailID");
+        String action = request.getParameter("action");
+
+        if (cartDetailIDParam != null && action != null) {
+            try {
+                int cartDetailID = Integer.parseInt(cartDetailIDParam);
+
+                // Kiểm tra quyền sở hữu cartDetailID
+                if (!cartDAO.isCartDetailOwnedByUser(cartDetailID, userId)) {
+                    response.sendRedirect(request.getContextPath() + "/ViewCart");
+                    return;
+                }
+
+                if ("increment".equals(action)) {
+                    // Tăng số lượng
+                    cartDAO.editCartDetailByID(userId, cartDetailID, "increment");
+                } else if ("decrement".equals(action)) {
+                    // Giảm số lượng
+                    cartDAO.editCartDetailByID(userId, cartDetailID, "decrement");
+                } else if ("delete".equals(action)) {
+                    // Xóa sản phẩm khỏi giỏ hàng
+                    cartDAO.deleteCartDetailByID(userId, cartDetailID);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            response.sendRedirect(request.getContextPath() + "/ViewCart");
+            return;
+        }
+
+        // Lấy danh sách giỏ hàng
         List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
 
         // Gửi danh sách cartDetails lên trang JSP
-        if (cartDetails != null) {
+        if (cartDetails != null && !cartDetails.isEmpty()) {
             request.setAttribute("cartDetails", cartDetails);
             request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
         } else {
-            request.getRequestDispatcher("Home/home.jsp").forward(request, response);
+            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
         }
     }
 

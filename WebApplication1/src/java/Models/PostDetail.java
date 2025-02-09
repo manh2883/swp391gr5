@@ -4,14 +4,16 @@
  */
 package Models;
 
+/**
+ *
+ * @author dell
+ */
 public class PostDetail {
-
     private int postDetailId;
     private int postId;
     private String content;
 
-    public PostDetail() {
-    }
+    public PostDetail() {}
 
     public PostDetail(int postDetailId, int postId, String content) {
         this.postDetailId = postDetailId;

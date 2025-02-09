@@ -1,17 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Models;
 
 import java.util.Date;
 
-/**
- *
- * @author dell
- */
 public class Post {
-
     private int postId;
     private String title;
     private int status;
@@ -22,8 +13,7 @@ public class Post {
     private int updatedBy;
     private Date publishedAt;
 
-    public Post() {
-    }
+    public Post() {}
 
     public Post(int postId, String title, int status, int viewCount, Date createdAt, Date updatedAt, int createdBy, int updatedBy, Date publishedAt) {
         this.postId = postId;
@@ -113,5 +103,4 @@ public class Post {
     public String toString() {
         return "Post{" + "postId=" + postId + ", title='" + title + '\'' + ", status=" + status + ", viewCount=" + viewCount + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + ", publishedAt=" + publishedAt + '}';
     }
-
 }

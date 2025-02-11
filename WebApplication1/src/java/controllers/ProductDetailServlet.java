@@ -4,6 +4,8 @@
  */
 package controllers;
 
+import DAO.ProductDAO;
+import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -55,7 +57,16 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+       String productId = request.getParameter("productId");
+        if (productId != null) {
+            ProductDAO productDAO = new ProductDAO();
+            Product product = productDAO.getProductById(productId);
+            request.setAttribute("product", product);
+            request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+        }else{
+            request.setAttribute("message", "product not found");
+        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        }
     }
 
     /**

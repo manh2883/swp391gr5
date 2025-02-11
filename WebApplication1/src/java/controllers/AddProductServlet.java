@@ -86,9 +86,12 @@ public class AddProductServlet extends HttpServlet {
         double price = Double.parseDouble(request.getParameter("price"));
         int categoryId = Integer.parseInt(request.getParameter("category_id"));
         
-        Product product = new Product(productId, name, description, "nike", price, categoryId);
-        productDAO.addProduct(product);
-        response.sendRedirect("Product/ProductList.jsp");
+//        //Product product = new Product(productId, name, description, "nike", price, categoryId);
+//        productDAO.addProduct(product);
+//        System.out.println(product);
+//        request.setAttribute("message", product);
+//        //response.sendRedirect("Product/ProductList.jsp");
+        request.getRequestDispatcher("Product/AddProduct.jsp").forward(request, response);
     }
 
     /**

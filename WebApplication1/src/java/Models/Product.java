@@ -5,6 +5,7 @@
 package Models;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
@@ -16,49 +17,36 @@ public class Product {
     private String description;
     private double price;
     private String brandName;
-    private int categoryId;
-    private Timestamp createAt;
-
+    private String categoryName;
+    private Date createAt;
+    private String imgUrl;
+    
     public Product() {
     }
 
-    
-    
-    public Product(String productId, String name, String description, double price, String brandName, int categoryId, Timestamp createAt) {
+    public Product(String productId, String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.brandName = brandName;
-        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.createAt = createAt;
+        this.imgUrl = imgUrl;
     }
 
-    public Product(String productId, String name, String description, String brandName, double price, int categoryId) {
-        this.productId = productId;
+   
+
+    public Product(String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.brandName = brandName;
-        this.categoryId = categoryId;
-        this.createAt = null;
-
+        this.categoryName = categoryName;
+        this.createAt = createAt;
+        this.imgUrl = imgUrl;
     }
 
-    public Product(int variantId, String color, String size, int stock) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Product(String productId, String color, String size, int stock) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public Product(String productId, int variantId, String color, String size, int stock) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    
-    
     public String getProductId() {
         return productId;
     }
@@ -99,15 +87,15 @@ public class Product {
         this.brandName = brandName;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public Timestamp getCreateAt() {
+    public Date getCreateAt() {
         return createAt;
     }
 
@@ -115,23 +103,18 @@ public class Product {
         this.createAt = createAt;
     }
 
-    
-    
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     @Override
     public String toString() {
-        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryId=" + categoryId + ", createAt=" + createAt + '}';
+        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
     }
 
-
-    public void setproductId(int aInt) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public int getproductId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    
-    
     
 }

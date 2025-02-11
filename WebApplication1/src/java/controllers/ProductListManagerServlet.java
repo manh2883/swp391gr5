@@ -9,24 +9,17 @@ import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
  * @author Dell
  */
-public class ViewProductServlet extends HttpServlet {
+public class ProductListManagerServlet extends HttpServlet {
 
-    private ProductDAO productDAO;
-
-    @Override
-    public void init() throws ServletException {
-        productDAO = new ProductDAO();
-    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,10 +37,10 @@ public class ViewProductServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewProductServlet</title>");            
+            out.println("<title>Servlet ProductListManagerServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewProductServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProductListManagerServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,10 +58,10 @@ public class ViewProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productId = request.getParameter("id");
-        Product product = productDAO.getProductById(productId);
-        request.setAttribute("product", product);
-        request.getRequestDispatcher("ProductList.jsp").forward(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        ArrayList<Product> ProductList = pDAO.getAllProducts();
+        request.setAttribute("ProductList", ProductList);
+        request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
     }
 
     /**

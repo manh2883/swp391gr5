@@ -16,7 +16,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Add Product</h2>
-        <form action="AddProductServlet" method="post">
+        <form action="AddProduct" method="post">
             <div class="mb-3">
                 <label for="product_id" class="form-label">Product ID</label>
                 <input type="text" class="form-control" id="product_id" name="product_id" required>
@@ -44,6 +44,9 @@
             <button type="submit" class="btn btn-primary">Add Product</button>
             <a href="products" class="btn btn-secondary">Cancel</a>
         </form>
+        <div>
+            ${message}
+        </div>
     </div>
 </body>
 </html>

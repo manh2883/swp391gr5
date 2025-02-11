@@ -63,9 +63,12 @@
                     </ol>
                 </div>
                 <div class="table-responsive cart_info">
+                    <form action="${pageContext.request.contextPath}/Checkout" method="post">
                     <table class="table table-condensed">
+                        <!-- Bắt đầu form -->
                         <thead>
                             <tr class="cart_menu">
+                                <td class="select"><input type="checkbox" id="selectAll" /></td>
                                 <td class="image">Item</td>
                                 <td class="description"></td>
                                 <td class="price">Price</td>
@@ -80,6 +83,11 @@
                                     <c:set var="totalPrice" value="0" scope="page" />
                                     <c:forEach var="cart" items="${cartDetails}">
                                         <tr>
+                                            <!-- Cột checkbox -->
+                                            <td class="select">
+                                                <input type="checkbox" name="selectedItems" value="${cart.cartDetailID}" class="itemCheckbox" />
+                                            </td>
+                                            <!-- Các cột khác -->
                                             <td class="cart_product">
                                                 <a href=""><img src="${pageContext.request.contextPath}/Images/cart/${cart.productID}.png" alt=""></a>
                                             </td>
@@ -132,21 +140,27 @@
                                     </c:forEach>
                                     <!-- Hiển thị tổng giá trị giỏ hàng -->
                                     <tr>
-                                        <td colspan="4" style="text-align: right;">Tổng cộng:</td>
+                                        <td colspan="5" style="text-align: right;">Tổng cộng:</td>
                                         <td class="cart_total">
                                             <p class="cart_total_price">${totalPrice}</p>
                                         </td>
-                                        <td></td> <!-- Ô trống hoặc sử dụng để hiển thị nút thanh toán -->
+                                        <td></td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
-                                    <tr>
-                                        <td colspan="6" style="text-align: center;">No items in your cart.</td>
+                                     <tr>
+                                        <td colspan="7" style="text-align: center;">No items in your cart.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
                         </tbody>
                     </table>
+                     <!-- Nút Checkout -->
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Checkout</button>
+                    </div>
+                </form>
+                <!-- Kết thúc form -->
                 </div>
 
             </div>

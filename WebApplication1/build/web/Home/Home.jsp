@@ -811,8 +811,6 @@
         }
         );
     </script>
-
-</script>
 </html>
 
 

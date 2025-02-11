@@ -633,7 +633,12 @@ public class AccountDAO extends DBContext {
             }
         }
     }
-
+    
+    public static boolean checkRoleExist(int roleId){
+        
+        return true;
+    }
+    
     public static void main(String[] args) {
         System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
         AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");

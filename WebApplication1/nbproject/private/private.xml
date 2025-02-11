@@ -12,15 +12,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/SliderDAO.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/SliderDetail.java</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/Account.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Login/Login.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/UserDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ViewCartServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/Mail/mailSender.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ForgotPasswordServlet.java</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/AccountDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Login/ForgotPassWord.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/SendOtpServlet.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/PermissionDAO.java</file>
         </group>
     </open-files>
 </project-private>

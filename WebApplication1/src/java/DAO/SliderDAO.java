@@ -54,5 +54,10 @@ public class SliderDAO extends DBContext {
     public static void delateSliderDetailForSlider(int sliderId, SliderDetail sliderDetail) {
 
     }
-
+    public static void main(String[] args) {
+        SliderDAO sDAO = new SliderDAO();
+        for(Slider s: sDAO.getAllSlider()){
+            System.out.println(s);
+        }
+    }
 }

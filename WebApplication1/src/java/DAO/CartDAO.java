@@ -10,6 +10,7 @@ import Models.Product;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -56,8 +57,8 @@ public class CartDAO extends DBContext {
         }
     }
 
-    public ArrayList<CartDetail> getAllCartDetailByUserID(int userID) {
-        ArrayList<CartDetail> cartDetails = new ArrayList<>();
+    public List<CartDetail> getAllCartDetailByUserID(int userID) {
+        List<CartDetail> cartDetails = new ArrayList<>();
         String query = "SELECT cd.cart_detail_id, cd.cart_id, cd.product_id, "
                 + "cd.product_variant_id, cd.quantity, cd.updated_date,p.price "
                 + "FROM cart_detail cd "
@@ -79,7 +80,7 @@ public class CartDAO extends DBContext {
                 cartDetail.setProductVariantID(rs.getInt("product_variant_id"));
                 cartDetail.setQuantity(rs.getInt("quantity"));
                 cartDetail.setUpdatedDate(rs.getTimestamp("updated_date"));
-                
+
                 Product product = new Product();
                 product.setProductId(rs.getString("product_id"));
 //                product.setName(rs.getString("name"));
@@ -96,7 +97,7 @@ public class CartDAO extends DBContext {
         return cartDetails;
     }
 
-public void editCartDetailByID(int userID, int cartDetailID, String action) {
+    public void editCartDetailByID(int userID, int cartDetailID, String action) {
         if (userID <= 0 || cartDetailID <= 0 || action == null) {
             throw new IllegalArgumentException("Tham số không hợp lệ.");
         }
@@ -161,6 +162,7 @@ public void editCartDetailByID(int userID, int cartDetailID, String action) {
         }
 
     }
+
     public boolean deleteCartDetailByID(int userID, int cartDetailID) {
         if (userID <= 0 || cartDetailID <= 0) {
             throw new IllegalArgumentException("userID và cartDetailID phải lớn hơn 0.");
@@ -191,6 +193,7 @@ public void editCartDetailByID(int userID, int cartDetailID, String action) {
             return false;
         }
     }
+
     public boolean isCartDetailOwnedByUser(int cartDetailID, int userID) {
         String query = "SELECT 1 FROM cart_detail cd "
                 + "JOIN cart c ON cd.cart_id = c.cart_id "
@@ -212,6 +215,7 @@ public void editCartDetailByID(int userID, int cartDetailID, String action) {
         }
         return false;
     }
+
     public static void main(String[] args) {
         CartDAO cDAO = new CartDAO();
 //        System.out.println(cDAO.getCartIDByUserID(1));

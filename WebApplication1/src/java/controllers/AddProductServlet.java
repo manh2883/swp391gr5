@@ -9,16 +9,24 @@ import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
- * @author Acer
+ * @author Dell
  */
-public class ProductDetailServlet extends HttpServlet {
+public class AddProductServlet extends HttpServlet {
 
+    private ProductDAO productDAO;
+
+    @Override
+    public void init() throws ServletException {
+        productDAO = new ProductDAO();
+    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -36,10 +44,10 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");            
+            out.println("<title>Servlet AddProductServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddProductServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,16 +65,7 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String productId = request.getParameter("productId");
-        if (productId != null) {
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);
-            request.setAttribute("product", product);
-            request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-        }else{
-            request.setAttribute("message", "product not found");
-        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        }
+        request.getRequestDispatcher("Product/AddProduct.jsp").forward(request, response);
     }
 
     /**
@@ -80,7 +79,19 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+         String productId = request.getParameter("product_id");
+        String name = request.getParameter("name");
+        String description = request.getParameter("description");
+        int brandId = Integer.parseInt(request.getParameter("brand_id"));
+        double price = Double.parseDouble(request.getParameter("price"));
+        int categoryId = Integer.parseInt(request.getParameter("category_id"));
         
+//        //Product product = new Product(productId, name, description, "nike", price, categoryId);
+//        productDAO.addProduct(product);
+//        System.out.println(product);
+//        request.setAttribute("message", product);
+//        //response.sendRedirect("Product/ProductList.jsp");
+        request.getRequestDispatcher("Product/AddProduct.jsp").forward(request, response);
     }
 
     /**

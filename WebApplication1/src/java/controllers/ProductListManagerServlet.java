@@ -12,12 +12,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 /**
  *
- * @author Acer
+ * @author Dell
  */
-public class ProductDetailServlet extends HttpServlet {
+public class ProductListManagerServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +37,10 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");            
+            out.println("<title>Servlet ProductListManagerServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProductListManagerServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,16 +58,10 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String productId = request.getParameter("productId");
-        if (productId != null) {
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);
-            request.setAttribute("product", product);
-            request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-        }else{
-            request.setAttribute("message", "product not found");
-        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        }
+        ProductDAO pDAO = new ProductDAO();
+        ArrayList<Product> ProductList = pDAO.getAllProducts();
+        request.setAttribute("ProductList", ProductList);
+        request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
     }
 
     /**
@@ -80,7 +75,7 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        processRequest(request, response);
     }
 
     /**

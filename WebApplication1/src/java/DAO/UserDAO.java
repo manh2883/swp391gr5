@@ -39,7 +39,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-                user.setAddress(rs.getString("address"));
+                
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -77,7 +77,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-                user.setAddress(rs.getString("address"));
+              
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -114,7 +114,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-                user.setAddress(rs.getString("address"));
+         
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -151,7 +151,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-                user.setAddress(rs.getString("address"));
+              
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -172,7 +172,7 @@ public class UserDAO extends DBContext {
     public static void createUser(User user) {
 
         String sql = "INSERT INTO user ( `DoB`, `gender`, `first_name`, "
-                + "`last_name`, `email`, `phone_number`, `address`, `created_at`, `updated_at`) "
+                + "`last_name`, `email`, `phone_number`, `created_at`, `updated_at`) "
                 + "VALUES (?,?,?,?,?,?,?,?,?)";
         try {
             DBContext db = new DBContext();
@@ -188,9 +188,9 @@ public class UserDAO extends DBContext {
             stm.setString(4, user.getLastName());
             stm.setString(5, user.getEmail());
             stm.setString(6, user.getPhoneNumber());
-            stm.setString(7, user.getAddress());
+          
+            stm.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
             stm.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
-            stm.setTimestamp(9, new Timestamp(System.currentTimeMillis()));
             int rowsUpdated = stm.executeUpdate();
             // Đóng kết nối và tài nguyên
             System.out.println(rowsUpdated + " row(s) updated.");

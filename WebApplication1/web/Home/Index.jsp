@@ -13,6 +13,5 @@
     </head>
     <body>
        <% response.sendRedirect("Home"); %>
-
     </body>
 </html>

@@ -39,7 +39,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-                
+
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -77,7 +77,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-              
+
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -105,28 +105,28 @@ public class UserDAO extends DBContext {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, email);
             ResultSet rs = stm.executeQuery();
-
+            User user = new User();
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                User user = new User();
+
                 user.setUserId(rs.getInt("user_id"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-         
+
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
                 user.setCreatedAt(rs.getTimestamp("created_at"));
                 user.setUpdatedAt(rs.getTimestamp("updated_at"));
-                return user;
+
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-
+            return user;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -151,7 +151,7 @@ public class UserDAO extends DBContext {
                 user.setPhoneNumber(rs.getString("phone_number"));
                 user.setAvtLink(rs.getString("avt_link"));
                 user.setDoB(rs.getDate("DoB"));
-              
+
                 user.setGender(rs.getInt("gender"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
@@ -173,7 +173,7 @@ public class UserDAO extends DBContext {
 
         String sql = "INSERT INTO user ( `DoB`, `gender`, `first_name`, "
                 + "`last_name`, `email`, `phone_number`, `created_at`, `updated_at`) "
-                + "VALUES (?,?,?,?,?,?,?,?,?)";
+                + "VALUES (?,?,?,?,?,?,?,?)";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
@@ -188,7 +188,7 @@ public class UserDAO extends DBContext {
             stm.setString(4, user.getLastName());
             stm.setString(5, user.getEmail());
             stm.setString(6, user.getPhoneNumber());
-          
+
             stm.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
             stm.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
             int rowsUpdated = stm.executeUpdate();
@@ -263,8 +263,8 @@ public class UserDAO extends DBContext {
         }
 
         System.out.println("------------------");
-        User testUser = new User("abc@abc.com", "03431020232", null, new Date(2012, 12, 12), "Konoha", 0, "abc", "abc");
-        createUser(testUser);
+//        User testUser = new User("abc@abc.com", "03431020232", null, new Date(2012, 12, 12), "Konoha", 0, "abc", "abc");
+//        createUser(testUser);
 
         userList = getAllUser();
         for (User user : userList) {

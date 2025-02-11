@@ -19,7 +19,6 @@ public class User {
     private String phoneNumber;
     private String avtLink;
     private Date doB;
-    private String address;
     private int gender;
     private String firstName;
     private String lastName;
@@ -30,14 +29,14 @@ public class User {
     }
 
     public User(int userId, String email, String phoneNumber, String avtLink,
-            Date doB, String address, int gender, String firstName, String lastName,
+            Date doB, int gender, String firstName, String lastName,
             Timestamp createdAt, Timestamp updatedAt) {
         this.userId = userId;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.avtLink = avtLink;
         this.doB = doB;
-        this.address = address;
+
         this.gender = gender;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -46,13 +45,12 @@ public class User {
     }
 
     public User(String email, String phoneNumber, String avtLink, Date doB,
-            String address, int gender, String firstName, String lastName) {
+            int gender, String firstName, String lastName) {
         this.userId = 0;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.avtLink = avtLink;
         this.doB = doB;
-        this.address = address;
         this.gender = gender;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -101,14 +99,6 @@ public class User {
         this.doB = doB;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public int getGender() {
         return gender;
     }
@@ -151,7 +141,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB + ", address=" + address + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+        return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB  + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
     }
 
 }

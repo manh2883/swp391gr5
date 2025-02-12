@@ -216,13 +216,46 @@ public class CartDAO extends DBContext {
         return false;
     }
 
+    public CartDetail getCartDetailByID(int cartDetailID) {
+        CartDetail cartDetail = new CartDetail();
+        String query = "SELECT * FROM cart_detail WHERE cart_detail_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, cartDetailID);
+            ResultSet rs = stm.executeQuery();
+
+            if (rs.next()) {
+                // Khởi tạo đối tượng CartDetail và gán giá trị từ kết quả truy vấn
+                //CartDetail cartDetail = new CartDetail();
+                cartDetail.setCartDetailID(rs.getInt("cart_detail_id"));
+                cartDetail.setCartID(rs.getInt("cart_id"));
+                cartDetail.setProductID(rs.getString("product_id"));
+                cartDetail.setProductVariantID(rs.getInt("product_variant_id"));
+                cartDetail.setQuantity(rs.getInt("quantity"));
+                cartDetail.setUpdatedDate(rs.getTimestamp("updated_date"));
+
+                // Lấy thông tin sản phẩm (nếu cần)
+                ProductDAO productDAO = new ProductDAO();
+                Product product = productDAO.getProductById(rs.getString("product_id"));
+                cartDetail.setProduct(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cartDetail;
+    }
+    
     public static void main(String[] args) {
         CartDAO cDAO = new CartDAO();
-//        System.out.println(cDAO.getCartIDByUserID(1));
-//        cDAO.createCartForUserID(1);
-//        System.out.println(cDAO.getCartIDByUserID(1));
-        for (CartDetail c : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(c);
-        }
+        //        System.out.println(cDAO.getCartIDByUserID(1));
+        //        cDAO.createCartForUserID(1);
+        //        System.out.println(cDAO.getCartIDByUserID(1));
+        //        for (CartDetail c : cDAO.getAllCartDetailByUserID(4)) {
+        //            System.out.println(c);
+        //        }
+        cDAO.getCartDetailByID(1);
+        System.out.println(cDAO.getCartDetailByID(1));
     }
 }

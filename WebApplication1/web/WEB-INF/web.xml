@@ -41,32 +41,8 @@
         <servlet-class>controllers.SendOtpServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddProductServlet</servlet-name>
-        <servlet-class>controllers.AddProductServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ProductServlet</servlet-name>
-        <servlet-class>controllers.ProductServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>EditProductServlet</servlet-name>
-        <servlet-class>controllers.EditProductServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ProductVariantServlet</servlet-name>
-        <servlet-class>controllers.ProductVariantServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ViewProductServlet</servlet-name>
-        <servlet-class>controllers.ViewProductServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>EditProductVariantServlet</servlet-name>
-        <servlet-class>controllers.EditProductVariantServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ProductListManagerServlet</servlet-name>
-        <servlet-class>controllers.ProductListManagerServlet</servlet-class>
+        <servlet-name>CheckoutServlet</servlet-name>
+        <servlet-class>controllers.CheckoutServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -105,39 +81,14 @@
         <url-pattern>/CreateNewPassWord</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddProductServlet</servlet-name>
-        <url-pattern>/AddProduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>EditProductServlet</servlet-name>
-        <url-pattern>/EditProduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ProductServlet</servlet-name>
-        <url-pattern>/Product</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ProductVariantServlet</servlet-name>
-        <url-pattern>/ProductVariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ViewProductServlet</servlet-name>
-        <url-pattern>/ViewProduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>EditProductVariantServlet</servlet-name>
-        <url-pattern>/EditProductVariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SendOtpServlet</servlet-name>
         <url-pattern>/SendOtp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ProductListManagerServlet</servlet-name>
-        <url-pattern>/ProductListManager</url-pattern>
+        <servlet-name>CheckoutServlet</servlet-name>
+        <url-pattern>/Checkout</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>
     </welcome-file-list>
 </web-app>
-    

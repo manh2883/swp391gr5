@@ -13,16 +13,29 @@ public class SliderDetail {
     private int sliderId;
     private int sliderOrder;
     private String sliderImgLink;
-    private String BackLink;
+    private String backLink;
+    private String detailTitle;
+    private String detailContent;
 
     public SliderDetail() {
     }
 
-    public SliderDetail(int sliderId, int sliderOrder, String sliderImgLink, String BackLink) {
+    public SliderDetail(int sliderId, int sliderOrder, String sliderImgLink, String BackLink, String detailTitle, String detailContent) {
         this.sliderId = sliderId;
         this.sliderOrder = sliderOrder;
-        this.sliderImgLink = sliderImgLink;
-        this.BackLink = BackLink;
+        if (sliderImgLink != null) {
+            this.sliderImgLink = sliderImgLink;
+        } else {
+            this.sliderImgLink = "/Images/RUN.jsg";
+        }
+        if (BackLink != null) {
+            this.backLink = BackLink;
+        } else {
+            this.backLink = "/Home";
+        }
+
+        this.detailTitle = detailTitle;
+        this.detailContent = detailContent;
     }
 
     public int getSliderId() {
@@ -42,9 +55,6 @@ public class SliderDetail {
     }
 
     public String getSliderImgLink() {
-        if (sliderImgLink == null) {
-            return "RUN.jpg";
-        }
         return sliderImgLink;
     }
 
@@ -53,19 +63,32 @@ public class SliderDetail {
     }
 
     public String getBackLink() {
-        if (BackLink == null) {
-            return "Home";
-        }
-        return BackLink;
+        return backLink;
     }
 
     public void setBackLink(String BackLink) {
-        this.BackLink = BackLink;
+        this.backLink = BackLink;
+    }
+
+    public String getDetailTitle() {
+        return detailTitle;
+    }
+
+    public void setDetailTitle(String detailTitle) {
+        this.detailTitle = detailTitle;
+    }
+
+    public String getDetailContent() {
+        return detailContent;
+    }
+
+    public void setDetailContent(String detailContent) {
+        this.detailContent = detailContent;
     }
 
     @Override
     public String toString() {
-        return "SliderDetail{" + "sliderId=" + sliderId + ", sliderOrder=" + sliderOrder + ", sliderImgLink=" + sliderImgLink + ", BackLink=" + BackLink + '}';
+        return "SliderDetail{" + "sliderId=" + sliderId + ", sliderOrder=" + sliderOrder + ", sliderImgLink=" + sliderImgLink + ", BackLink=" + backLink + ", detailTitle=" + detailTitle + ", detailContent=" + detailContent + '}';
     }
 
 }

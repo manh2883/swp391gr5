@@ -5,6 +5,11 @@
 package DAO;
 
 import DBContext.DBContext;
+import Models.Product;
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import models.Slider;
 import models.SliderDetail;
@@ -16,7 +21,30 @@ import models.SliderDetail;
 public class SliderDAO extends DBContext {
 
     public static ArrayList<Slider> getAllSlider() {
-        return null;
+        DBContext db = new DBContext();
+        String query = "SELECT * FROM slider";
+        ArrayList<Slider> list = new ArrayList<>();
+        try {
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+               Slider slider = new Slider();
+               slider.setSliderId(0);Id(rs.getInt(rs.getInt("slider_id")));
+               slider.setClickCount(rs.getInt("click_count"));
+               slider.setCreatedBy(createdBy);
+               slider.setCreatedDate(createdDate);
+               slider.setEndDate(endDate);
+               slider.setSliderName()
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public static ArrayList<SliderDetail> getAllSliderDetailBySliderId(int id) {
@@ -54,9 +82,10 @@ public class SliderDAO extends DBContext {
     public static void delateSliderDetailForSlider(int sliderId, SliderDetail sliderDetail) {
 
     }
+
     public static void main(String[] args) {
         SliderDAO sDAO = new SliderDAO();
-        for(Slider s: sDAO.getAllSlider()){
+        for (Slider s : sDAO.getAllSlider()) {
             System.out.println(s);
         }
     }

@@ -22,6 +22,7 @@ public class Slider {
     private int width;
     private int clickCount;
 
+
     public Slider() {
     }
 

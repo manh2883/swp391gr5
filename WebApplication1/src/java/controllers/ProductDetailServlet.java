@@ -62,6 +62,8 @@ public class ProductDetailServlet extends HttpServlet {
             ProductDAO productDAO = new ProductDAO();
             Product product = productDAO.getProductById(productId);
             request.setAttribute("product", product);
+            request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
+            System.out.println(productDAO.getImgUrlForProductID(productId));
             request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
         }else{
             request.setAttribute("message", "product not found");

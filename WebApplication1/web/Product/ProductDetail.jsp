@@ -200,8 +200,8 @@
                         <div class="product-details"><!--product-details-->
                             <div class="col-sm-5">
                                 <div class="view-product">
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/1.jpg" alt="" />
-                                    <h3>ZOOM</h3>
+                                    <img src="${pageContext.request.contextPath}/${imgUrl}" alt="" />
+<!--                                    <h3>ZOOM</h3>-->
                                 </div>
                                 <div id="similar-product" class="carousel slide" data-ride="carousel">
 
@@ -237,13 +237,13 @@
                             </div>
                             <div class="col-sm-7">
                                 <div class="product-information"><!--/product-information-->
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/new.jpg" class="newarrival" alt="" />
-                                    <h2>Anne Klein Sleeveless Colorblock Scuba</h2>
-                                    <p>Web ID: 1089772</p>
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />
+                                    <img src=" " class="newarrival" alt="" />
+                                    <h2>${product.name}</h2>
+                                    <p>Web ID: ${product.productId}</p>
+                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />-->
                                     <span>
-                                        <span>US $59</span>
-                                        <label>Quantity:</label>
+                                        <span>${product.price}</span>
+                                        <label>Category:${product.categoryName}</label>
                                         <input type="text" value="3" />
                                         <button type="button" class="btn btn-fefault cart">
                                             <i class="fa fa-shopping-cart"></i>

@@ -74,13 +74,13 @@
                             <c:choose>
                                 <c:when test="${not empty ProductList}">
                                     <c:forEach var="product" items="${ProductList}">
-                                        <tr>
+                                        <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
                                             
                                             <td class="cart_product">
-                                                <a href=""><img src="${pageContext.request.contextPath}/Images/cart/one.png" alt=""></a>
+                                                <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}"><img src="${pageContext.request.contextPath}/Images/cart/one.png" alt=""></a>
                                             </td>
                                             <td class="cart_description">
-                                                <h4><a href="">${product.productId}</a></h4>
+                                                <h4>${product.productId}</h4>
                                                 <c:if test="${cart.productVariantID > 0}">
                                                     <p>Variant: ${cart.productVariantID}</p>
                                                 </c:if>
@@ -111,7 +111,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="6" style="text-align: center;">No items in your cart.</td>
+                                        <td colspan="6" style="text-align: center;">No items in Product List.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>

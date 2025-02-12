@@ -32,7 +32,11 @@ public class Product {
         this.brandName = brandName;
         this.categoryName = categoryName;
         this.createAt = createAt;
-        this.imgUrl = imgUrl;
+        if(imgUrl == null || imgUrl.isEmpty()) {
+            this.imgUrl = "Images/RUN.jpg";
+        }else{
+            this.imgUrl = imgUrl;
+        }
     }
 
    

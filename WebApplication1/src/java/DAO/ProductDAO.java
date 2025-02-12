@@ -24,33 +24,29 @@ import java.sql.Timestamp;
  */
 public class ProductDAO extends DBContext {
 
-    public static Product getProductById(String id) throws IOException {
-        String query = "SELECT * FROM Product WHERE product_id = ?";
-        Product product = new Product();
-        DBContext db = new DBContext();
-        try {
-
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(1, id);
-            ResultSet rs = stm.executeQuery();
-
-            if (rs.next()) {
-                product.setProductId(rs.getString("product_Id"));
-                product.setName(rs.getString("name"));
-                product.setPrice(rs.getDouble("price"));
-                product.setDescription(rs.getString("description"));
-                product.setCategoryName(rs.getString("category_name"));
+    public static Product getProductById(String id) {
+       for(Product p: getAllProducts()){
+            if(p.getProductId() == null ? id == null : p.getProductId().equals(id)){
+                return p;
             }
-            rs.close();
-            stm.close();
-
-        }catch (SQLException e){
         }
-                    return product;
+        return null;
 
     }
 
+    public static String getImgUrlForProductID(String Id){
+        for(Product p: getAllProducts()){
+            if(p.getProductId() == null ? Id == null : p.getProductId().equals(Id)){
+                if(p.getImgUrl() == null || p.getImgUrl().isEmpty()){
+                    return "Images/RUN.jpg";
+                }else{
+                    return p.getImgUrl();
+                }
+            }
+        }
+        return null;
+    }
+    
     public static ArrayList<Product> getAllProducts() {
         ArrayList<Product> products = new ArrayList<>();
         String query = """
@@ -61,7 +57,7 @@ public class ProductDAO extends DBContext {
                         left join product_category on product.category_id = product_category.category_id
                         join product_variant on product.product_id = product_variant.product_id
                         left join product_image on product_variant.variant_id = product_image.product_variant_id
-                       order by product.created_at asc;""";
+                       order by product.product_id asc;""";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -144,8 +140,11 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-        for (Product p : pDAO.getAllProducts()) {
-            System.out.println(p);
-        }
+//        for(Product p: pDAO.getAllProducts()){
+//            System.out.println(p);
+//        }
+        System.out.println(pDAO.getImgUrlForProductID("P007"));
+    //        System.out.println(pDAO.getProductById("P007"));
+        System.out.println(pDAO.getImgUrlForProductID("P006"));
     }
 }

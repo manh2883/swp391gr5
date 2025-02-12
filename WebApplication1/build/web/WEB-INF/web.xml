@@ -21,6 +21,10 @@
         <servlet-class>controllers.ProductDetailServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ProductListManagerServlet</servlet-name>
+        <servlet-class>controllers.ProductListManagerServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ViewPostServlet</servlet-name>
         <servlet-class>controllers.ViewPostServlet</servlet-class>
     </servlet>
@@ -63,6 +67,10 @@
     <servlet-mapping>
         <servlet-name>ProductDetailServlet</servlet-name>
         <url-pattern>/ProductDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductListManagerServlet</servlet-name>
+        <url-pattern>/ProductListManager</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ViewPostServlet</servlet-name>

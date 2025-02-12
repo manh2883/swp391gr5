@@ -640,9 +640,10 @@ public class AccountDAO extends DBContext {
     }
     
     public static void main(String[] args) {
-        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
-        AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");
-        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
-
+//        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
+//        AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");
+//        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
+        AccountDAO.createAccount(new Account(42, 1, "abc123", "12345678", 1, 1));
+        System.out.println(AccountDAO.getAccountByUserId(42));
     }
 }

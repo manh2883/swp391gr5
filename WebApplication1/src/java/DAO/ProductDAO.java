@@ -24,18 +24,18 @@ import java.sql.Timestamp;
  */
 public class ProductDAO extends DBContext{
     
-public Product getProductById(int id) throws IOException {
+public Product getProductById(String id) throws IOException {
         String query = "SELECT * FROM Product WHERE product_id = ?";
         Product product = new Product();
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setInt(1, id);
+            stm.setString(1, id);
             ResultSet rs = stm.executeQuery();
             
             if (rs.next()) {
-                product.setproductId(rs.getInt("product_Id"));
+                product.setProductId(rs.getString("product_id"));
                 product.setName(rs.getString("name"));
                 product.setPrice(rs.getDouble("price"));
                 product.setDescription(rs.getString("description"));

@@ -128,7 +128,7 @@ public class RegisterServlet extends HttpServlet {
             User user1 = uDAO.getUserByEmail(email);
             System.out.println(user1);
             if (user1 != null) {
-                Account newAcc = new Account(user1.getUserId(), 1, userName, passWord, 0, 1);
+                Account newAcc = new Account(user1.getUserId(), 2, userName, passWord, 0, 1);
                 newAcc.setPassword(passWord);
                 aDAO.createAccount(newAcc);
             } else {

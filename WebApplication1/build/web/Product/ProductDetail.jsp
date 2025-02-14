@@ -201,7 +201,7 @@
                             <div class="col-sm-5">
                                 <div class="view-product">
                                     <img src="${pageContext.request.contextPath}/${imgUrl}" alt="" />
-<!--                                    <h3>ZOOM</h3>-->
+                                    <!--                                    <h3>ZOOM</h3>-->
                                 </div>
                                 <div id="similar-product" class="carousel slide" data-ride="carousel">
 
@@ -240,20 +240,66 @@
                                     <img src=" " class="newarrival" alt="" />
                                     <h2>${product.name}</h2>
                                     <p>Web ID: ${product.productId}</p>
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />-->
+<!--                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />-->
                                     <span>
                                         <span>${product.price}</span>
-                                        <label>Category:${product.categoryName}</label>
-                                        <input type="text" value="3" />
-                                        <button type="button" class="btn btn-fefault cart">
-                                            <i class="fa fa-shopping-cart"></i>
-                                            Add to cart
-                                        </button>
                                     </span>
-                                    <p><b>Availability:</b> In Stock</p>
-                                    <p><b>Condition:</b> New</p>
-                                    <p><b>Brand:</b> E-SHOPPER</p>
-                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>
+
+                                    <form action="action">
+                                        <table>
+                                            <tbody style="align-items: center;">
+                                                <!-- Lựa chọn màu sắc -->
+                                                <c:choose>
+                                                    <c:when test="${not empty colorList}">
+                                                        <tr style="padding-top: 20px">
+                                                            <td>Color:</td>
+                                                            <td style="padding-left: 50px; height: 45px">
+                                                                <select>
+                                                                    <c:forEach var="colorItem" items="${colorList}">
+                                                                        <option value="${colorItem}">${colorItem}</option>
+                                                                    </c:forEach>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                </c:choose>
+
+                                                <!-- Lựa chọn kích thước -->
+                                                <c:choose>
+                                                    <c:when test="${not empty sizeList}">
+                                                        <tr style="padding-top: 20px">
+                                                            <td>Size:</td>
+                                                            <td style="padding-left: 50px; height: 45px">
+                                                                <select>
+                                                                    <c:forEach var="sizeItem" items="${sizeList}">
+                                                                        <option value="${sizeItem}">${sizeItem}</option>
+                                                                    </c:forEach>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                </c:choose>
+                                            </tbody>
+                                        </table>
+
+                                        <span>
+                                            <input type="text" value="1" />
+                                            <button type="button" class="btn btn-fefault cart">
+                                                <i class="fa fa-shopping-cart"></i> Add to cart
+                                            </button>
+                                            <button type="button" class="btn btn-fefault cart">
+                                                <i class="fa fa-shopping-cart"></i> Purchase
+                                            </button>
+                                        </span>
+                                    </form>
+
+
+
+<!--                                    <p><b>Category:</b>${product.categoryName}</p>
+<p><b>Availability:</b> In Stock</p>
+<p><b>Condition:</b> New</p>
+<p><b>Brand:</b> E-SHOPPER</p>-->
+<!--                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>-->
                                 </div><!--/product-information-->
                             </div>
                         </div><!--/product-details-->

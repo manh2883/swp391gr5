@@ -79,10 +79,10 @@
                             </ul>
                         </div>
                     </div>
-                    <form class="col-sm-4" method="Search" action="post">
+                    <form class="col-sm-4" method="post" action="Search">
                         <div class="search_box d-flex flex-row pull-right align-items-center  " >
-                            <input type="text" placeholder="Search" />
-                            <button type="button" class="btn btn-default get-manh" >Search</button>
+                            <input type="text" placeholder="Search" name="searchKey" />
+                            <button type="button submit" class="btn btn-default get-manh" >Search</button>
                         </div>
 
                     </form>

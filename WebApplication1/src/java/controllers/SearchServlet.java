@@ -12,13 +12,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
- * @author Acer
+ * @author Dell
  */
-public class ProductDetailServlet extends HttpServlet {
+public class SearchServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +38,10 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");
+            out.println("<title>Servlet SearchServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SearchServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,36 +59,7 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productId = request.getParameter("productId");
-        if (productId != null) {
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);
-            if (product == null) {
-                request.setAttribute("message", "product not found");
-                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-            } else {
-                request.setAttribute("product", product);
-                request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
-
-                List<String> color = productDAO.getAllColorbyProductId(productId);
-                if (color != null && !color.isEmpty()) {
-                    request.setAttribute("colorList", color);
-
-                }
-                List<String> size = productDAO.getAllSizebyProductId(productId);
-                if (size != null && !size.isEmpty()) {
-                    request.setAttribute("sizeList", size);
-
-                }
-
-                System.out.println(productDAO.getImgUrlForProductID(productId));
-                request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-            }
-
-        } else {
-            request.setAttribute("message", "product not found");
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -101,7 +73,37 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String key = request.getParameter("searchKey");
+//        request.setAttribute("message", key);
+//        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        ArrayList<Product> products = pDAO.getAllProducts();
+        //Category, Brand, ProductName, ProductId.
+        if (products == null || products.isEmpty()) {
+            request.setAttribute("message", "khong co san pham");
+            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        } else {
 
+            Iterator<Product> iterator = products.iterator();
+            while (iterator.hasNext()) {
+                Product p = iterator.next();
+                if (!p.getCategoryName().contains(key)
+                        && !p.getBrandName().contains(key)
+                        && !p.getProductId().contains(key)
+                        && !p.getName().contains(key)) {
+                    iterator.remove();
+                }
+            }
+
+            if (products == null || products.isEmpty()) {
+                request.setAttribute("message", "khong co san pham");
+                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            } else {
+                request.setAttribute("ProductList", products);
+                request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+            }
+
+        }
     }
 
     /**

@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -188,49 +190,6 @@ public class ProductDAO extends DBContext {
         return colors;
     }
 
-//    //check xem cart có tồn tại hay không?; gọi getUserById; getCartIdByUserId;nếu có cart thì chạy tiếp, nếu không có thì tạo cart.  
-//// kiểm tra xem có variant hay không?
-////kiểm tra product xem có hay không?
-////kiểm tra xem còn hàng trong kho hay không(viết một hàm mới).
-////nếu có đủ hết các điều kiện trên thì sẽ add to cart
-//    public static int getOrCreateCartId(int userId) {
-//        
-//        
-//        int cartId = -1;
-//                    String query = "SELECT cart_id FROM cart WHERE user_id = ?";
-//
-//        try {
-//            // Kiểm tra xem user đã có giỏ hàng chưa
-//            DBContext db = new DBContext();
-//            java.sql.Connection con = db.getConnection();
-//            PreparedStatement stm = con.prepareStatement(query);
-//            stm.setInt(1, userId);
-//            ResultSet rs = stm.executeQuery();
-//
-//            if (rs.next()) {
-//                cartId = rs.getInt("cart_id");
-//            }else {
-//                // Nếu chưa có, tạo giỏ hàng mới
-//                String insertCart = "INSERT INTO cart (user_id) VALUES (?)";
-//                PreparedStatement stmInsert = con.prepareStatement(insertCart, PreparedStatement.RETURN_GENERATED_KEYS);
-//                stmInsert.setInt(1, userId);
-//                stmInsert.executeUpdate();
-//                ResultSet generatedKeys = stmInsert.getGeneratedKeys();
-//                if (generatedKeys.next()) {
-//                    cartId = generatedKeys.getInt(1);
-//                }
-//                stmInsert.close();
-//            }
-//            stm.close();
-//            rs.close();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return cartId;
-//    }
-//
-//
-    // Kiểm tra biến thể sản phẩm có tồn tại không (theo color, size)
     public static int getVariantByColorAndSize(String productId, String color, String size) {
 
         String query = "SELECT variant_id from product_variant where color = ? and size = ? and product_id = ? ";
@@ -418,100 +377,64 @@ public class ProductDAO extends DBContext {
         }
     }
 
-//    public void AddToCart(String productId, String color, String size, int userId) throws SQLException {
-//        
-//        DBContext db = new DBContext();
-//        java.sql.Connection con = db.getConnection();
-//       PreparedStatement stm = con.prepareStatement(productId);
-//       ResultSet rs = stm.executeQuery();
-//        try {
-//            con.setAutoCommit(false);
-//        }catch (SQLException e) {
-//            e.printStackTrace();
-//            }
-//
-//            // Kiểm tra xem sản phẩm có tồn tại không
-//            String checkProductQuery = "SELECT COUNT(*) FROM product group by product_id ";
-//            try {
-//                PreparedStatement stmcheckProduct = con.prepareStatement(checkProductQuery);
-//                stm.setString(1, productId);
-//            }catch (SQLException e) {
-//            e.printStackTrace();
-//            }
-//                try {
-//                    PreparedStatement stm = con.prepareStatement(checkProductQuery);
-//                    ResultSet rs = stm.executeQuery();
-//                    if (rs.next() && rs.getInt(1) == 0) {
-//                        throw new SQLException("Sản phẩm không tồn tại.");
-//                    }
-//                }catch (SQLException e) {
-//            e.printStackTrace();
-//            }
-//            
-//
-//            // Kiểm tra biến thể sản phẩm
-//            String checkVariantQuery = "SELECT variant_id, stock FROM product_variant WHERE product_id = ? AND color = ? AND size = ?";
-//            int variantId = -1, stock = 0;
-//            try {
-//                 PreparedStatement stmcheckVariant = con.prepareStatement(checkVariantQuery);
-//                
-//                stmcheckVariant.setString(1, productId);
-//                stmcheckVariant.setString(2, color);
-//                stmcheckVariant.setString(3, size);
-//            }catch (SQLException e) {
-//            e.printStackTrace();
-//            }
-//                try {
-//                    ResultSet rs = stm.checkVariant.executeQuery();
-//                    
-//                    if (rs.next()) {
-//                        variantId = rs.getInt("variant_id");
-//                        stock = rs.getInt("stock");
-//                    } else {
-//                        throw new SQLException("Biến thể sản phẩm không tồn tại.");
-//                    }
-//                }
-//            
-//
-//            // Kiểm tra hàng tồn kho
-//            if (stock <= 0) {
-//                throw new SQLException("Sản phẩm đã hết hàng.");
-//}
-//
-//            // Lấy hoặc tạo giỏ hàng cho user
-//            CartDAO cartDAO = new CartDAO();
-//            int cartId = cartDAO.getCartIDByUserID(userId);
-//            if (cartId == -1) {
-//                cartDAO.createCartForUserID(userId);
-//                cartId = cartDAO.getCartIDByUserID(userId);
-//            }
-//
-//            // Thêm sản phẩm vào giỏ hàng
-//            String addToCartQuery = "INSERT INTO cart_detail (cart_id, product_id, product_variant_id, quantity, updated_date) "
-//                    + "VALUES (?, ?, ?, 1, NOW()) "
-//                    + "ON DUPLICATE KEY UPDATE quantity = quantity + 1, updated_date = NOW()";
-//            try (PreparedStatement addToCartStmt = con.prepareStatement(addToCartQuery)) {
-//                addToCartStmt.setInt(1, cartID);
-//                addToCartStmt.setString(2, productId);
-//                addToCartStmt.setInt(3, variantId);
-//                addToCartStmt.executeUpdate();
-//            
-//
-//            con.commit();
-//            }catch(SQLException e) {
-//            throw new SQLException("Lỗi khi thêm sản phẩm vào giỏ hàng: " + e.getMessage());
-//        }
-//    }
+    /**
+     *
+     * @return
+     */
+    public static Map<Integer, String> getAllBrand(){
+        
+              String query = "SELECT * from brand";
+              Map<Integer, String> brandList = new HashMap<>(); 
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            
+            ResultSet rs = stm.executeQuery();
+            
+            while (rs.next()) {
+                brandList.put(rs.getInt("brand_id"), rs.getString("name"));
+            }
+            stm.close();
+            rs.close();
+           
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return brandList;
+
+    }
+    
+    public static Map<Integer, String> getAllProductCategory(){
+        
+              String query = "SELECT * from product_category";
+              Map<Integer, String> brandList = new HashMap<>(); 
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            
+            ResultSet rs = stm.executeQuery();
+            
+            while (rs.next()) {
+                brandList.put(rs.getInt("category_id"), rs.getString("category_name"));
+            }
+            stm.close();
+            rs.close();
+           
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return brandList;
+
+    }
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-        CartDAO cDAO = new CartDAO();
-        for (CartDetail c : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(c);
-        }
-        addToCart("P004", "BLACK", "M", 4);
-        System.out.println("--------------");
-        for (CartDetail c : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(c);
-        }
+        System.out.println(getAllBrand());
+         System.out.println(getAllProductCategory());
     }
 }

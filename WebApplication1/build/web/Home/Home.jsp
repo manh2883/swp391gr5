@@ -61,7 +61,7 @@
         </header>
 
 
-        <section id="slider" style="border: red solid 1px"><!--slider-->
+        <section id="slider" style=""><!--slider-->
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12">
@@ -127,7 +127,7 @@
             </div>
         </section><!--/slider-->
 
-        <section style="border: 1px solid blue">
+        <section style="">
             <div class="container" >
                 <div class="row" >
                     <div class="col-sm-3">
@@ -163,17 +163,7 @@
                                     <p>No Item found</p>
                                 </c:otherwise>
                             </c:choose>
-
-
-
-
-
-
-
-
-
                         </div>
-
                         <!-- Pagination -->
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
                             <ul class="pagination" style="justify-content: center;font-size: 14px">
@@ -195,8 +185,6 @@
                                 </li>
                             </ul>
                         </nav>
-
-
                     </div>
                 </div>
             </div>

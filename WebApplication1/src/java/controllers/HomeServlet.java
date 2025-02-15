@@ -61,7 +61,7 @@ public class HomeServlet extends HttpServlet {
         ProductDAO pDAO = new ProductDAO();
         Map<Integer, String> bList = pDAO.getAllBrand();
         Map<Integer, String> cList = pDAO.getAllProductCategory();
-        Map<Product, Map<Boolean,Boolean>> productList = pDAO.getProductView();
+        Map<Product, Map<Boolean,Boolean>> productList = pDAO.getProductListHome(9);
         if (bList != null && !bList.isEmpty()) {
             request.setAttribute("brandList", bList);
         }

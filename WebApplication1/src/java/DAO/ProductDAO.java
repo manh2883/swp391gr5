@@ -50,7 +50,6 @@ public class ProductDAO extends DBContext {
                            FROM product_image
                        ) AS ranked
                        where rn = 1 and product_id = ?""";
-
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -63,6 +62,10 @@ public class ProductDAO extends DBContext {
                     imgUrl = rs.getString("back_link");
                 }
             }
+
+            rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,6 +106,8 @@ public class ProductDAO extends DBContext {
                 products.add(product);
             }
             rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
 
         }
@@ -177,6 +182,9 @@ public class ProductDAO extends DBContext {
                     sizes.add(rs.getString("size"));
                 }
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -202,6 +210,10 @@ public class ProductDAO extends DBContext {
                 }
             }
 
+            rs.close();
+            stm.close();
+            con.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -224,8 +236,9 @@ public class ProductDAO extends DBContext {
             if (rs.next()) {
                 return rs.getInt("variant_id");
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -250,8 +263,9 @@ public class ProductDAO extends DBContext {
                 int stock = rs.getInt("stock");
                 return stock; // Trả về true nếu còn hàng
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -279,8 +293,9 @@ public class ProductDAO extends DBContext {
                     return null;
                 }
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -308,8 +323,9 @@ public class ProductDAO extends DBContext {
                     return null;
                 }
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -363,8 +379,9 @@ public class ProductDAO extends DBContext {
                 id = rs.getInt("cart_detail_id");
                 System.out.println(id);
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
             return id; // Trả về true nếu còn hàng
 
         } catch (SQLException e) {
@@ -415,8 +432,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 brandList.put(rs.getInt("brand_id"), rs.getString("name"));
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -439,8 +457,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 brandList.put(rs.getInt("category_id"), rs.getString("category_name"));
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -462,8 +481,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 price = rs.getDouble("price");
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -488,8 +508,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 priceList.add(rs.getDouble("price"));
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -518,8 +539,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 price = rs.getDouble("price");
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -554,8 +576,9 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 isNew = true;
             }
-            stm.close();
             rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -568,17 +591,31 @@ public class ProductDAO extends DBContext {
         Product pro = getProductById(productId);
         return pro.getPrice() > getCurrentPriceByProductId(productId) && getCurrentPriceByProductId(productId) > -1;
     }
-    
-    public static Map<Product, Map<Boolean,Boolean>> getProductView(){
-       Map<Product, Map<Boolean,Boolean>> productList = new HashMap<>();
-       for(Product p : getAllProducts()){
-           productList.put(p, getProcductNotifyInformation(p.getProductId()));
-       }
-       return productList;
+
+    public static Map<Product, Map<Boolean, Boolean>> getProductView() {
+        Map<Product, Map<Boolean, Boolean>> productList = new HashMap<>();
+        for (Product p : getAllProducts()) {
+            productList.put(p, getProcductNotifyInformation(p.getProductId()));
+        }
+        return productList;
     }
-    
-    
-    
+
+    public static Map<Product, Map<Boolean, Boolean>> getProductListHome(int quantity) {
+        Map<Product, Map<Boolean, Boolean>> productList = new HashMap<>();
+        List<Product> allProducts = getAllProducts(); // Lấy toàn bộ sản phẩm
+        int count = 0;
+
+        for (Product p : allProducts) {
+            if (count >= 9) {
+                break;
+            }
+            productList.put(p, getProcductNotifyInformation(p.getProductId()));
+            count++;
+        }
+
+        return productList;
+    }
+
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
         for (Product p : pDAO.getAllProducts()) {

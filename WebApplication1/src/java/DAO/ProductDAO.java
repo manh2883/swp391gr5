@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,27 +41,44 @@ public class ProductDAO extends DBContext {
     }
 
     public static String getImgUrlForProductID(String Id) {
-        for (Product p : getAllProducts()) {
-            if (p.getProductId() == null ? Id == null : p.getProductId().equals(Id)) {
-                if (p.getImgUrl() == null || p.getImgUrl().isEmpty()) {
-                    return "Images/RUN.jpg";
-                } else {
-                    return p.getImgUrl();
+        String imgUrl = "Images/RUN.jpg";
+        String query = """
+                       SELECT *
+                       FROM (
+                           SELECT *,
+                                  ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY img_id ASC) AS rn
+                           FROM product_image
+                       ) AS ranked
+                       where rn = 1 and product_id = ?""";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, Id);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                if (rs.getString("back_link") != null && !rs.getString("back_link").isEmpty()) {
+                    imgUrl = rs.getString("back_link");
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return null;
+
+        return imgUrl;
     }
 
     public static ArrayList<Product> getAllProducts() {
         ArrayList<Product> products = new ArrayList<>();
         String query = """
                        SELECT distinct product.product_id,product.description, product.name, price, brand.name, 
-                       product_category.category_name,  product.created_at, product_variant.variant_id, product_image.back_link 
+                       product_category.category_name,  product.created_at 
                        FROM tpfshopwearv2.product 
                         left join brand on product.brand_id = brand.brand_id 
                         left join product_category on product.category_id = product_category.category_id
-                        join product_variant on product.product_id = product_variant.product_id
+                        left join product_variant on product.product_id = product_variant.product_id
                         left join product_image on product_variant.variant_id = product_image.product_variant_id
                        order by product.product_id asc;""";
         try {
@@ -80,7 +98,8 @@ public class ProductDAO extends DBContext {
                 product.setDescription(rs.getString("description"));
                 product.setCategoryName(rs.getString(6));
                 product.setCreateAt(rs.getTimestamp("created_at"));
-                product.setImgUrl(rs.getString("back_link"));
+                product.setImgUrl(getImgUrlForProductID(rs.getString("product_Id")));
+
                 products.add(product);
             }
             rs.close();
@@ -309,7 +328,7 @@ public class ProductDAO extends DBContext {
                 cartdao.createCartForUserID(userId);
             }
             ca = cartdao.getCartIDByUserID(userId);
-            System.out.println("cart_id: " +ca);
+            System.out.println("cart_id: " + ca);
             int variantId = getVariantByColorAndSize(productId, color, size);
             System.out.println(variantId);
             if (variantId > 0) {
@@ -381,60 +400,189 @@ public class ProductDAO extends DBContext {
      *
      * @return
      */
-    public static Map<Integer, String> getAllBrand(){
-        
-              String query = "SELECT * from brand";
-              Map<Integer, String> brandList = new HashMap<>(); 
+    public static Map<Integer, String> getAllBrand() {
+
+        String query = "SELECT * from brand";
+        Map<Integer, String> brandList = new HashMap<>();
 
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            
+
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 brandList.put(rs.getInt("brand_id"), rs.getString("name"));
             }
             stm.close();
             rs.close();
-           
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return brandList;
-
     }
-    
-    public static Map<Integer, String> getAllProductCategory(){
-        
-              String query = "SELECT * from product_category";
-              Map<Integer, String> brandList = new HashMap<>(); 
+
+    public static Map<Integer, String> getAllProductCategory() {
+
+        String query = "SELECT * from product_category";
+        Map<Integer, String> brandList = new HashMap<>();
 
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            
+
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 brandList.put(rs.getInt("category_id"), rs.getString("category_name"));
             }
             stm.close();
             rs.close();
-           
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return brandList;
+    }
+
+    public static double getNetPriceByProductId(String productId) {
+        double price = 0;
+        String query = "SELECT * from product where product_id = ? ";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                price = rs.getDouble("price");
+            }
+            stm.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return price;
+    }
+
+    public static double getCurrentPriceByProductId(String productId) {
+        double price = -1;
+        List<Double> priceList = new ArrayList<>();
+        String query = """
+                       SELECT price
+                       FROM product_price 
+                       WHERE NOW() BETWEEN start_price_date AND end_price_date and product_id = ?""";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                priceList.add(rs.getDouble("price"));
+            }
+            stm.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (priceList != null && !priceList.isEmpty()) {
+            price = Collections.min(priceList);
+        }
+        return price;
+    }
+
+    public static double getCurrentPriceForProductVariant(String productId, int variantId) {
+        double price = 0;
+        List<Double> priceList = new ArrayList<>();
+        String query = """
+                       SELECT price
+                       FROM product_price 
+                       WHERE NOW() BETWEEN start_price_date AND end_price_date and product_id = ? and variant_id = ? """;
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            stm.setInt(2, variantId);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                price = rs.getDouble("price");
+            }
+            stm.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return price;
+    }
+
+    public static Map<Boolean, Boolean> getProcductNotifyInformation(String productId) {
+        Map<Boolean, Boolean> map = new HashMap<>();
+        boolean isNew = isNewProduct(productId);
+        boolean isSalse = isSaleProduct(productId);
+        map.put(isNew, isSalse);
+        return map;
 
     }
+
+    public static boolean isNewProduct(String productId) {
+        boolean isNew = false;
+        String query = """
+                       SELECT * 
+                       FROM product 
+                       WHERE created_at >= NOW() - INTERVAL 14 DAY
+                       and product_id = ?""";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                isNew = true;
+            }
+            stm.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return isNew;
+    }
+
+    public static boolean isSaleProduct(String productId) {
+        Product pro = getProductById(productId);
+        return pro.getPrice() > getCurrentPriceByProductId(productId) && getCurrentPriceByProductId(productId) > -1;
+    }
+    
+    public static Map<Product, Map<Boolean,Boolean>> getProductView(){
+       Map<Product, Map<Boolean,Boolean>> productList = new HashMap<>();
+       for(Product p : getAllProducts()){
+           productList.put(p, getProcductNotifyInformation(p.getProductId()));
+       }
+       return productList;
+    }
+    
+    
+    
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-        System.out.println(getAllBrand());
-         System.out.println(getAllProductCategory());
+        for (Product p : pDAO.getAllProducts()) {
+            System.out.println(p);
+        }
     }
 }

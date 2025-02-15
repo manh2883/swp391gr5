@@ -4,12 +4,15 @@
  */
 package controllers;
 
+import DAO.ProductDAO;
+import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  *
@@ -55,8 +58,20 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.setAttribute("message", "This is home page");
+        ProductDAO pDAO = new ProductDAO();
+        Map<Integer, String> bList = pDAO.getAllBrand();
+        Map<Integer, String> cList = pDAO.getAllProductCategory();
+        Map<Product, Map<Boolean,Boolean>> productList = pDAO.getProductView();
+        if (bList != null && !bList.isEmpty()) {
+            request.setAttribute("brandList", bList);
+        }
+        if (cList != null && !cList.isEmpty()) {
+            request.setAttribute("categoryList", cList);
+        }
+        if(productList != null && !productList.isEmpty()){
+            request.setAttribute("productList", productList);
+        }
+        
         request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
     }
 

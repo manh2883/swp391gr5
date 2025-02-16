@@ -44,7 +44,7 @@
                         </div>
                         <div class="mainmenu pull-left">
                             <ul class="nav navbar-nav collapse navbar-collapse">
-                                <li><a href="index.html">Home</a></li>
+                                <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
                                 <li class="dropdown"><a href="${pageContext.request.contextPath}/ViewBlogs">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
                                         <li><a href="${pageContext.request.contextPath}/ViewProduct">Products</a></li>

@@ -65,62 +65,45 @@
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12">
+                        <!--current slider-->
                         <div id="slider-carousel" class="carousel slide" data-ride="carousel">
-                            <ol class="carousel-indicators">
-                                <li data-target="#slider-carousel" data-slide-to="0" class="active"></li>
-                                <li data-target="#slider-carousel" data-slide-to="1"></li>
-                                <li data-target="#slider-carousel" data-slide-to="2"></li>
-                            </ol>
-
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <div class="col-sm-6">
-                                        <h1><span>TPF</span>Shopwear</h1>
-                                        <h2>Slider Datail Title</h2>
-                                        <p>Description </p>
-                                        <button type="button" class="btn btn-default get">Get it now</button>
+                            <c:choose>
+                                <c:when test="${not empty sliderDetailList}">
+                                    <ol class="carousel-indicators">
+                                        <c:forEach var="entry" items="${sliderDetailList}" varStatus="status">
+                                            <li data-target="#slider-carousel" data-slide-to="${status.index}" class="${status.first ? 'active' : ''}"></li>
+                                            </c:forEach>
+                                    </ol>
+                                    <div class="carousel-inner">
+                                        <c:forEach var="entry" items="${sliderDetailList}" varStatus="status">
+                                            <div class="carousel-item ${status.first ? 'active' : ''}">
+                                                <div class="col-sm-6">
+                                                    <h1><span>TPF</span>Shopwear</h1>
+                                                    <h2>${entry.detailTitle}</h2>
+                                                    <p>${entry.detailContent}</p>
+                                                    <a href="${pageContext.request.contextPath}/${entry.backLink}">
+                                                        <button type="button" class="btn btn-default get">Get it now</button>
+                                                    </a>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <img src="${pageContext.request.contextPath}/${entry.sliderImgLink}" class="girl img-responsive" alt="" />
+                                                </div>
+                                            </div>
+                                        </c:forEach>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <img src="${pageContext.request.contextPath}/Images/Home/girl1.jpg" class="girl img-responsive" alt="" />
-                                        <!--<img src="${pageContext.request.contextPath}/Images/Home/pricing.png"  class="pricing" alt="" />-->
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="col-sm-6">
-                                        <h1><span>TPF</span>Shopwear</h1>
-                                        <h2>Slider Datail Title</h2>
-                                        <p>Description </p>
-                                        <button type="button" class="btn btn-default get">Get it now</button>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <img src="${pageContext.request.contextPath}/Images/Home/girl2.jpg" class="girl img-responsive" alt="" />
-                                        <!--<img src="${pageContext.request.contextPath}/Images/Home/pricing.png"  class="pricing" alt="" />-->
-                                    </div>
-                                </div>
-
-                                <div class="carousel-item">
-                                    <div class="col-sm-6">
-                                        <h1><span>TPF</span>Shopwear</h1>
-                                        <h2>Slider Datail Title</h2>
-                                        <p>Description </p>
-                                        <button type="button" class="btn btn-default get">Get it now</button>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <img src="${pageContext.request.contextPath}/Images/Home/girl3.jpg" class="girl img-responsive" alt="" />
-                                        <!--<img src="${pageContext.request.contextPath}/Images/Home/pricing.png" class="pricing" alt="" />-->
-                                    </div>
-                                </div>
-
-                            </div>
-
+                                </c:when>
+                                <c:otherwise>
+                                    <p>No Item found</p>
+                                </c:otherwise>
+                            </c:choose>
                             <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                             <a href="#slider-carousel" class="right control-carousel hidden-xs" data-slide="next">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-
                         </div>
+
 
                     </div>
                 </div>
@@ -152,7 +135,7 @@
                                                              />
                                                         <h2>${product.price}</h2>
                                                         <p>${product.name}</p>
-                                                        <a href="#" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
                                                     </div>
                                                 </div>
                                             </div>

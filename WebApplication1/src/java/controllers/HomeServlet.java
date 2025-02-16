@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.SliderDAO;
 import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Map;
+import models.SliderDetail;
 
 /**
  *
@@ -59,9 +62,12 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ProductDAO pDAO = new ProductDAO();
-        Map<Integer, String> bList = pDAO.getAllBrand();
-        Map<Integer, String> cList = pDAO.getAllProductCategory();
-        Map<Product, Map<Boolean,Boolean>> productList = pDAO.getProductListHome(9);
+        SliderDAO sDAO = new SliderDAO();
+        Map<Integer, String> bList = ProductDAO.getAllBrand();
+        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        Map<Product, Map<Boolean,Boolean>> productList = ProductDAO.getProductListHome(9);
+       ArrayList<SliderDetail> sList = SliderDAO.getCurrentSliderList();
+          // ArrayList<SliderDetail> sList = null;
         if (bList != null && !bList.isEmpty()) {
             request.setAttribute("brandList", bList);
         }
@@ -70,6 +76,9 @@ public class HomeServlet extends HttpServlet {
         }
         if(productList != null && !productList.isEmpty()){
             request.setAttribute("productList", productList);
+        }
+        if(sList != null && !sList.isEmpty()){
+            request.setAttribute("sliderDetailList", sList);
         }
         
         request.getRequestDispatcher("Home/Home.jsp").forward(request, response);

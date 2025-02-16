@@ -5,13 +5,17 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.UserDAO;
+import Models.Account;
 import Models.Product;
+import Models.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -101,6 +105,25 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String color = request.getParameter("colorInput");
+        String size = request.getParameter("sizeInput");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            request.getRequestDispatcher("Login").forward(request, response);
+        } else {
+            int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+            String idIn = request.getParameter("idInput");
+//            ProductDAO prd = new ProductDAO();
+//            prd.addToCart(idIn, color, size, userId);
+            request.getRequestDispatcher("ProductDetail?productId="+ idIn).forward(request, response);
+//            request.setAttribute("colorList", color);
+//            request.setAttribute("sizeList", size);
+//            request.setAttribute("message", userId + idIn);
+//
+//            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+
+        }
 
     }
 

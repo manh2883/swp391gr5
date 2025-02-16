@@ -32,6 +32,9 @@ public class CartDAO extends DBContext {
             if (rs.next()) {
                 cartID = rs.getInt("cart_id");
             }
+            rs.close();
+            con.close();
+            stm.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -245,16 +245,17 @@
                                         <span>${product.price}</span>
                                     </span>
 
-                                    <form action="action">
+                                    <form action="ProductDetail" method="post">
                                         <table>
                                             <tbody style="align-items: center;">
                                                 <!-- Lựa chọn màu sắc -->
+                                            <input readonly style ="visibility: hidden " value ="${product.productId} " name = "idInput"> 
                                                 <c:choose>
                                                     <c:when test="${not empty colorList}">
                                                         <tr style="padding-top: 20px">
                                                             <td>Color:</td>
                                                             <td style="padding-left: 50px; height: 45px">
-                                                                <select>
+                                                                <select name = "colorInput">
                                                                     <c:forEach var="colorItem" items="${colorList}">
                                                                         <option value="${colorItem}">${colorItem}</option>
                                                                     </c:forEach>
@@ -270,7 +271,7 @@
                                                         <tr style="padding-top: 20px">
                                                             <td>Size:</td>
                                                             <td style="padding-left: 50px; height: 45px">
-                                                                <select>
+                                                                <select name = "sizeInput">
                                                                     <c:forEach var="sizeItem" items="${sizeList}">
                                                                         <option value="${sizeItem}">${sizeItem}</option>
                                                                     </c:forEach>
@@ -284,7 +285,7 @@
 
                                         <span>
                                             <input type="text" value="1" />
-                                            <button type="button" class="btn btn-fefault cart">
+                                            <button type="button submit" class="btn btn-fefault cart">
                                                 <i class="fa fa-shopping-cart"></i> Add to cart
                                             </button>
                                             <button type="button" class="btn btn-fefault cart">

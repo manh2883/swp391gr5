@@ -111,7 +111,6 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
 
         }
-
         return products;
     }
 
@@ -159,6 +158,7 @@ public class ProductDAO extends DBContext {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, id);
             stm.executeUpdate();
+
             stm.close();
             con.close();
         } catch (SQLException e) {
@@ -223,45 +223,72 @@ public class ProductDAO extends DBContext {
 
     public static int getVariantByColorAndSize(String productId, String color, String size) {
 
-        String query = "SELECT variant_id from product_variant where color = ? and size = ? and product_id = ? ";
-
+        String query1 = "SELECT variant_id from product_variant where product_id = ? and color = ? and size = ? ";
+        String query2 = "SELECT variant_id from product_variant where product_id = ?";
+        int id = -1;
+        String query = null;
+        if (color == null && size == null) {
+                query = query2;
+            } else {
+                query = query1;
+            }
         try {
+            
+            
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
+            
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(3, productId);
-            stm.setString(1, color);
-            stm.setString(2, size);
+            stm.setString(1, productId);
+            if(color != null && !color.isEmpty() && size != null && !size.isEmpty())  {
+                stm.setString(2, color);
+
+                stm.setString(3, size);
+            }
+
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                return rs.getInt("variant_id");
+                id = rs.getInt("variant_id");
+                System.out.println("found: "+id);
             }
+            
             rs.close();
             stm.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1;
+        return id;
     }
 
     // Kiểm tra còn hàng trong kho không
     public static int getStockForVariantProduct(String productId, String color, String size) {
 
-        String query = "SELECT stock FROM product_variant WHERE product_id = ? AND color = ? AND size = ?";
-
+        String query1 = "SELECT stock FROM product_variant WHERE product_id = ? AND color = ? AND size = ?";
+        String query2 = "SELECT stock FROM product_variant WHERE product_id = ?";
+        int stock = -1;
+        String query = null;
+        if (color == null && size == null) {
+                query = query2;
+            } else {
+                query = query1;
+            }
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
 
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, productId);
-            stm.setString(2, color);
-            stm.setString(3, size);
+            if(color != null && !color.isEmpty() && size != null && !size.isEmpty())  {
+                stm.setString(2, color);
+
+                stm.setString(3, size);
+            }
+          
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                int stock = rs.getInt("stock");
-                return stock; // Trả về true nếu còn hàng
+                stock = rs.getInt("stock");
+                
             }
             rs.close();
             stm.close();
@@ -269,7 +296,7 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return stock;
     }
 
     public static String getColorForVariantProduct(String productId, int variantId) {
@@ -346,19 +373,23 @@ public class ProductDAO extends DBContext {
             ca = cartdao.getCartIDByUserID(userId);
             System.out.println("cart_id: " + ca);
             int variantId = getVariantByColorAndSize(productId, color, size);
-            System.out.println(variantId);
+            System.out.println("product_id " +productId);
+            System.out.println("color " +color);
+            System.out.println("size " +size);
+            System.out.println("variant_id "+variantId);
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
-                System.out.println(cartDetailId);
+                System.out.println("cartDetailId" + cartDetailId);
                 if (cartDetailId > 0) {
                     cartdao.editCartDetailByID(userId, cartDetailId, "increment");
                 } else {
-                    System.out.println(getStockForVariantProduct(productId, color, size));
+                    System.out.println("getStockForVariantProduct"+getStockForVariantProduct(productId, color, size));
                     if (getStockForVariantProduct(productId, color, size) > 0) {
                         AddCartDetail(productId, variantId, ca);
                     }
                 }
             }
+            return;
         }
     }
 
@@ -618,8 +649,18 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-        for (Product p : pDAO.getAllProducts()) {
-            System.out.println(p);
+
+//        for (Product p : pDAO.getAllProducts()) {
+//            System.out.println(p);
+//        }
+        System.out.println(getVariantByColorAndSize("P001", "Red", "M"));
+        CartDAO cDAO = new CartDAO();
+        for(CartDetail cd: cDAO.getAllCartDetailByUserID(4)){
+            System.out.println(cd);
+        }
+        ProductDAO.addToCart("P001", "Red","M", 4);
+        for(CartDetail cd: cDAO.getAllCartDetailByUserID(4)){
+            System.out.println(cd);
         }
     }
 }

@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -19,10 +20,10 @@ import java.util.ArrayList;
  */
 public class SliderDAO extends DBContext {
 
-    public static ArrayList<Slider> getAllSlider() {
+    public static List<Slider> getAllSlider() {
         DBContext db = new DBContext();
         String query = "SELECT * FROM slider";
-        ArrayList<Slider> list = new ArrayList<>();
+        List<Slider> list = new ArrayList<>();
         try {
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
@@ -50,10 +51,10 @@ public class SliderDAO extends DBContext {
         return list;
     }
 
-    public static ArrayList<SliderDetail> getAllSliderDetailBySliderId(int id) {
+    public static List<SliderDetail> getAllSliderDetailBySliderId(int id) {
         DBContext db = new DBContext();
         String query = "SELECT * FROM slider_detail where slider_id = ? order by slider_order";
-        ArrayList<SliderDetail> list = new ArrayList<>();
+        List<SliderDetail> list = new ArrayList<>();
         try {
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
@@ -111,7 +112,7 @@ public class SliderDAO extends DBContext {
         return id;
     }
 
-    public static ArrayList<SliderDetail> getCurrentSliderList() {
+    public static List<SliderDetail> getCurrentSliderList() {
         return getAllSliderDetailBySliderId(getCurrentSlidetId());
     }
 
@@ -177,7 +178,7 @@ public class SliderDAO extends DBContext {
 //            }
 //        }
         System.out.println(SliderDAO.getCurrentSlidetId());
-        for (SliderDetail sd : SliderDAO.getCurrentSliderList()) {
+        for (SliderDetail sd : SliderDAO.getAllSliderDetailBySliderId(2)) {
             System.out.println(sd);
         }
     }

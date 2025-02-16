@@ -87,7 +87,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
 //            session.setAttribute("userName", acc.getUsername());
             session.setAttribute("account", new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
-            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
+            request.getRequestDispatcher("Home").forward(request, response);
         } else {
             request.setAttribute("passError", "Username or password is incorrect!");
             request.setAttribute("userName", userName);

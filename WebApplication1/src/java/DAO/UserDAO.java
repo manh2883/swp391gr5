@@ -6,6 +6,7 @@ package DAO;
 
 import DBContext.DBContext;
 import Models.User;
+import Models.UserAddress;
 import com.sun.jdi.connect.spi.Connection;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -255,7 +256,56 @@ public class UserDAO extends DBContext {
         }
         return userID;
     }
-
+    
+    public List<UserAddress> getUserAddresses(int userId) {
+        List<UserAddress> addressList = new ArrayList<>();
+        String query = "SELECT address_id, user_id, address_content FROM user_address WHERE user_id = ?";
+        
+        try{
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userId);
+            ResultSet resultSet = stm.executeQuery();
+            
+            while (resultSet.next()) {
+                UserAddress address = new UserAddress();
+                address.setAddressID(resultSet.getInt("address_id"));
+                address.setUserID(resultSet.getInt("user_id"));
+                address.setAddressLine(resultSet.getString("address_content"));
+                addressList.add(address);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return addressList;
+    }
+    
+    public static UserAddress getUserAddressById(int addressId) {
+        UserAddress address = null;
+        String query = "SELECT address_id, user_id, address_content FROM user_address WHERE address_id = ?";
+        
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, addressId);
+            ResultSet resultSet = stm.executeQuery();
+            
+            if (resultSet.next()) {
+                address = new UserAddress();
+                address.setAddressID(resultSet.getInt("address_id"));
+                address.setUserID(resultSet.getInt("user_id"));
+                address.setAddressLine(resultSet.getString("address_content"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return address;
+    }
+    
     public static void main(String[] args) {
         List<User> userList = getAllUser();
         for (User user : userList) {

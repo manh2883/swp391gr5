@@ -30,13 +30,13 @@ public class SliderDAO extends DBContext {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-               Slider slider = new Slider();
-               slider.setSliderId(0);Id(rs.getInt(rs.getInt("slider_id")));
-               slider.setClickCount(rs.getInt("click_count"));
-               slider.setCreatedBy(createdBy);
-               slider.setCreatedDate(createdDate);
-               slider.setEndDate(endDate);
-               slider.setSliderName()
+//               Slider slider = new Slider();
+//               slider.setSliderId(0);Id(rs.getInt(rs.getInt("slider_id")));
+//               slider.setClickCount(rs.getInt("click_count"));
+//               slider.setCreatedBy(createdBy);
+//               slider.setCreatedDate(createdDate);
+//               slider.setEndDate(endDate);
+//               slider.setSliderName()
             }
             rs.close();
             stm.close();

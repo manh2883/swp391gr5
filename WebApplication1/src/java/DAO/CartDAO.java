@@ -32,6 +32,9 @@ public class CartDAO extends DBContext {
             if (rs.next()) {
                 cartID = rs.getInt("cart_id");
             }
+            rs.close();
+            con.close();
+            stm.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,70 +101,72 @@ public class CartDAO extends DBContext {
     }
 
     public void editCartDetailByID(int userID, int cartDetailID, String action) {
-        if (userID <= 0 || cartDetailID <= 0 || action == null) {
-            throw new IllegalArgumentException("Tham số không hợp lệ.");
-        }
-        String updateQuery = "";
-        String deleteQuery = "";
-        if ("increment".equals(action)) {
-            updateQuery = "UPDATE cart_detail cd "
-                    + "JOIN cart c ON cd.cart_id = c.cart_id "
-                    + "SET cd.quantity = cd.quantity + 1, cd.updated_date = NOW() "
-                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
-        } else if ("decrement".equals(action)) {
-            // Giảm số lượng
-            updateQuery = "UPDATE cart_detail cd "
-                    + "JOIN cart c ON cd.cart_id = c.cart_id "
-                    + "SET cd.quantity = cd.quantity - 1, cd.updated_date = NOW() "
-                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+    if (userID <= 0 || cartDetailID <= 0 || action == null) {
+        throw new IllegalArgumentException("Tham số không hợp lệ.");
+    }
 
-            // Xóa nếu số lượng <= 0
-            deleteQuery = "DELETE cd FROM cart_detail cd "
-                    + "JOIN cart c ON cd.cart_id = c.cart_id "
-                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ? AND cd.quantity <= 0";
-        } else {
-            return; // Nếu action không hợp lệ, thoát khỏi phương thức
-        }
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
-            try {
-                int updateCount;
-                try (PreparedStatement updateStm = con.prepareStatement(updateQuery)) {
-                    updateStm.setInt(1, cartDetailID);
-                    updateStm.setInt(2, userID);
-                    updateCount = updateStm.executeUpdate();
-                }
-                if (updateCount == 0) {
-                    // Không có bản ghi nào được cập nhật
-                    con.rollback();
-                    System.out.println("Cập nhật thất bại. Kiểm tra lại cartDetailID và userID.");
-                    return;
-                }
-                if ("decrement".equals(action) && !deleteQuery.isEmpty()) {
-                    // Xóa nếu cần
-                    int deleteCount;
-                    try (PreparedStatement deleteStm = con.prepareStatement(deleteQuery)) {
-                        deleteStm.setInt(1, cartDetailID);
-                        deleteStm.setInt(2, userID);
-                        deleteCount = deleteStm.executeUpdate();
-                    }
+    String updateQuery = "";
+    String deleteQuery = "";
+    if ("increment".equals(action)) {
+        updateQuery = "UPDATE cart_detail cd "
+                + "JOIN cart c ON cd.cart_id = c.cart_id "
+                + "SET cd.quantity = cd.quantity + 1, cd.updated_date = NOW() "
+                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+    } else if ("decrement".equals(action)) {
+        updateQuery = "UPDATE cart_detail cd "
+                + "JOIN cart c ON cd.cart_id = c.cart_id "
+                + "SET cd.quantity = cd.quantity - 1, cd.updated_date = NOW() "
+                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+
+        deleteQuery = "DELETE cd FROM cart_detail cd "
+                + "JOIN cart c ON cd.cart_id = c.cart_id "
+                + "WHERE cd.cart_detail_id = ? AND c.user_id = ? AND cd.quantity <= 0";
+    } else {
+        return;
+    }
+
+    try {
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        
+        con.setAutoCommit(false); // 🔹 Tắt autoCommit để có thể rollback khi cần
+
+        try (PreparedStatement updateStm = con.prepareStatement(updateQuery)) {
+            updateStm.setInt(1, cartDetailID);
+            updateStm.setInt(2, userID);
+            int updateCount = updateStm.executeUpdate();
+
+            if (updateCount == 0) {
+                con.rollback();  // 🔴 Chỉ rollback nếu đã setAutoCommit(false)
+                System.out.println("Cập nhật thất bại. Kiểm tra lại cartDetailID và userID.");
+                return;
+            }
+
+            if ("decrement".equals(action) && !deleteQuery.isEmpty()) {
+                try (PreparedStatement deleteStm = con.prepareStatement(deleteQuery)) {
+                    deleteStm.setInt(1, cartDetailID);
+                    deleteStm.setInt(2, userID);
+                    int deleteCount = deleteStm.executeUpdate();
                     if (deleteCount > 0) {
                         System.out.println("Sản phẩm đã bị xóa khỏi giỏ hàng do số lượng <= 0.");
                     }
                 }
-                con.commit();
-                System.out.println("Cập nhật giỏ hàng thành công.");
-            } catch (Exception e) {
-                con.rollback(); // Hoàn tác nếu có lỗi
-                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Xử lý ngoại lệ tùy theo yêu cầu của ứng dụng, ví dụ ghi log hoặc thông báo lỗi cho người dùng
-        }
 
+            con.commit();  // ✅ Commit nếu mọi thứ thành công
+            System.out.println("Cập nhật giỏ hàng thành công.");
+
+        } catch (Exception e) {
+            con.rollback();  // 🔴 Rollback nếu có lỗi
+            e.printStackTrace();
+        } finally {
+            con.setAutoCommit(true);  // ✅ Bật lại autoCommit sau khi xong
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
 
     public boolean deleteCartDetailByID(int userID, int cartDetailID) {
         if (userID <= 0 || cartDetailID <= 0) {

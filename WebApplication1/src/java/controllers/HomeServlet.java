@@ -4,12 +4,19 @@
  */
 package controllers;
 
+import DAO.ProductDAO;
+import DAO.SliderDAO;
+import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import models.SliderDetail;
 
 /**
  *
@@ -28,19 +35,28 @@ public class HomeServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet HomeServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet HomeServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        ProductDAO pDAO = new ProductDAO();
+        SliderDAO sDAO = new SliderDAO();
+        Map<Integer, String> bList = ProductDAO.getAllBrand();
+        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        Map<Product, Map<Boolean,Boolean>> productList = ProductDAO.getProductListHome(9);
+//       List<SliderDetail> sList = SliderDAO.getAllSliderDetailBySliderId(2);
+          // ArrayList<SliderDetail> sList = null;
+        if (bList != null && !bList.isEmpty()) {
+            request.setAttribute("brandList", bList);
         }
+        if (cList != null && !cList.isEmpty()) {
+            request.setAttribute("categoryList", cList);
+        }
+        if(productList != null && !productList.isEmpty()){
+            request.setAttribute("productList", productList);
+        }
+//        if(sList != null && !sList.isEmpty()){
+//            request.setAttribute("sliderDetailList", sList);
+//        }
+        
+        request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -55,8 +71,26 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.setAttribute("message", "This is home page");
+        ProductDAO pDAO = new ProductDAO();
+        SliderDAO sDAO = new SliderDAO();
+        Map<Integer, String> bList = ProductDAO.getAllBrand();
+        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        Map<Product, Map<Boolean,Boolean>> productList = ProductDAO.getProductListHome(9);
+//       List<SliderDetail> sList = SliderDAO.getAllSliderDetailBySliderId(2);
+          // ArrayList<SliderDetail> sList = null;
+        if (bList != null && !bList.isEmpty()) {
+            request.setAttribute("brandList", bList);
+        }
+        if (cList != null && !cList.isEmpty()) {
+            request.setAttribute("categoryList", cList);
+        }
+        if(productList != null && !productList.isEmpty()){
+            request.setAttribute("productList", productList);
+        }
+//        if(sList != null && !sList.isEmpty()){
+//            request.setAttribute("sliderDetailList", sList);
+//        }
+        
         request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
     }
 

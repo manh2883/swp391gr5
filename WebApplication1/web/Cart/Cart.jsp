@@ -159,7 +159,7 @@
                         <div style="text-align: right; margin-top: 20px;">
                             <button type="submit" class="btn btn-primary">Checkout</button>
                         </div>
-                    </form>
+                    </form> 
                     <!-- Kết thúc form -->
                 </div>
 

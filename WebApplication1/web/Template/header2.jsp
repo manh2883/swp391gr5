@@ -44,31 +44,45 @@
                         </div>
                         <div class="mainmenu pull-left">
                             <ul class="nav navbar-nav collapse navbar-collapse">
-                                <li><a href="index.html">Home</a></li>
-                                <li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
+                                <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
+                                <li class="dropdown"><a href="${pageContext.request.contextPath}/ViewBlogs">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="shop.html">Products</a></li>
-                                        <li><a href="product-details.html">Product Details</a></li> 
-                                        <li><a href="checkout.html">Checkout</a></li> 
-                                        <li><a href="cart.html">Cart</a></li> 
-                                        <li><a href="login.html" class="active">Login</a></li> 
+                                        <li><a href="${pageContext.request.contextPath}/ViewProduct">Products</a></li>
+                                        <!--                                        <li><a href="product-details.html">Product Details</a></li> 
+                                                                                <li><a href="checkout.html">Checkout</a></li> 
+                                                                                <li><a href="cart.html">Cart</a></li> -->
+                                        <!--                                        <li><a href="login.html" class="active">Login</a></li> -->
                                     </ul>
                                 </li> 
-                                <li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
+                                <li class="dropdown"><a href="${pageContext.request.contextPath}/ViewBlogs">Blog<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="blog.html">Blog List</a></li>
-                                        <li><a href="blog-single.html">Blog Single</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/ViewBlogs">Blog List</a></li>
+                                        <!--<li><a href="blog-single.html">Blog Single</a></li>-->
                                     </ul>
                                 </li> 
-                                <li><a href="404.html">404</a></li>
-                                <li><a href="contact-us.html">Contact</a></li>
+                                <!--                                <li><a href="404.html">404</a></li>
+                                                                <li><a href="contact-us.html">Contact</a></li>-->
+
+                                <c:set var="account" value="${sessionScope.account}" />
+                                <c:choose>
+                                    <c:when test="${not empty account and account.roleId != 2 and  not empty account.roleId}">
+                                        <li class="dropdown">
+                                            <a href="${pageContext.request.contextPath}/DashBoard">Dashboard</a>
+                                        </li>
+                                    </c:when>
+                                    <c:otherwise>
+                                      
+                                    </c:otherwise>
+                                </c:choose>
+
+
                             </ul>
                         </div>
                     </div>
-                    <form class="col-sm-4" method="Search" action="post">
+                    <form class="col-sm-4" method="post" action="Search">
                         <div class="search_box d-flex flex-row pull-right align-items-center  " >
-                            <input type="text" placeholder="Search" />
-                            <button type="button" class="btn btn-default get-manh" >Search</button>
+                            <input type="text" placeholder="Search" name="searchKey" />
+                            <button type="button submit" class="btn btn-default get-manh" >Search</button>
                         </div>
 
                     </form>

@@ -4,21 +4,22 @@
  */
 package controllers;
 
-import DAO.AccountDAO;
-import Models.Account;
+import DAO.ProductDAO;
+import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
- * @author Acer
+ * @author Dell
  */
-public class LoginServlet extends HttpServlet {
+public class SearchServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +38,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet SearchServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SearchServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,8 +59,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**
@@ -73,29 +73,39 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String userName = request.getParameter("userName");
-        String passWord = request.getParameter("passWord");
-
-        System.out.println(userName);
-        System.out.println(passWord);
-
-        AccountDAO aDAO = new AccountDAO();
-        Account acc = aDAO.login(userName, passWord);
-
-        if (acc != null) {
-            HttpSession session = request.getSession();
-//            session.setAttribute("userName", acc.getUsername());
-            session.setAttribute("account", new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
-            request.getRequestDispatcher("Home").forward(request, response);
+        String key = request.getParameter("searchKey");
+//        request.setAttribute("message", key);
+//        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        ArrayList<Product> products = pDAO.getAllProducts();
+        //Category, Brand, ProductName, ProductId.
+        if (products == null || products.isEmpty()) {
+            request.setAttribute("message", "khong co san pham");
+            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         } else {
-            request.setAttribute("passError", "Username or password is incorrect!");
-            request.setAttribute("userName", userName);
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+
+            Iterator<Product> iterator = products.iterator();
+            while (iterator.hasNext()) {
+                Product p = iterator.next();
+                if (!p.getCategoryName().contains(key)
+                        && !p.getBrandName().contains(key)
+                        && !p.getProductId().contains(key)
+                        && !p.getName().contains(key)) {
+                    iterator.remove();
+                }
+            }
+
+            if (products == null || products.isEmpty()) {
+                request.setAttribute("message", "khong co san pham");
+                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            } else {
+                request.setAttribute("ProductList", products);
+                request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+            }
+
         }
     }
 
-    // Hàm kiểm tra mật khẩu bằng cách so sánh mật khẩu băm
     /**
      * Returns a short description of the servlet.
      *

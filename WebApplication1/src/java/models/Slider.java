@@ -17,7 +17,7 @@ public class Slider {
     private Timestamp startDate;
     private Timestamp endDate;
     private Timestamp createdDate;
-    private Timestamp createdBy;
+    private int createdBy;
     private int length;
     private int width;
     private int clickCount;
@@ -26,7 +26,7 @@ public class Slider {
     public Slider() {
     }
 
-    public Slider(int sliderId, String sliderName, Timestamp startDate, Timestamp endDate, Timestamp createdDate, Timestamp createdBy, int length, int width, int clickCount) {
+    public Slider(int sliderId, String sliderName, Timestamp startDate, Timestamp endDate, Timestamp createdDate,int createdBy, int length, int width, int clickCount) {
         this.sliderId = sliderId;
         this.sliderName = sliderName;
         this.startDate = startDate;
@@ -38,7 +38,7 @@ public class Slider {
         this.clickCount = clickCount;
     }
 
-    public Slider(String sliderName, Timestamp startDate, Timestamp endDate, Timestamp createdDate, Timestamp createdBy, int length, int width) {
+    public Slider(String sliderName, Timestamp startDate, Timestamp endDate, Timestamp createdDate,int createdBy, int length, int width) {
         this.sliderName = sliderName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -89,11 +89,11 @@ public class Slider {
         this.createdDate = createdDate;
     }
 
-    public Timestamp getCreatedBy() {
+    public int getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Timestamp createdBy) {
+    public void setCreatedBy(int createdBy) {
         this.createdBy = createdBy;
     }
 

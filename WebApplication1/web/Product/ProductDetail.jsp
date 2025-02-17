@@ -200,8 +200,8 @@
                         <div class="product-details"><!--product-details-->
                             <div class="col-sm-5">
                                 <div class="view-product">
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/1.jpg" alt="" />
-                                    <h3>ZOOM</h3>
+                                    <img src="${pageContext.request.contextPath}/${imgUrl}" alt="" />
+                                    <!--                                    <h3>ZOOM</h3>-->
                                 </div>
                                 <div id="similar-product" class="carousel slide" data-ride="carousel">
 
@@ -237,23 +237,70 @@
                             </div>
                             <div class="col-sm-7">
                                 <div class="product-information"><!--/product-information-->
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/new.jpg" class="newarrival" alt="" />
-                                    <h2>Anne Klein Sleeveless Colorblock Scuba</h2>
-                                    <p>Web ID: 1089772</p>
-                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />
+                                    <img src=" " class="newarrival" alt="" />
+                                    <h2>${product.name}</h2>
+                                    <p>Web ID: ${product.productId}</p>
+<!--                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />-->
                                     <span>
-                                        <span>US $59</span>
-                                        <label>Quantity:</label>
-                                        <input type="text" value="3" />
-                                        <button type="button" class="btn btn-fefault cart">
-                                            <i class="fa fa-shopping-cart"></i>
-                                            Add to cart
-                                        </button>
+                                        <span>${product.price}</span>
                                     </span>
-                                    <p><b>Availability:</b> In Stock</p>
-                                    <p><b>Condition:</b> New</p>
-                                    <p><b>Brand:</b> E-SHOPPER</p>
-                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>
+
+                                    <form action="ProductDetail" method="post">
+                                        <table>
+                                            <tbody style="align-items: center;">
+                                                <!-- Lựa chọn màu sắc -->
+                                            <input readonly style ="visibility: hidden " value ="${product.productId} " name = "idInput"> 
+                                                <c:choose>
+                                                    <c:when test="${not empty colorList}">
+                                                        <tr style="padding-top: 20px">
+                                                            <td>Color:</td>
+                                                            <td style="padding-left: 50px; height: 45px">
+                                                                <select name = "colorInput">
+                                                                    <c:forEach var="colorItem" items="${colorList}">
+                                                                        <option value="${colorItem}">${colorItem}</option>
+                                                                    </c:forEach>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                </c:choose>
+
+                                                <!-- Lựa chọn kích thước -->
+                                                <c:choose>
+                                                    <c:when test="${not empty sizeList}">
+                                                        <tr style="padding-top: 20px">
+                                                            <td>Size:</td>
+                                                            <td style="padding-left: 50px; height: 45px">
+                                                                <select name = "sizeInput">
+                                                                    <c:forEach var="sizeItem" items="${sizeList}">
+                                                                        <option value="${sizeItem}">${sizeItem}</option>
+                                                                    </c:forEach>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                </c:choose>
+                                            </tbody>
+                                        </table>
+
+                                        <span>
+                                            <input type="text" value="1" />
+                                            <button type="button submit" class="btn btn-fefault cart">
+                                                <i class="fa fa-shopping-cart"></i> Add to cart
+                                            </button>
+                                            <button type="button" class="btn btn-fefault cart">
+                                                <i class="fa fa-shopping-cart"></i> Purchase
+                                            </button>
+                                        </span>
+                                    </form>
+
+
+
+<!--                                    <p><b>Category:</b>${product.categoryName}</p>
+<p><b>Availability:</b> In Stock</p>
+<p><b>Condition:</b> New</p>
+<p><b>Brand:</b> E-SHOPPER</p>-->
+<!--                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>-->
                                 </div><!--/product-information-->
                             </div>
                         </div><!--/product-details-->

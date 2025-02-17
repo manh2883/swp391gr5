@@ -5,13 +5,18 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.UserDAO;
+import Models.Account;
 import Models.Product;
+import Models.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  *
@@ -36,7 +41,7 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");            
+            out.println("<title>Servlet ProductDetailServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
@@ -57,15 +62,35 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String productId = request.getParameter("productId");
+        String productId = request.getParameter("productId");
         if (productId != null) {
             ProductDAO productDAO = new ProductDAO();
             Product product = productDAO.getProductById(productId);
-            request.setAttribute("product", product);
-            request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-        }else{
+            if (product == null) {
+                request.setAttribute("message", "product not found");
+                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            } else {
+                request.setAttribute("product", product);
+                request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
+
+                List<String> color = productDAO.getAllColorbyProductId(productId);
+                if (color != null && !color.isEmpty()) {
+                    request.setAttribute("colorList", color);
+
+                }
+                List<String> size = productDAO.getAllSizebyProductId(productId);
+                if (size != null && !size.isEmpty()) {
+                    request.setAttribute("sizeList", size);
+
+                }
+
+                System.out.println(productDAO.getImgUrlForProductID(productId));
+                request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+            }
+
+        } else {
             request.setAttribute("message", "product not found");
-        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         }
     }
 
@@ -80,7 +105,26 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        String color = request.getParameter("colorInput");
+        String size = request.getParameter("sizeInput");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            request.getRequestDispatcher("Login").forward(request, response);
+        } else {
+            int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+            String idIn = request.getParameter("idInput");
+//            ProductDAO prd = new ProductDAO();
+//            prd.addToCart(idIn, color, size, userId);
+            request.getRequestDispatcher("ProductDetail?productId="+ idIn).forward(request, response);
+//            request.setAttribute("colorList", color);
+//            request.setAttribute("sizeList", size);
+//            request.setAttribute("message", userId + idIn);
+//
+//            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+
+        }
+
     }
 
     /**

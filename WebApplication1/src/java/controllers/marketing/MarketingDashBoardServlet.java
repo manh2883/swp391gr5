@@ -2,23 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controllers;
+package controllers.marketing;
 
-import DAO.AccountDAO;
-import Models.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author Acer
  */
-public class LoginServlet extends HttpServlet {
+public class MarketingDashBoardServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +34,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet MarketingDashBoardServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet MarketingDashBoardServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,8 +55,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**
@@ -73,29 +69,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String userName = request.getParameter("userName");
-        String passWord = request.getParameter("passWord");
-
-        System.out.println(userName);
-        System.out.println(passWord);
-
-        AccountDAO aDAO = new AccountDAO();
-        Account acc = aDAO.login(userName, passWord);
-
-        if (acc != null) {
-            HttpSession session = request.getSession();
-//            session.setAttribute("userName", acc.getUsername());
-            session.setAttribute("account", new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
-            request.getRequestDispatcher("Home").forward(request, response);
-        } else {
-            request.setAttribute("passError", "Username or password is incorrect!");
-            request.setAttribute("userName", userName);
-            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
-    // Hàm kiểm tra mật khẩu bằng cách so sánh mật khẩu băm
     /**
      * Returns a short description of the servlet.
      *

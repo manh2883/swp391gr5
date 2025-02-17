@@ -7,21 +7,20 @@ package controllers;
 import DAO.ProductDAO;
 import DAO.UserDAO;
 import Models.Account;
-import Models.Product;
+import Models.User;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  *
  * @author Acer
  */
-public class ProductDetailServlet extends HttpServlet {
+public class AddToCartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +39,10 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");
+            out.println("<title>Servlet AddToCartServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddToCartServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,36 +60,7 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productId = request.getParameter("productId");
-        if (productId != null) {
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);
-            if (product == null) {
-                request.setAttribute("message", "product not found");
-                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-            } else {
-                request.setAttribute("product", product);
-                request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
-
-                List<String> color = productDAO.getAllColorbyProductId(productId);
-                if (color != null && !color.isEmpty()) {
-                    request.setAttribute("colorList", color);
-
-                }
-                List<String> size = productDAO.getAllSizebyProductId(productId);
-                if (size != null && !size.isEmpty()) {
-                    request.setAttribute("sizeList", size);
-
-                }
-
-                System.out.println(productDAO.getImgUrlForProductID(productId));
-                request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-            }
-
-        } else {
-            request.setAttribute("message", "product not found");
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -115,15 +85,15 @@ public class ProductDetailServlet extends HttpServlet {
             String idIn = request.getParameter("idInput");
             ProductDAO.addToCart(idIn, color, size, userId);
 //            String nextUrl = "ProductDetail?productId=" + idIn;
-//            request.getRequestDispatcher("Home").forward(request, response);
-
+//            request.getRequestDispatcher("Home").forward(request, response);  
+            User u = UserDAO.getUserById(userId);
             request.setAttribute("colorList", color + ", " + size + ", " + idIn);
-            request.setAttribute("sizeList", userId);
-            request.setAttribute("message", ProductDAO.getVariantByColorAndSize(idIn, color, size));
+            request.setAttribute("sizeList", u);
+            int vI= ProductDAO.getVariantByColorAndSize(idIn, color, size);
+            request.setAttribute("message", vI);
             request.getRequestDispatcher("Home/test.jsp").forward(request, response);
 
         }
-
     }
 
     /**

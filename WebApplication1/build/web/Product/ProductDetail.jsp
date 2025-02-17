@@ -245,7 +245,7 @@
                                         <span>${product.price}</span>
                                     </span>
 
-                                    <form action="ProductDetail" method="post">
+                                    <form action="AddToCart" method="post">
                                         <table>
                                             <tbody style="align-items: center;">
                                                 <!-- Lựa chọn màu sắc -->

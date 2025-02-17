@@ -14,13 +14,9 @@
         <group>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/HomeServlet.java</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ProductDetailServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/Slider.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/Product.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Home/Home.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/header2.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Product/ProductDetail.jsp</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/SliderDetail.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/SliderDAO.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/AddToCartServlet.java</file>
         </group>
     </open-files>
 </project-private>

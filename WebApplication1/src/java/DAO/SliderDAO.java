@@ -12,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -112,10 +114,9 @@ public class SliderDAO extends DBContext {
         return id;
     }
 
-    public static List<SliderDetail> getCurrentSliderList() {
-        return getAllSliderDetailBySliderId(getCurrentSlidetId());
-    }
-
+//    public static List<SliderDetail> getCurrentSliderList() {
+//        return getAllSliderDetailBySliderId(getCurrentSlidetId());
+//    }
     public static Slider getSliderById(int sliderId) {
         DBContext db = new DBContext();
         String query = "SELECT * FROM slider where slider_id = ?";
@@ -145,6 +146,38 @@ public class SliderDAO extends DBContext {
         return slider;
     }
 
+    public static Map<Map<String, String>, Map<String, String>> getCurrentSliderList() {
+        Map<String, String> sliderContent = new HashMap<>();
+        Map<String, String> sliderLink = new HashMap<>();
+
+        DBContext db = new DBContext();
+        String query = "SELECT * FROM slider_detail WHERE slider_id = ? ORDER BY slider_order";
+
+        try (
+                java.sql.Connection con = db.getConnection(); 
+                PreparedStatement stm = con.prepareStatement(query)) {
+
+            stm.setInt(1, getCurrentSlidetId());
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                // Thêm dữ liệu vào Map sliderContent
+                sliderContent.put(rs.getString("sliderTitle"), rs.getString("sliderContent"));
+
+                // Thêm dữ liệu vào Map sliderLink
+                sliderLink.put(rs.getString("sliderTitle"), rs.getString("slider_img_link"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Tạo Map chứa hai Map trên
+        Map<Map<String, String>, Map<String, String>> result = new HashMap<>();
+        result.put(sliderContent, sliderLink);
+
+        return result;
+    }
+
     public static void createSlider(Slider slider) {
 
     }
@@ -168,18 +201,37 @@ public class SliderDAO extends DBContext {
     public static void delateSliderDetailForSlider(int sliderId, SliderDetail SliderDetail) {
 
     }
+    
+    public static void printSliderList(Map<Map<String, String>, Map<String, String>> sliderData) {
+    // Duyệt qua Map chính
+    sliderData.forEach((contentMap, linkMap) -> {
+        System.out.println("=== SLIDER DETAILS ===");
 
+        // In dữ liệu từ sliderContent
+        System.out.println("Slider Content:");
+        contentMap.forEach((title, content) -> {
+            System.out.println("  - Title: " + title);
+            System.out.println("    Content: " + content);
+        });
+
+        // In dữ liệu từ sliderLink
+        System.out.println("Slider Links:");
+        linkMap.forEach((title, imgLink) -> {
+            System.out.println("  - Title: " + title);
+            System.out.println("    Image Link: " + imgLink);
+        });
+
+        System.out.println("=======================");
+    });
+}
+
+    
     public static void main(String[] args) {
         SliderDAO sDAO = new SliderDAO();
-//        for (Slider s : sDAO.getAllSlider()) {
-//            System.out.println(s);
-//            for (SliderDetail sd : sDAO.getAllSliderDetailBySliderId(s.getSliderId())) {
-//                System.out.println("       " + sd);
-//            }
-//        }
-        System.out.println(SliderDAO.getCurrentSlidetId());
-        for (SliderDetail sd : SliderDAO.getAllSliderDetailBySliderId(2)) {
-            System.out.println(sd);
-        }
+
+        printSliderList(getCurrentSliderList());
+       
+        
+        
     }
 }

@@ -77,9 +77,9 @@ public class AddToCartServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Lấy tham số từ request
-        String color = request.getParameter("colorInput");
-        String size = request.getParameter("sizeInput");
-        String idIn = request.getParameter("idInput");
+        String color = request.getParameter("colorInput").trim();
+        String size = request.getParameter("sizeInput").trim();
+        String idIn = request.getParameter("idInput").trim();
 
         // Kiểm tra tham số hợp lệ
         if (idIn == null || idIn.isEmpty()) {

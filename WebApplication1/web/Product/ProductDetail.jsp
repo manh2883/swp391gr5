@@ -249,7 +249,7 @@
                                         <table>
                                             <tbody style="align-items: center;">
                                                 <!-- Lựa chọn màu sắc -->
-                                            <input readonly style ="visibility: hidden " value ="${product.productId} " name = "idInput"> 
+                                            <input readonly style ="visibility: hidden " value ="${product.productId}" name = "idInput"> 
                                             <c:choose>
                                                 <c:when test="${not empty colorList}">
                                                     <tr style="padding-top: 20px">
@@ -284,8 +284,8 @@
                                         </table>
 
                                         <span>
-                                            <input type="text" value="1" />
-                                            <button type="button submit" class="btn btn-fefault cart">
+                                            <!--<input type="text" value="1" />-->
+                                            <button type="submit" class="btn btn-fefault cart">
                                                 <i class="fa fa-shopping-cart"></i> Add to cart
                                             </button>
                                             <button type="button" class="btn btn-fefault cart">

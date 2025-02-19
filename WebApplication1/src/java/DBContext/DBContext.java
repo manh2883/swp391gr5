@@ -29,15 +29,15 @@ public class DBContext {
         }
         return null;
     }
-
-    public static void main(String[] args) {
-        DBContext dbContext = new DBContext();
-        Connection connection = dbContext.getConnection();
-
-        if (connection != null) {
-            System.out.println("Kết nối thành cong!");
-        } else {
-            System.out.println("Kết nối thất bai!");
-        }
-    }
+//
+//    public static void main(String[] args) {
+//        DBContext dbContext = new DBContext();
+//        Connection connection = dbContext.getConnection();
+//
+//        if (connection != null) {
+//            System.out.println("Kết nối thành cong!");
+//        } else {
+//            System.out.println("Kết nối thất bai!");
+//        }
+//    }
 }

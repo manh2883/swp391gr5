@@ -154,6 +154,7 @@ public class CartDAO extends DBContext {
             }
 
             con.commit();  // ✅ Commit nếu mọi thứ thành công
+            updateStm.close();
             System.out.println("Cập nhật giỏ hàng thành công.");
 
         } catch (Exception e) {

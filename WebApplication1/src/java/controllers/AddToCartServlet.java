@@ -8,6 +8,7 @@ import DAO.ProductDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.User;
+import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -74,26 +75,62 @@ public class AddToCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Lấy tham số từ request
         String color = request.getParameter("colorInput");
         String size = request.getParameter("sizeInput");
+        String idIn = request.getParameter("idInput");
+
+        // Kiểm tra tham số hợp lệ
+        if (idIn == null || idIn.isEmpty()) {
+            request.setAttribute("error", "Invalid product ID.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra đăng nhập
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
+
         if (account == null) {
             request.getRequestDispatcher("Login").forward(request, response);
-        } else {
-            int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-            String idIn = request.getParameter("idInput");
-            ProductDAO.addToCart(idIn, color, size, userId);
-//            String nextUrl = "ProductDetail?productId=" + idIn;
-//            request.getRequestDispatcher("Home").forward(request, response);  
-            User u = UserDAO.getUserById(userId);
-            request.setAttribute("colorList", color + ", " + size + ", " + idIn);
-            request.setAttribute("sizeList", u);
-            int vI= ProductDAO.getVariantByColorAndSize(idIn, color, size);
-            request.setAttribute("message", vI);
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-
+            return;
         }
+
+        // Lấy userId từ accountId
+        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+        if (userId <= 0) {
+            request.setAttribute("error", "User not found.");
+//            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra color & size trước khi thêm vào giỏ hàng
+        if ((color != null && !color.isEmpty()) || (size != null && !size.isEmpty())) {
+            ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
+        }
+
+        // Lấy thông tin user
+        User u = UserDAO.getUserById(userId);
+        if (u == null) {
+            request.setAttribute("error", "User not found.");
+//            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
+        // Lấy variant_id
+        int vI = ProductDAO.getVariantByColorAndSize(idIn.toUpperCase(), color.toUpperCase(), size.toUpperCase());
+        if (vI == -1) {
+            request.setAttribute("message", "Variant not found.");
+        } else {
+            request.setAttribute("message", vI);
+        }
+
+        // Gửi dữ liệu đến JSP
+        request.setAttribute("colorList", color + ", " + size + ", " + idIn);
+        request.setAttribute("sizeList", u);
+        response.sendRedirect("ProductDetail?productId=" + idIn);
+//        request.getRequestDispatcher("ProductDetail?productId="+idIn).forward(request, response);
     }
 
     /**
@@ -105,5 +142,9 @@ public class AddToCartServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    public void contextDestroyed(ServletContextEvent sce) {
+        com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkedShutdown();
+    }
 
 }

@@ -88,9 +88,9 @@ public class SearchServlet extends HttpServlet {
             while (iterator.hasNext()) {
                 Product p = iterator.next();
                 if (!p.getCategoryName().contains(key)
-                        && !p.getBrandName().contains(key)
-                        && !p.getProductId().contains(key)
-                        && !p.getName().contains(key)) {
+                        && !p.getBrandName().toLowerCase().contains(key)
+                        && !p.getProductId().toLowerCase().contains(key)
+                        && !p.getName().toLowerCase().contains(key)) {
                     iterator.remove();
                 }
             }

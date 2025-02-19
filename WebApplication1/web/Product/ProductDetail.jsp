@@ -250,36 +250,36 @@
                                             <tbody style="align-items: center;">
                                                 <!-- Lựa chọn màu sắc -->
                                             <input readonly style ="visibility: hidden " value ="${product.productId} " name = "idInput"> 
-                                                <c:choose>
-                                                    <c:when test="${not empty colorList}">
-                                                        <tr style="padding-top: 20px">
-                                                            <td>Color:</td>
-                                                            <td style="padding-left: 50px; height: 45px">
-                                                                <select name = "colorInput">
-                                                                    <c:forEach var="colorItem" items="${colorList}">
-                                                                        <option value="${colorItem}">${colorItem}</option>
-                                                                    </c:forEach>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                    </c:when>
-                                                </c:choose>
+                                            <c:choose>
+                                                <c:when test="${not empty colorList}">
+                                                    <tr style="padding-top: 20px">
+                                                        <td>Color:</td>
+                                                        <td style="padding-left: 50px; height: 45px">
+                                                            <select name = "colorInput">
+                                                                <c:forEach var="colorItem" items="${colorList}">
+                                                                    <option value="${colorItem}">${colorItem}</option>
+                                                                </c:forEach>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                </c:when>
+                                            </c:choose>
 
-                                                <!-- Lựa chọn kích thước -->
-                                                <c:choose>
-                                                    <c:when test="${not empty sizeList}">
-                                                        <tr style="padding-top: 20px">
-                                                            <td>Size:</td>
-                                                            <td style="padding-left: 50px; height: 45px">
-                                                                <select name = "sizeInput">
-                                                                    <c:forEach var="sizeItem" items="${sizeList}">
-                                                                        <option value="${sizeItem}">${sizeItem}</option>
-                                                                    </c:forEach>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                    </c:when>
-                                                </c:choose>
+                                            <!-- Lựa chọn kích thước -->
+                                            <c:choose>
+                                                <c:when test="${not empty sizeList}">
+                                                    <tr style="padding-top: 20px">
+                                                        <td>Size:</td>
+                                                        <td style="padding-left: 50px; height: 45px">
+                                                            <select name = "sizeInput">
+                                                                <c:forEach var="sizeItem" items="${sizeList}">
+                                                                    <option value="${sizeItem}">${sizeItem}</option>
+                                                                </c:forEach>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                </c:when>
+                                            </c:choose>
                                             </tbody>
                                         </table>
 

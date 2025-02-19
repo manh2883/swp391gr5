@@ -228,31 +228,30 @@ public class ProductDAO extends DBContext {
         int id = -1;
         String query = null;
         if (color == null && size == null) {
-            query = query2;
-        } else {
-            query = query1;
-        }
+                query = query2;
+            } else {
+                query = query1;
+            }
         try {
-
+            
+            
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
-
+            
             PreparedStatement stm = con.prepareStatement(query);
-
-            if (query.equals(query1)) {
+            stm.setString(1, productId);
+            if(color != null && !color.isEmpty() && size != null && !size.isEmpty())  {
                 stm.setString(2, color);
+
                 stm.setString(3, size);
-                stm.setString(1, productId);
-            } else if (query.equals(query2)) {
-                stm.setString(1, productId);
             }
+
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 id = rs.getInt("variant_id");
-                System.out.println("found: " + id);
-                return id;
+                System.out.println("found: "+id);
             }
-
+            
             rs.close();
             stm.close();
             con.close();
@@ -270,26 +269,26 @@ public class ProductDAO extends DBContext {
         int stock = -1;
         String query = null;
         if (color == null && size == null) {
-            query = query2;
-        } else {
-            query = query1;
-        }
+                query = query2;
+            } else {
+                query = query1;
+            }
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
 
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, productId);
-            if (color != null && !color.isEmpty() && size != null && !size.isEmpty()) {
+            if(color != null && !color.isEmpty() && size != null && !size.isEmpty())  {
                 stm.setString(2, color);
 
                 stm.setString(3, size);
             }
-
+          
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 stock = rs.getInt("stock");
-
+                
             }
             rs.close();
             stm.close();
@@ -374,17 +373,17 @@ public class ProductDAO extends DBContext {
             ca = cartdao.getCartIDByUserID(userId);
             System.out.println("cart_id: " + ca);
             int variantId = getVariantByColorAndSize(productId, color, size);
-            System.out.println("product_id " + productId);
-            System.out.println("color " + color);
-            System.out.println("size " + size);
-            System.out.println("variant_id " + variantId);
+            System.out.println("product_id " +productId);
+            System.out.println("color " +color);
+            System.out.println("size " +size);
+            System.out.println("variant_id "+variantId);
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
-                System.out.println("cartDetailId" + cartDetailId);
+                System.out.println("cartDetailId " + cartDetailId);
                 if (cartDetailId > 0) {
                     cartdao.editCartDetailByID(userId, cartDetailId, "increment");
                 } else {
-                    System.out.println("getStockForVariantProduct" + getStockForVariantProduct(productId, color, size));
+                    System.out.println("getStockForVariantProduct "+getStockForVariantProduct(productId, color, size));
                     if (getStockForVariantProduct(productId, color, size) > 0) {
                         AddCartDetail(productId, variantId, ca);
                     }
@@ -582,11 +581,11 @@ public class ProductDAO extends DBContext {
         return price;
     }
 
-    public static Map<Boolean, String> getProcductNotifyInformation(String productId) {
-        Map<Boolean, String> map = new HashMap<>();
+    public static Map<Boolean, Boolean> getProcductNotifyInformation(String productId) {
+        Map<Boolean, Boolean> map = new HashMap<>();
         boolean isNew = isNewProduct(productId);
-        String salse = isSaleProduct(productId);
-        map.put(isNew, salse);
+        boolean isSalse = isSaleProduct(productId);
+        map.put(isNew, isSalse);
         return map;
 
     }
@@ -619,33 +618,26 @@ public class ProductDAO extends DBContext {
         return isNew;
     }
 
-    public static String isSaleProduct(String productId) {
+    public static boolean isSaleProduct(String productId) {
         Product pro = getProductById(productId);
-        double price = getCurrentPriceByProductId(productId);
-
-        if (price > -1) {
-            if (pro.getPrice() > price) {
-                return String.valueOf(price);
-            }
-        }
-        return  null;
+        return pro.getPrice() > getCurrentPriceByProductId(productId) && getCurrentPriceByProductId(productId) > -1;
     }
 
-    public static Map<Product, Map<Boolean, String>> getProductView() {
-        Map<Product, Map<Boolean, String>> productList = new HashMap<>();
+    public static Map<Product, Map<Boolean, Boolean>> getProductView() {
+        Map<Product, Map<Boolean, Boolean>> productList = new HashMap<>();
         for (Product p : getAllProducts()) {
             productList.put(p, getProcductNotifyInformation(p.getProductId()));
         }
         return productList;
     }
 
-    public static Map<Product, Map<Boolean, String>> getProductListHome(int quantity) {
-        Map<Product, Map<Boolean, String>> productList = new HashMap<>();
+    public static Map<Product, Map<Boolean, Boolean>> getProductListHome(int quantity) {
+        Map<Product, Map<Boolean, Boolean>> productList = new HashMap<>();
         List<Product> allProducts = getAllProducts(); // Lấy toàn bộ sản phẩm
         int count = 0;
 
         for (Product p : allProducts) {
-            if (count >= quantity) {
+            if (count >= 9) {
                 break;
             }
             productList.put(p, getProcductNotifyInformation(p.getProductId()));
@@ -654,11 +646,21 @@ public class ProductDAO extends DBContext {
 
         return productList;
     }
-    
-    
+
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-        getProductListHome(12);
 
+//        for (Product p : pDAO.getAllProducts()) {
+//            System.out.println(p);
+//        }
+        System.out.println(getVariantByColorAndSize("P001", "Red", "M"));
+        CartDAO cDAO = new CartDAO();
+        for(CartDetail cd: cDAO.getAllCartDetailByUserID(4)){
+            System.out.println(cd);
+        }
+        ProductDAO.addToCart("P001", "Red","M", 4);
+        for(CartDetail cd: cDAO.getAllCartDetailByUserID(4)){
+            System.out.println(cd);
+        }
     }
 }

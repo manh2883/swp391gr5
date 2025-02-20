@@ -7,21 +7,21 @@ package controllers;
 import DAO.ProductDAO;
 import DAO.UserDAO;
 import Models.Account;
-import Models.Product;
+import Models.User;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  *
  * @author Acer
  */
-public class ProductDetailServlet extends HttpServlet {
+public class AddToCartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,10 +40,10 @@ public class ProductDetailServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailServlet</title>");
+            out.println("<title>Servlet AddToCartServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddToCartServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,36 +61,7 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productId = request.getParameter("productId");
-        if (productId != null) {
-            ProductDAO productDAO = new ProductDAO();
-            Product product = productDAO.getProductById(productId);
-            if (product == null) {
-                request.setAttribute("message", "product not found");
-                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-            } else {
-                request.setAttribute("product", product);
-                request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
-
-                List<String> color = productDAO.getAllColorbyProductId(productId);
-                if (color != null && !color.isEmpty()) {
-                    request.setAttribute("colorList", color);
-
-                }
-                List<String> size = productDAO.getAllSizebyProductId(productId);
-                if (size != null && !size.isEmpty()) {
-                    request.setAttribute("sizeList", size);
-
-                }
-
-                System.out.println(productDAO.getImgUrlForProductID(productId));
-                request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
-            }
-
-        } else {
-            request.setAttribute("message", "product not found");
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -104,26 +75,62 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String color = request.getParameter("colorInput");
-        String size = request.getParameter("sizeInput");
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
-            request.getRequestDispatcher("Login").forward(request, response);
-        } else {
-            int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-            String idIn = request.getParameter("idInput");
-            ProductDAO.addToCart(idIn, color, size, userId);
-//            String nextUrl = "ProductDetail?productId=" + idIn;
-//            request.getRequestDispatcher("Home").forward(request, response);
 
-            request.setAttribute("colorList", color + ", " + size + ", " + idIn);
-            request.setAttribute("sizeList", userId);
-            request.setAttribute("message", ProductDAO.getVariantByColorAndSize(idIn, color, size));
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        // Lấy tham số từ request
+        String color = request.getParameter("colorInput").trim();
+        String size = request.getParameter("sizeInput").trim();
+        String idIn = request.getParameter("idInput").trim();
 
+        // Kiểm tra tham số hợp lệ
+        if (idIn == null || idIn.isEmpty()) {
+            request.setAttribute("error", "Invalid product ID.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
         }
 
+        // Kiểm tra đăng nhập
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            request.getRequestDispatcher("Login").forward(request, response);
+            return;
+        }
+
+        // Lấy userId từ accountId
+        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+        if (userId <= 0) {
+            request.setAttribute("error", "User not found.");
+//            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra color & size trước khi thêm vào giỏ hàng
+        if ((color != null && !color.isEmpty()) || (size != null && !size.isEmpty())) {
+            ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
+        }
+
+        // Lấy thông tin user
+        User u = UserDAO.getUserById(userId);
+        if (u == null) {
+            request.setAttribute("error", "User not found.");
+//            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
+        // Lấy variant_id
+        int vI = ProductDAO.getVariantByColorAndSize(idIn.toUpperCase(), color.toUpperCase(), size.toUpperCase());
+        if (vI == -1) {
+            request.setAttribute("message", "Variant not found.");
+        } else {
+            request.setAttribute("message", vI);
+        }
+
+        // Gửi dữ liệu đến JSP
+        request.setAttribute("colorList", color + ", " + size + ", " + idIn);
+        request.setAttribute("sizeList", u);
+        response.sendRedirect("ProductDetail?productId=" + idIn);
+//        request.getRequestDispatcher("ProductDetail?productId="+idIn).forward(request, response);
     }
 
     /**
@@ -135,5 +142,9 @@ public class ProductDetailServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    public void contextDestroyed(ServletContextEvent sce) {
+        com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkedShutdown();
+    }
 
 }

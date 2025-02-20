@@ -60,64 +60,6 @@
             <c:import url="/Template/header2.jsp" />
         </header>
 
-        <!--Slider-->
-        <section id="slider"><!--slider-->
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <!--current slider-->
-                        <div id="slider-carousel" class="carousel slide" data-ride="carousel">
-                            <c:choose>
-                                <c:when test="${not empty sliderContent}">
-                                    <!-- Carousel Indicators -->
-                                    <ol class="carousel-indicators">
-                                        <c:set var="index" value="0" />
-                                        <c:forEach var="entry" items="${sliderContent}">
-                                            <li data-target="#slider-carousel" data-slide-to="${index}" class="${index == 0 ? 'active' : ''}"></li>
-                                                <c:set var="index" value="${index + 1}" />
-                                            </c:forEach>
-                                    </ol>
-
-                                    <!-- Carousel Items -->
-                                    <div class="carousel-inner">
-                                        <c:set var="index" value="0" />
-                                        <c:forEach var="entry" items="${sliderContent}">
-                                            <div class="carousel-item ${index == 0 ? 'active' : ''}">
-                                                <div class="col-sm-6">
-                                                    <h1><span>TPF</span>Shopwear</h1>
-                                                    <h2>${entry.key}</h2>
-                                                    <p>${entry.value}</p>
-                                                    <a href="${pageContext.request.contextPath}/${sliderLink[entry.value]}">
-                                                        <button type="button" class="btn btn-default get">Get it now</button>
-                                                    </a>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <img src="${pageContext.request.contextPath}/${sliderLink[entry.key]}" class="girl img-responsive" alt="" />
-                                                </div>
-                                            </div>
-                                            <c:set var="index" value="${index + 1}" />
-                                        </c:forEach>
-                                    </div>
-                                </c:when>
-                                <c:otherwise>
-                                    <p>No Item found</p>
-                                </c:otherwise>
-                            </c:choose>
-
-                            <!-- Carousel Controls -->
-                            <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
-                            <a href="#slider-carousel" class="right control-carousel hidden-xs" data-slide="next">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section><!--/slider-->
-
-
         <section style="">
             <div class="container" >
                 <div class="row" >
@@ -126,6 +68,64 @@
                     </div>
 
                     <div class="col-sm-9 padding-right" >
+                        <div class="padding-right"   >
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <form>
+                                        <table style="align-items: center">
+                                            <tbody>
+                                                <tr style="border:1px solid blue">
+                                                    <td>
+                                                        <input type="text" placeholder="Zip / Postal Code *">
+                                                    </td>
+                                                    <td>
+                                                        <select>
+                                                            <option>-- Country --</option>
+                                                            <option>United States</option>
+                                                        </select><!-- comment -->
+                                                    </td>
+                                                    <td>
+                                                        <select>
+                                                            <option>-- State / Province / Region --</option>
+                                                            <option>United States</option>
+                                                            <option>Bangladesh</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <a class="btn btn-primary" href="">Continue</a>
+                                                    </td> 	
+                                                </tr>
+                                                <tr style="padding-top: 20px;border:1px solid blue">
+                                                    <td>
+                                                        <select>
+                                                            <option>-- State / Province / Region --</option>
+                                                            <option>United States</option>
+                                                            <option>Bangladesh</option>
+
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" placeholder="Zip / Postal Code *">
+                                                    </td>
+                                                    <td>
+                                                        <select>
+                                                            <option>-- Country --</option>
+                                                            <option>United States</option>
+                                                        </select><!-- comment -->
+                                                    </td>
+                                                    <td>
+                                                        <a class="btn btn-primary" href="">Get Quotes</a>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+
+
+                                </div>
+                            </div>
+                        </div>
                         <div class="features_items">
                             <h2 class="title text-center">New Products</h2>
 
@@ -203,7 +203,7 @@
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
                             <ul class="pagination" style="justify-content: center;font-size: 14px">
                                 <li class="page-item">
-                                    <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList">Show More</a>
+                                    <a class="page-link" href="#">Show More</a>
                                 </li>
                             </ul>
                         </nav>

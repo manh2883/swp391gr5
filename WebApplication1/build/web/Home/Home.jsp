@@ -60,35 +60,42 @@
             <c:import url="/Template/header2.jsp" />
         </header>
 
-
-        <section id="slider" style=""><!--slider-->
+        <!--Slider-->
+        <section id="slider"><!--slider-->
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12">
                         <!--current slider-->
                         <div id="slider-carousel" class="carousel slide" data-ride="carousel">
                             <c:choose>
-                                <c:when test="${not empty sliderDetailList}">
+                                <c:when test="${not empty sliderContent}">
+                                    <!-- Carousel Indicators -->
                                     <ol class="carousel-indicators">
-                                        <c:forEach var="entry" items="${sliderDetailList}" varStatus="status">
-                                            <li data-target="#slider-carousel" data-slide-to="${status.index}" class="${status.first ? 'active' : ''}"></li>
+                                        <c:set var="index" value="0" />
+                                        <c:forEach var="entry" items="${sliderContent}">
+                                            <li data-target="#slider-carousel" data-slide-to="${index}" class="${index == 0 ? 'active' : ''}"></li>
+                                                <c:set var="index" value="${index + 1}" />
                                             </c:forEach>
                                     </ol>
+
+                                    <!-- Carousel Items -->
                                     <div class="carousel-inner">
-                                        <c:forEach var="entry" items="${sliderDetailList}" varStatus="status">
-                                            <div class="carousel-item ${status.first ? 'active' : ''}">
+                                        <c:set var="index" value="0" />
+                                        <c:forEach var="entry" items="${sliderContent}">
+                                            <div class="carousel-item ${index == 0 ? 'active' : ''}">
                                                 <div class="col-sm-6">
                                                     <h1><span>TPF</span>Shopwear</h1>
-                                                    <h2>${entry.detailTitle}</h2>
-                                                    <p>${entry.detailContent}</p>
-                                                    <a href="${pageContext.request.contextPath}/${entry.backLink}">
+                                                    <h2>${entry.key}</h2>
+                                                    <p>${entry.value}</p>
+                                                    <a href="${pageContext.request.contextPath}/${sliderLink[entry.value]}">
                                                         <button type="button" class="btn btn-default get">Get it now</button>
                                                     </a>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <img src="${pageContext.request.contextPath}/${entry.sliderImgLink}" class="girl img-responsive" alt="" />
+                                                    <img src="${pageContext.request.contextPath}/${sliderLink[entry.key]}" class="girl img-responsive" alt="" />
                                                 </div>
                                             </div>
+                                            <c:set var="index" value="${index + 1}" />
                                         </c:forEach>
                                     </div>
                                 </c:when>
@@ -96,6 +103,8 @@
                                     <p>No Item found</p>
                                 </c:otherwise>
                             </c:choose>
+
+                            <!-- Carousel Controls -->
                             <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
                                 <i class="fa fa-angle-left"></i>
                             </a>
@@ -103,12 +112,11 @@
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         </div>
-
-
                     </div>
                 </div>
             </div>
         </section><!--/slider-->
+
 
         <section style="">
             <div class="container" >
@@ -125,18 +133,48 @@
                                 <c:when test="${not empty productList}">
                                     <c:forEach var="entry" items="${productList}">
                                         <c:set var="product" value="${entry.key}" />
+                                        <c:set var="tagMap" value="${entry.value}" />
                                         <div class="col-sm-4">
                                             <div class="product-image-wrapper">
                                                 <div class="single-products">
-                                                    <div class="productinfo text-center ">
+                                                    <div class="productinfo text-center">
                                                         <!-- Đặt width và height cho ảnh -->
+                                                        <c:forEach var="tagEntry" items="${tagMap}">
+                                                            <c:set var="isNew" value="${tagEntry.key}" />
+                                                            <c:set var="sale" value="${tagEntry.value}" />
+                                                        </c:forEach>
                                                         <img src="${pageContext.request.contextPath}/${product.imgUrl}" 
-                                                             alt="${product.name}" class="product-img"
-                                                             />
-                                                        <h2>${product.price}</h2>
+                                                             alt="${product.name}" class="product-img" />
+
+                                                        <c:choose>
+                                                            <c:when test="${not empty sale}">
+                                                                <h2><span>
+                                                                        ${sale}
+                                                                    </span>
+                                                                    <span style="text-decoration: line-through;
+                                                                          padding-right: 10px; font-size:20px;color: gray;">
+                                                                        ${product.price}</span></h2>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                <h2>${product.price}</h2>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                         <p>${product.name}</p>
-                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}" 
+                                                           class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i> Add to cart</a>
                                                     </div>
+
+                                                    <!-- Tag -->
+
+                                                    <c:choose>
+                                                        <c:when test="${not empty sale}">
+                                                            <img src="${pageContext.request.contextPath}/Images/Home/sale.png" class="new" alt="Sale" />
+                                                        </c:when>
+                                                        <c:when test="${isNew}">
+                                                            <img src="${pageContext.request.contextPath}/Images/Home/new.png" class="new" alt="New" />
+                                                        </c:when>
+                                                    </c:choose>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -146,6 +184,7 @@
                                     <p>No Item found</p>
                                 </c:otherwise>
                             </c:choose>
+
                         </div>
                         <!-- Pagination -->
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
@@ -164,7 +203,7 @@
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
                             <ul class="pagination" style="justify-content: center;font-size: 14px">
                                 <li class="page-item">
-                                    <a class="page-link" href="#">Show More</a>
+                                    <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList">Show More</a>
                                 </li>
                             </ul>
                         </nav>

@@ -102,25 +102,21 @@
                                                     <p>${cart.product.price}</p>
                                                 </td>
                                                 <td class="cart_quantity">
-                                                    <div class="cart_quantity_button d-flex flex-row">
-
-
-
+                                                    <div class="cart_quantity_button d-flex flex-row search_box" style="width: 35px; height: 35px;">
 
                                                         <form action="ViewCart" method="get" style="display:inline;">
                                                             <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                             <input type="hidden" name="action" value="decrement">
-                                                            <button type="submit" class="cart_quantity_down"> - </button>
+                                                            <button type="submit" class="btn" style="width: 35px; height: 35px;border-radius: 0px"> - </button>
                                                         </form>
-                                                        <input class="quantity-input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
-
+                                                        <input class="" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
 
                                                         <form action="ViewCart" method="get" style="display:inline;">
 
                                                             <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                             <input type="hidden" name="action" value="increment">
 
-                                                            <button type="submit" class="cart_quantity_up"> + </button>
+                                                            <button type="submit" class="btn" style="width: 35px; height: 35px;border-radius: 0px"> + </button>
                                                         </form>
                                                     </div>
                                                 </td>
@@ -133,7 +129,7 @@
                                                     <form action="ViewCart" method="get">
                                                         <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                         <input type="hidden" name="action" value="delete">
-                                                        <button type="submit" class="cart_quantity_delete"><i class="fa fa-times"></i></button>
+                                                        <button type="submit" class="cart_quantity_delete btn"><i class="fa fa-times"></i></button>
                                                     </form>
                                                 </td>
                                             </tr>

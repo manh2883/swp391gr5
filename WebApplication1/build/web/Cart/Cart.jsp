@@ -63,7 +63,7 @@
                     </ol>
                 </div>
                 <div class="table-responsive cart_info">
-                    <form action="${pageContext.request.contextPath}/Checkout" method="get">
+                    <form action="Checkout" method="post">
                         <table class="table table-condensed">
                             <!-- Bắt đầu form -->
                             <thead>
@@ -89,7 +89,7 @@
                                                 </td>
                                                 <!-- Các cột khác -->
                                                 <td class="cart_product">
-                                                    <a href=""><img src="${pageContext.request.contextPath}/Images/cart/${cart.productID}.png" alt=""></a>
+                                                    <a href=""><img src="${pageContext.request.contextPath}/${product.imgUrl}" alt=""></a>
                                                 </td>
                                                 <td class="cart_description">
                                                     <h4><a href="">Product ${cart.productID}</a></h4>
@@ -102,19 +102,25 @@
                                                     <p>${cart.product.price}</p>
                                                 </td>
                                                 <td class="cart_quantity">
-                                                    <div class="cart_quantity_button">
-                                                        <form action="ViewCart" method="get" style="display:inline;">
-                                                            <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
-                                                            <input type="hidden" name="action" value="increment">
-                                                            <button type="submit" class="cart_quantity_up"> + </button>
-                                                        </form>
+                                                    <div class="cart_quantity_button d-flex flex-row">
 
-                                                        <input class="quantity-input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
+
+
 
                                                         <form action="ViewCart" method="get" style="display:inline;">
                                                             <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                             <input type="hidden" name="action" value="decrement">
                                                             <button type="submit" class="cart_quantity_down"> - </button>
+                                                        </form>
+                                                        <input class="quantity-input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
+
+
+                                                        <form action="ViewCart" method="get" style="display:inline;">
+
+                                                            <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
+                                                            <input type="hidden" name="action" value="increment">
+
+                                                            <button type="submit" class="cart_quantity_up"> + </button>
                                                         </form>
                                                     </div>
                                                 </td>
@@ -124,7 +130,7 @@
                                                     <p class="cart_total_price">${itemTotal}</p>
                                                 </td>
                                                 <td class="cart_delete">
-                                                    <form action="${pageContext.request.contextPath}/ViewCart" method="get">
+                                                    <form action="ViewCart" method="get">
                                                         <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                         <input type="hidden" name="action" value="delete">
                                                         <button type="submit" class="cart_quantity_delete"><i class="fa fa-times"></i></button>

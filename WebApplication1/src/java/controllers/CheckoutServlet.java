@@ -129,11 +129,11 @@ public class CheckoutServlet extends HttpServlet {
             // Lưu checkoutItems vào session hoặc request để sử dụng trong trang thanh toán
             request.setAttribute("checkoutItems", checkoutItems);
             // Chuyển đến trang thanh toán
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/checkout.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("Cart/Checkout.jsp");
             dispatcher.forward(request, response);
         } else {
             // Không có sản phẩm nào được chọn
-            response.sendRedirect("viewCart.jsp?message=Please select at least one item to checkout.");
+            response.sendRedirect("ViewCart");
         }
     }
 

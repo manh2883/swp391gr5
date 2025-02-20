@@ -62,39 +62,8 @@ public class ViewCartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-//
-//        // Lấy userID từ session (giả sử user đăng nhập rồi)
-//        Account account = (Account) session.getAttribute("account");
-//        int accountId = -1;
-//        if (account == null) {
-//            request.setAttribute("userName", "hehe");
-//            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-//            
-//        } else {
-//            accountId = account.getAccountId();
-//        }
-//
-//        UserDAO uDAO = new UserDAO();
-//        int userId = -1;
-//        userId = uDAO.getUserIDByAccountID(accountId);
-//
-//        System.out.println(userId + ", " + accountId);
-//// Lấy danh sách giỏ hàng từ database
-//        if (userId == -1) {
-//            request.setAttribute("userName", "hoho");
-//            request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
-//        }
-//        CartDAO cartDAO = new CartDAO();
-//        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
-//
-//        // Gửi danh sách cartDetails lên trang JSP
-//        if (cartDetails != null) {
-//            request.setAttribute("cartDetails", cartDetails);
-//            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
-//        } else {
-//            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
-//        }
         CartDAO cartDAO = new CartDAO();
+
         // Lấy account từ session
         Account account = (Account) session.getAttribute("account");
         if (account == null) {
@@ -137,6 +106,9 @@ public class ViewCartServlet extends HttpServlet {
                     // Xóa sản phẩm khỏi giỏ hàng
                     cartDAO.deleteCartDetailByID(userId, cartDetailID);
                 }
+                // Cập nhật lại giỏ hàng trong session
+                List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
+                session.setAttribute("cartDetails", cartDetails);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }

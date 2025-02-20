@@ -103,22 +103,18 @@
                                                 </td>
                                                 <td class="cart_quantity">
                                                     <div class="cart_quantity_button">
-                                                        <a class="cart_quantity_up" href="#"> + </a>
-                                                        <!-- Nút giảm số lượng (-) -->
-                                                        <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
-                                                            <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
-                                                            <input type="hidden" name="action" value="decrement">
-                                                            <button type="submit" class="cart_quantity_down"> - </button>
-                                                        </form>
-
-                                                        <!-- Hiển thị số lượng -->
-                                                        <input class="cart_quantity_input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
-
-                                                        <!-- Nút tăng số lượng (+) -->
-                                                        <form action="${pageContext.request.contextPath}/ViewCart" method="get" style="display:inline;">
+                                                        <form action="ViewCart" method="get" style="display:inline;">
                                                             <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
                                                             <input type="hidden" name="action" value="increment">
                                                             <button type="submit" class="cart_quantity_up"> + </button>
+                                                        </form>
+
+                                                        <input class="quantity-input" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
+
+                                                        <form action="ViewCart" method="get" style="display:inline;">
+                                                            <input type="hidden" name="cartDetailID" value="${cart.cartDetailID}">
+                                                            <input type="hidden" name="action" value="decrement">
+                                                            <button type="submit" class="cart_quantity_down"> - </button>
                                                         </form>
                                                     </div>
                                                 </td>

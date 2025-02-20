@@ -6,6 +6,7 @@ package controllers;
 
 import DAO.CartDAO;
 import DAO.UserDAO;
+import Models.Account;
 import Models.CartDetail;
 import Models.User;
 import Models.UserAddress;
@@ -67,14 +68,14 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = request.getSession();
         // Giả sử bạn có cách để lấy thông tin người dùng đã đăng nhập
         // và lưu trữ trong biến `user`
-        User user = (User) session.getAttribute("loggedInUser");
+        Account account = (Account) session.getAttribute("account");
 
-        if (user == null) {
+        if (account == null) {
             // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("Login/Login.jsp");
+            response.sendRedirect("Login");
             return;
         }
-
+        User user = UserDAO.getUserById(account.getAccountId());
         // Lấy danh sách địa chỉ đã lưu của người dùng
         List<UserAddress> addressList  = new ArrayList<>();// Bạn cần triển khai phương thức này trong lớp User
 
@@ -93,7 +94,7 @@ public class CheckoutServlet extends HttpServlet {
             session.setAttribute("selectedAddress", selectedAddress);
 
             // Đặt các thuộc tính cần thiết vào request
-            request.setAttribute("user", user);
+            request.setAttribute("user", account);
             request.setAttribute("addressList", addressList);
             request.setAttribute("selectedAddress", selectedAddress);
 

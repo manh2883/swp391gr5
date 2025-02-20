@@ -1632,7 +1632,7 @@ h2.title {
     margin: 15px -70px 10px 25px;
 }
 
-.cart_quantity_button a {
+/*.cart_quantity_button a {
     background:#F0F0E9;
     color: #696763;
     display: inline-block;
@@ -1652,6 +1652,42 @@ h2.title {
     text-align: center;
     font-family: 'Roboto',sans-serif;
 
+}*/
+.cart_quantity_button {
+    display: flex;
+    align-items: center;
+}
+
+.cart_quantity_button form {
+    display: flex;
+    align-items: center;
+}
+
+.cart_quantity_button button, .cart_quantity_button .quantity-input {
+    background:#F0F0E9;
+    color: #696763;
+    font-size: 16px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 35px;
+    margin: 0 5px; /* Điều chỉnh khoảng cách giữa các nút */
+}
+
+.cart_quantity_button .quantity-input {
+    width: 50px;
+    text-align: center;
+    margin: 0 5px; /* Điều chỉnh khoảng cách giữa ô nhập và các nút */
+}
+
+.table-responsive {
+    overflow: auto;
+}
+
+.cart_info {
+    margin-bottom: 20px;
 }
 
 

@@ -186,20 +186,7 @@
                             </c:choose>
 
                         </div>
-                        <!-- Pagination -->
-                        <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
-                            <ul class="pagination" style="justify-content: center;font-size: 14px">
-                                <c:if test="${totalPages > 0}">
-                                    <c:forEach var="i" begin="1" end="${totalPages}">
-                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="viewList?page=${i}&searchId=${searchId}
-                                               &name=${name}&email=${email}&mobile=${mobile}
-                                               &availability=${availability}&specialization=${specialization}">${i}</a>
-                                        </li>
-                                    </c:forEach>
-                                </c:if>
-                            </ul>
-                        </nav>
+                       
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
                             <ul class="pagination" style="justify-content: center;font-size: 14px">
                                 <li class="page-item">

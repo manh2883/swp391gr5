@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.SliderDAO;
 import Models.Product;
 import java.io.IOException;
@@ -37,24 +38,42 @@ public class HomeServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+         
         ProductDAO pDAO = new ProductDAO();
         SliderDAO sDAO = new SliderDAO();
-        Map<Integer, String> bList = ProductDAO.getAllBrand();
-        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
-        Map<Product, Map<Boolean, String>> productList = ProductDAO.getProductListHome(9);
-        Map<Map<String, String>, Map<String, String>> sList = SliderDAO.getCurrentSliderList();
 
+        // Left side brand
+       List<Object[]> bList = SettingDAO.getPublicBrandList();
         if (bList != null && !bList.isEmpty()) {
             request.setAttribute("brandList", bList);
         }
+
+        // Left side category
+        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
         if (cList != null && !cList.isEmpty()) {
             request.setAttribute("categoryList", cList);
         }
+        
+        // Product List
+        List<Map.Entry<Product, Map<Boolean, String>>> productList = ProductDAO.getProductListPublic(9);
         if (productList != null && !productList.isEmpty()) {
             request.setAttribute("productList", productList);
         }
-
+        
+        // filter
+        
+        
+        
+        
+        
+        
+        
+        // phan trang
+        
+        
+        
+        // Slider
+        Map<Map<String, String>, Map<String, String>> sList = SliderDAO.getCurrentSliderList();
         if (sList != null && !sList.isEmpty()) {
             // Tạo hai Map để tách dữ liệu
             Map<String, String> sliderContent = new LinkedHashMap<>(); // Giữ thứ tự
@@ -69,9 +88,9 @@ public class HomeServlet extends HttpServlet {
             // Đặt vào request
             request.setAttribute("sliderContent", sliderContent);
             request.setAttribute("sliderLink", sliderLink);
-            request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
 
         }
+        request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
     }
 
         // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

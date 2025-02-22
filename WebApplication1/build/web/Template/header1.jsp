@@ -95,7 +95,7 @@
                                                 <a href="#">
                                                     <i class="fa fa-user-circle"></i> Account <i class="fa fa-angle-down"></i>
                                                 </a>
-                                                <ul class="sub-menu" role="menu">
+                                                <ul class="sub-menu" role="menu" style="background: white">
                                                     <li><a href="profile.html">My Profile</a></li>
                                                     <li><a href="orders.html">My Orders</a></li>
                                                     <li><a href="${pageContext.request.contextPath}/Logout">Log Out</a></li>

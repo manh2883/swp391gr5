@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -377,13 +378,13 @@ public class ProductDAO extends DBContext {
             }
             ca = cartdao.getCartIDByUserID(userId);
             System.out.println("cart_id: " + ca);
-            
+
             int variantId = getVariantByColorAndSize(productId, color, size);
             System.out.println("product_id " + productId);
             System.out.println("color " + color);
             System.out.println("size " + size);
             System.out.println("variant_id " + variantId);
-            
+
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
                 System.out.println("cartDetailId " + cartDetailId);
@@ -455,28 +456,37 @@ public class ProductDAO extends DBContext {
      *
      * @return
      */
-    public static Map<Integer, String> getAllBrand() {
+    public static List<Object[]> getAllBrand() {
+        String query = "SELECT brand.brand_id, brand.name, count(product.product_id) as product_count "
+                + "FROM tpfshopwearv2.brand "
+                + "JOIN product ON product.brand_id = brand.brand_id "
+                + "GROUP BY product.brand_id "
+                + "ORDER BY product_count DESC";
 
-        String query = "SELECT * from brand";
-        Map<Integer, String> brandList = new HashMap<>();
+        List<Object[]> brandList = new ArrayList<>();
 
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                brandList.put(rs.getInt("brand_id"), rs.getString("name"));
+                Object[] brandData = new Object[3];
+                brandData[0] = rs.getInt("brand_id");     // ID
+                brandData[1] = rs.getString("name");      // Name
+                brandData[2] = rs.getInt("product_count"); // Product count
+
+                brandList.add(brandData);
             }
+
             rs.close();
             stm.close();
             con.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return brandList;
     }
 
@@ -645,20 +655,72 @@ public class ProductDAO extends DBContext {
         return productList;
     }
 
-    public static Map<Product, Map<Boolean, String>> getProductListHome(int quantity) {
-        Map<Product, Map<Boolean, String>> productList = new HashMap<>();
+    public static List<Map.Entry<Product, Map<Boolean, String>>> getProductListPublic(int quantity) {
+        Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
         List<Product> allProducts = getAllProducts(); // Lấy toàn bộ sản phẩm
         int count = 0;
 
+        // Nếu quantity <= 0, lấy tất cả sản phẩm
         for (Product p : allProducts) {
-            if (count >= 9) {
+            if (quantity > 0 && count >= quantity) {
                 break;
             }
-            productList.put(p, getProcductNotifyInformation(p.getProductId()));
+            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
             count++;
         }
 
+        // Chuyển Map thành List để dễ phân trang
+        return new ArrayList<>(productMap.entrySet());
+    }
+
+    public static List<Map.Entry<Product, Map<Boolean, String>>> getProductListAfterFilter() {
+        List<Map.Entry<Product, Map<Boolean, String>>> productList = getProductListPublic(0);
         return productList;
+    }
+
+    public static  String getBrandNameById(int id) {
+
+        String query = "SELECT brand.name from brand where brand.brand_id = ?";
+        String name = null;
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                name = rs.getString("name");
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return name;
+    }
+
+    public static String getCategoryNameById(int id) {
+        String query = "SELECT category_name from product_category where category_id = ?";
+        String name = null;
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                name = rs.getString("category_name");
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return name;
     }
 
     public static void main(String[] args) {

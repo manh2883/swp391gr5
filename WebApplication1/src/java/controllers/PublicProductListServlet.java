@@ -70,17 +70,15 @@ public class PublicProductListServlet extends HttpServlet {
 
         // Product List
         List<Map.Entry<Product, Map<Boolean, String>>> productList = ProductDAO.getProductListPublic(0);
-        
+
         // Xây dựng URL hiện tại
-            StringBuilder currentLink = new StringBuilder();
-        
+        StringBuilder currentLink = new StringBuilder();
+
         // filter
         if (productList != null && !productList.isEmpty()) {
             // DungPT code here
 
             Iterator<Map.Entry<Product, Map<Boolean, String>>> iterator = productList.iterator();
-
-            
 
             // get Parameter
             String categoryParam = request.getParameter("category");
@@ -89,7 +87,6 @@ public class PublicProductListServlet extends HttpServlet {
             // tao category
             Integer category = (categoryParam != null && !categoryParam.isEmpty()) ? Integer.valueOf(categoryParam) : null;
             Integer brand = (brandParam != null && !brandParam.isEmpty()) ? Integer.valueOf(brandParam) : null;
-
 
             while (iterator.hasNext()) {
                 Map.Entry<Product, Map<Boolean, String>> entry = iterator.next();
@@ -102,7 +99,7 @@ public class PublicProductListServlet extends HttpServlet {
                         iterator.remove(); // Xóa nếu không khớp
                         continue; // Tiếp tục vòng lặp, tránh kiểm tra brand nếu đã bị xóa
                     }
-                    currentLink.append("category=").append(category).append("&");
+
                 }
 
                 // Lọc theo brand
@@ -110,13 +107,19 @@ public class PublicProductListServlet extends HttpServlet {
                     String brandName = ProductDAO.getBrandNameById(brand);
                     if (!brandName.equals(product.getBrandName())) {
                         iterator.remove(); // Xóa nếu không khớp
-                    } else {
-                        currentLink.append("brand=").append(brand).append("&");
                     }
+
                 }
             }
 
 // Truyền currentLink về JSP
+            if (category != null) {
+                currentLink.append("category=").append(category).append("&");
+            }
+            if (brand != null) {
+                currentLink.append("brand=").append(brand).append("&");
+            }
+
             request.setAttribute("currentLink", currentLink.toString());
 
         }
@@ -162,7 +165,7 @@ public class PublicProductListServlet extends HttpServlet {
         request.setAttribute("currentLink", currentLink);
 
         if (productList != null && !productList.isEmpty()) {
-            request.setAttribute("productList", productList);
+            request.setAttribute("productList", subProductList);
         }
 
         // phan trang end

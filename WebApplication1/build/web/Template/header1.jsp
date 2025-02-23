@@ -86,19 +86,21 @@
                                                     <i class="fa fa-shopping-cart"></i> Cart
                                                 </a>
                                             </li>
-                                        
-                                            
-                                            
-
 
                                             <li class="nav-item dropdown">
                                                 <a href="#">
                                                     <i class="fa fa-user-circle"></i> Account <i class="fa fa-angle-down"></i>
                                                 </a>
-                                                <ul class="sub-menu" role="menu" style="background: white">
-                                                    <li><a href="profile.html">My Profile</a></li>
-                                                    <li><a href="orders.html">My Orders</a></li>
-                                                    <li><a href="${pageContext.request.contextPath}/Logout">Log Out</a></li>
+                                                <ul class="sub-menu" role="menu"  >
+                                                    <li style="width: 100%">
+                                                        <a href="profile.html" style="background-color: transparent; ">My Profile</a>
+                                                    </li >
+                                                    <li style="width: 100%">
+                                                        <a href="orders.html" style="background-color: transparent; ">My Orders</a>
+                                                    </li>
+                                                    <li style="width: 100%">
+                                                        <a href="${pageContext.request.contextPath}/Logout" style="background-color: transparent; ">Log Out</a>
+                                                    </li>
                                                 </ul>
                                             </li>
 

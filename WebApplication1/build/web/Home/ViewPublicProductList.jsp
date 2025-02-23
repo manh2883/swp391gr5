@@ -64,7 +64,7 @@
             <div class="container" >
                 <div class="row" >
                     <div class="col-sm-3">
-                        <c:import url="/Template/left_side_bar_public.jsp" />
+                        <%@ include file="/Template/left_side_bar_public.jspf" %>
                     </div>
 
                     <div class="col-sm-9 padding-right" >
@@ -192,7 +192,7 @@
                                 <c:if test="${totalPages > 0}">
                                     <c:forEach var="i" begin="1" end="${totalPages}">
                                         <li class=" ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="/PublicProductList?${currentLink}page=${i}">${i}</a>
+                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
                                         </li>
                                     </c:forEach>
                                 </c:if>

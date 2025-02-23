@@ -191,7 +191,9 @@
 ul.sub-menu{
   position: relative;
   width: auto;
-  display: block;
+  display: grid;
+
+  grid-template-columns: repeat(1, auto);
   background: transparent;
   box-shadow: none;
   top: 0;

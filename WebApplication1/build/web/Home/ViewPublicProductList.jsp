@@ -64,7 +64,7 @@
             <div class="container" >
                 <div class="row" >
                     <div class="col-sm-3">
-                        <c:import url="/Template/left_side_bar_public.jsp" />
+                        <%@ include file="/Template/left_side_bar_public.jspf" %>
                     </div>
 
                     <div class="col-sm-9 padding-right" >
@@ -126,6 +126,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="features_items">
                             <h2 class="title text-center">New Products</h2>
 
@@ -134,11 +135,11 @@
                                     <c:forEach var="entry" items="${productList}">
                                         <c:set var="product" value="${entry.key}" />
                                         <c:set var="tagMap" value="${entry.value}" />
+
                                         <div class="col-sm-4">
                                             <div class="product-image-wrapper">
                                                 <div class="single-products">
                                                     <div class="productinfo text-center">
-                                                        <!-- Đặt width và height cho ảnh -->
                                                         <c:forEach var="tagEntry" items="${tagMap}">
                                                             <c:set var="isNew" value="${tagEntry.key}" />
                                                             <c:set var="sale" value="${tagEntry.value}" />
@@ -148,14 +149,13 @@
 
                                                         <c:choose>
                                                             <c:when test="${not empty sale}">
-                                                                <h2><span>
-                                                                        ${sale}
+                                                                <h2><span>${sale}</span>
+                                                                    <span style="text-decoration: line-through; padding-right: 10px; font-size:20px;color: gray;">
+                                                                        ${product.price}
                                                                     </span>
-                                                                    <span style="text-decoration: line-through;
-                                                                          padding-right: 10px; font-size:20px;color: gray;">
-                                                                        ${product.price}</span></h2>
-                                                                    </c:when>
-                                                                    <c:otherwise>
+                                                                </h2>
+                                                            </c:when>
+                                                            <c:otherwise>
                                                                 <h2>${product.price}</h2>
                                                             </c:otherwise>
                                                         </c:choose>
@@ -165,7 +165,6 @@
                                                     </div>
 
                                                     <!-- Tag -->
-
                                                     <c:choose>
                                                         <c:when test="${not empty sale}">
                                                             <img src="${pageContext.request.contextPath}/Images/Home/sale.png" class="new" alt="Sale" />
@@ -186,31 +185,25 @@
                             </c:choose>
 
                         </div>
+                         <!--<p>abc ${log} abc</p>-->
                         <!-- Pagination -->
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
                             <ul class="pagination" style="justify-content: center;font-size: 14px">
                                 <c:if test="${totalPages > 0}">
                                     <c:forEach var="i" begin="1" end="${totalPages}">
-                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="viewList?page=${i}&searchId=${searchId}
-                                               &name=${name}&email=${email}&mobile=${mobile}
-                                               &availability=${availability}&specialization=${specialization}">${i}</a>
+                                        <li class=" ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
                                         </li>
                                     </c:forEach>
                                 </c:if>
-                            </ul>
-                        </nav>
-                        <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
-                            <ul class="pagination" style="justify-content: center;font-size: 14px">
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Show More</a>
-                                </li>
                             </ul>
                         </nav>
                     </div>
                 </div>
             </div>
         </section>
+       
+
         <c:import url="/Template/footer1.jsp" />
     </body>
     <script src="${pageContext.request.contextPath}/js/jquery.js"></script>

@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.SliderDAO;
 import Models.Product;
 import java.io.IOException;
@@ -13,8 +14,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,40 +38,7 @@ public class PublicProductListServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       response.setContentType("text/html;charset=UTF-8");
-        ProductDAO pDAO = new ProductDAO();
-        SliderDAO sDAO = new SliderDAO();
-        Map<Integer, String> bList = ProductDAO.getAllBrand();
-        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
-        Map<Product, Map<Boolean, String>> productList = ProductDAO.getProductListHome(9);
-        Map<Map<String, String>, Map<String, String>> sList = SliderDAO.getCurrentSliderList();
 
-        if (bList != null && !bList.isEmpty()) {
-            request.setAttribute("brandList", bList);
-        }
-        if (cList != null && !cList.isEmpty()) {
-            request.setAttribute("categoryList", cList);
-        }
-        if (productList != null && !productList.isEmpty()) {
-            request.setAttribute("productList", productList);
-        }
-
-        if (sList != null && !sList.isEmpty()) {
-            // Tạo hai Map để tách dữ liệu
-            Map<String, String> sliderContent = new LinkedHashMap<>(); // Giữ thứ tự
-            Map<String, String> sliderLink = new HashMap<>();
-
-            // Lặp qua sList để lấy dữ liệu
-            for (Map.Entry<Map<String, String>, Map<String, String>> entry : sList.entrySet()) {
-                sliderContent.putAll(entry.getKey()); // Lưu title và content
-                sliderLink.putAll(entry.getValue()); // Lưu title và image link
-            }
-
-            // Đặt vào request
-            request.setAttribute("sliderContent", sliderContent);
-            request.setAttribute("sliderLink", sliderLink);
-            request.getRequestDispatcher("Home/ViewPublicProductList.jsp").forward(request, response);
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -82,7 +53,130 @@ public class PublicProductListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        SliderDAO sDAO = new SliderDAO();
+
+        // Left side brand
+        List<Object[]> bList = SettingDAO.getPublicBrandList();
+        if (bList != null && !bList.isEmpty()) {
+            request.setAttribute("brandList", bList);
+        }
+
+        // Left side category
+        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        if (cList != null && !cList.isEmpty()) {
+            request.setAttribute("categoryList", cList);
+        }
+
+        // Product List
+        List<Map.Entry<Product, Map<Boolean, String>>> productList = ProductDAO.getProductListPublic(0);
+
+        // Xây dựng URL hiện tại
+        StringBuilder currentLink = new StringBuilder();
+
+        // filter
+        if (productList != null && !productList.isEmpty()) {
+            // DungPT code here
+
+            Iterator<Map.Entry<Product, Map<Boolean, String>>> iterator = productList.iterator();
+
+            // get Parameter
+            String categoryParam = request.getParameter("category");
+            String brandParam = request.getParameter("brand");
+
+            // tao category
+            Integer category = (categoryParam != null && !categoryParam.isEmpty()) ? Integer.valueOf(categoryParam) : null;
+            Integer brand = (brandParam != null && !brandParam.isEmpty()) ? Integer.valueOf(brandParam) : null;
+
+            while (iterator.hasNext()) {
+                Map.Entry<Product, Map<Boolean, String>> entry = iterator.next();
+                Product product = entry.getKey();
+
+                // Lọc theo category
+                if (category != null) {
+                    String categoryName = ProductDAO.getCategoryNameById(category);
+                    if (!categoryName.equals(product.getCategoryName())) {
+                        iterator.remove(); // Xóa nếu không khớp
+                        continue; // Tiếp tục vòng lặp, tránh kiểm tra brand nếu đã bị xóa
+                    }
+
+                }
+
+                // Lọc theo brand
+                if (brand != null) {
+                    String brandName = ProductDAO.getBrandNameById(brand);
+                    if (!brandName.equals(product.getBrandName())) {
+                        iterator.remove(); // Xóa nếu không khớp
+                    }
+
+                }
+            }
+
+// Truyền currentLink về JSP
+            if (category != null) {
+                currentLink.append("category=").append(category).append("&");
+            }
+            if (brand != null) {
+                currentLink.append("brand=").append(brand).append("&");
+            }
+
+            request.setAttribute("currentLink", currentLink.toString());
+
+        }
+
+        // phan trang start
+        // Tính toán số lượng trang
+        int totalProducts = productList.size();
+        int productPerPage = SettingDAO.getPublicProductPerPage();
+        int totalPages = (int) Math.ceil((double) totalProducts / productPerPage);
+
+        // Lấy số trang hiện tại từ tham số yêu cầu
+        String pageParam = request.getParameter("page");
+        int currentPage = 1;
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+                if (currentPage < 1) {
+                    currentPage = 1;
+                } else if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+            } catch (NumberFormatException e) {
+                currentPage = 1;
+            }
+        }
+//        currentLink += "page=" + currentPage + "&";
+
+        // Tính toán chỉ số cho subList
+        int startIndex = (currentPage - 1) * productPerPage;
+        int endIndex = Math.min(startIndex + productPerPage, totalProducts);
+
+        // Lấy subList cho trang hiện tại 
+        List<Map.Entry<Product, Map<Boolean, String>>> subProductList = new ArrayList<>();
+        if (!productList.isEmpty()) {
+            subProductList = productList.subList(startIndex, endIndex);
+        }
+
+        // Truyền dữ liệu lên JSP
+        request.setAttribute("productList", subProductList);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", currentPage);
+
+        request.setAttribute("currentLink", currentLink);
+
+        if (productList != null && !productList.isEmpty()) {
+            request.setAttribute("productList", subProductList);
+        }
+
+        // phan trang end
+//        // log: test subList
+//        String log = "";
+//                for (Map.Entry<Product, Map<Boolean, String>> entry : subProductList) {
+//            log += entry.getKey().getProductId();
+//        }
+//        request.setAttribute("log", log);
+        // truyen du lieu
+        request.getRequestDispatcher("Home/ViewPublicProductList.jsp").forward(request, response);
     }
 
     /**

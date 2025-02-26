@@ -37,7 +37,7 @@
                         <c:forEach var="category" items="${categoryList}">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h4 class="panel-title  " ><a href="${category.key}">${category.value}</a></h4>
+                                    <h4 class="panel-title  " ><a href="PublicProductList?category=${category.key}">${category.value}</a></h4>
 
                                 </div>
                             </div>
@@ -56,9 +56,9 @@
                             <ul class="nav nav-pills nav-stacked d-flex flex-column">
                                 <c:forEach var="brand" items="${brandList}">
                                     <li>
-                                        <a href="${brand.key}">
-                                            <span class="pull-right">(50)</span>
-                                            ${brand.value}
+                                        <a href="PublicProductList?brand=${brand[0]}">
+                                            <span class="pull-right">(${brand[2]})</span>
+                                            ${brand[1]}
                                         </a>
                                     </li>
                                 </c:forEach>

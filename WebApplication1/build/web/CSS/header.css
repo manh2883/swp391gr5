@@ -1,0 +1,20 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 2, 2025, 6:20:44 PM
+    Author     : Acer
+*/
+
+          .shop-menu .nav {
+                display: flex;
+                justify-content: flex-end; /* Đặt các phần tử ở bên phải */
+            }
+
+            .shop-menu .nav li {
+                display: inline-block; /* Đảm bảo li nằm ngang */
+                margin-right: 10px; /* Thêm khoảng cách giữa các phần tử */
+            }
+
+           

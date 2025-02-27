@@ -4,14 +4,18 @@
  */
 package controllers;
 
+import DAO.PermissionDAO;
 import DAO.ProductDAO;
+import Models.Account;
 import Models.Product;
+import com.mysql.cj.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 /**
@@ -37,7 +41,7 @@ public class ProductListManagerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductListManagerServlet</title>");            
+            out.println("<title>Servlet ProductListManagerServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet ProductListManagerServlet at " + request.getContextPath() + "</h1>");
@@ -58,10 +62,39 @@ public class ProductListManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProductDAO pDAO = new ProductDAO();
-        ArrayList<Product> ProductList = pDAO.getAllProducts();
-        request.setAttribute("ProductList", ProductList);
-        request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("ProductList", role)) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                } else {
+                    //Main Process
+                    ProductDAO pdDAO = new ProductDAO();
+                    ArrayList<Product> ProductList = pdDAO.getAllProducts();
+                    
+                    
+                    
+                    
+                    
+                    
+                    request.setAttribute("ProductList", ProductList);
+                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("message", "role not found");
+                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            }
+        } else {
+            request.setAttribute("message", "account not found");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+        }
+
     }
 
     /**

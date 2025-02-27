@@ -66,39 +66,32 @@ public class CheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        // Giả sử bạn có cách để lấy thông tin người dùng đã đăng nhập
-        // và lưu trữ trong biến `user`
         Account account = (Account) session.getAttribute("account");
 
         if (account == null) {
-            // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("Login");
             return;
         }
-        User user = UserDAO.getUserById(account.getAccountId());
-        // Lấy danh sách địa chỉ đã lưu của người dùng
-        List<UserAddress> addressList  = new ArrayList<>();// Bạn cần triển khai phương thức này trong lớp User
 
-        // Lấy địa chỉ được chọn (nếu có)
+        User user = CartDAO.getUserByID(account.getAccountId());
+        List<UserAddress> addressList = CartDAO.getUserAddresses(user.getUserId());
+
         String selectedAddressId = request.getParameter("addressId");
-            UserAddress selectedAddress = null;
+        UserAddress selectedAddress = null;
+
         if (selectedAddressId != null && !selectedAddressId.equals("new")) {
-                int addressId = Integer.parseInt(selectedAddressId);
-                selectedAddress = UserDAO.getUserAddressById(addressId);
-            } else if (!addressList.isEmpty()) {
-                selectedAddress = addressList.get(0);
-            } else {
-                selectedAddress = new UserAddress(); // Địa chỉ trống
-            }
-        // Lưu địa chỉ đã chọn vào session để giữ lại khi làm mới trang
-            session.setAttribute("selectedAddress", selectedAddress);
+            selectedAddress = CartDAO.getUserAddressById(Integer.parseInt(selectedAddressId));
+        } else if (!addressList.isEmpty()) {
+            selectedAddress = addressList.get(0);
+        } else {
+            selectedAddress = new UserAddress();
+        }
 
-            // Đặt các thuộc tính cần thiết vào request
-            request.setAttribute("user", account);
-            request.setAttribute("addressList", addressList);
-            request.setAttribute("selectedAddress", selectedAddress);
+        session.setAttribute("selectedAddress", selectedAddress);
+        request.setAttribute("user", user);
+        request.setAttribute("addressList", addressList);
+        request.setAttribute("selectedAddress", selectedAddress);
 
-            // Chuyển tiếp yêu cầu tới JSP
         request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
     }
 

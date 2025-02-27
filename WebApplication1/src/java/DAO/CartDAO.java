@@ -7,10 +7,13 @@ package DAO;
 import DBContext.DBContext;
 import Models.CartDetail;
 import Models.Product;
+import Models.User;
+import Models.UserAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.tomcat.dbcp.dbcp2.SQLExceptionList;
 
 /**
  *
@@ -101,73 +104,72 @@ public class CartDAO extends DBContext {
     }
 
     public void editCartDetailByID(int userID, int cartDetailID, String action) {
-    if (userID <= 0 || cartDetailID <= 0 || action == null) {
-        throw new IllegalArgumentException("Tham số không hợp lệ.");
-    }
+        if (userID <= 0 || cartDetailID <= 0 || action == null) {
+            throw new IllegalArgumentException("Tham số không hợp lệ.");
+        }
 
-    String updateQuery = "";
-    String deleteQuery = "";
-    if ("increment".equals(action)) {
-        updateQuery = "UPDATE cart_detail cd "
-                + "JOIN cart c ON cd.cart_id = c.cart_id "
-                + "SET cd.quantity = cd.quantity + 1, cd.updated_date = NOW() "
-                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
-    } else if ("decrement".equals(action)) {
-        updateQuery = "UPDATE cart_detail cd "
-                + "JOIN cart c ON cd.cart_id = c.cart_id "
-                + "SET cd.quantity = cd.quantity - 1, cd.updated_date = NOW() "
-                + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+        String updateQuery = "";
+        String deleteQuery = "";
+        if ("increment".equals(action)) {
+            updateQuery = "UPDATE cart_detail cd "
+                    + "JOIN cart c ON cd.cart_id = c.cart_id "
+                    + "SET cd.quantity = cd.quantity + 1, cd.updated_date = NOW() "
+                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
+        } else if ("decrement".equals(action)) {
+            updateQuery = "UPDATE cart_detail cd "
+                    + "JOIN cart c ON cd.cart_id = c.cart_id "
+                    + "SET cd.quantity = cd.quantity - 1, cd.updated_date = NOW() "
+                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
 
-        deleteQuery = "DELETE cd FROM cart_detail cd "
-                + "JOIN cart c ON cd.cart_id = c.cart_id "
-                + "WHERE cd.cart_detail_id = ? AND c.user_id = ? AND cd.quantity <= 0";
-    } else {
-        return;
-    }
+            deleteQuery = "DELETE cd FROM cart_detail cd "
+                    + "JOIN cart c ON cd.cart_id = c.cart_id "
+                    + "WHERE cd.cart_detail_id = ? AND c.user_id = ? AND cd.quantity <= 0";
+        } else {
+            return;
+        }
 
-    try {
-        DBContext db = new DBContext();
-        java.sql.Connection con = db.getConnection();
-        
-        con.setAutoCommit(false); // 🔹 Tắt autoCommit để có thể rollback khi cần
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
 
-        try (PreparedStatement updateStm = con.prepareStatement(updateQuery)) {
-            updateStm.setInt(1, cartDetailID);
-            updateStm.setInt(2, userID);
-            int updateCount = updateStm.executeUpdate();
+            con.setAutoCommit(false); // 🔹 Tắt autoCommit để có thể rollback khi cần
 
-            if (updateCount == 0) {
-                con.rollback();  // 🔴 Chỉ rollback nếu đã setAutoCommit(false)
-                System.out.println("Cập nhật thất bại. Kiểm tra lại cartDetailID và userID.");
-                return;
-            }
+            try (PreparedStatement updateStm = con.prepareStatement(updateQuery)) {
+                updateStm.setInt(1, cartDetailID);
+                updateStm.setInt(2, userID);
+                int updateCount = updateStm.executeUpdate();
 
-            if ("decrement".equals(action) && !deleteQuery.isEmpty()) {
-                try (PreparedStatement deleteStm = con.prepareStatement(deleteQuery)) {
-                    deleteStm.setInt(1, cartDetailID);
-                    deleteStm.setInt(2, userID);
-                    int deleteCount = deleteStm.executeUpdate();
-                    if (deleteCount > 0) {
-                        System.out.println("Sản phẩm đã bị xóa khỏi giỏ hàng do số lượng <= 0.");
+                if (updateCount == 0) {
+                    con.rollback();  // 🔴 Chỉ rollback nếu đã setAutoCommit(false)
+                    System.out.println("Cập nhật thất bại. Kiểm tra lại cartDetailID và userID.");
+                    return;
+                }
+
+                if ("decrement".equals(action) && !deleteQuery.isEmpty()) {
+                    try (PreparedStatement deleteStm = con.prepareStatement(deleteQuery)) {
+                        deleteStm.setInt(1, cartDetailID);
+                        deleteStm.setInt(2, userID);
+                        int deleteCount = deleteStm.executeUpdate();
+                        if (deleteCount > 0) {
+                            System.out.println("Sản phẩm đã bị xóa khỏi giỏ hàng do số lượng <= 0.");
+                        }
                     }
                 }
+
+                con.commit();  // ✅ Commit nếu mọi thứ thành công
+                updateStm.close();
+                System.out.println("Cập nhật giỏ hàng thành công.");
+
+            } catch (Exception e) {
+                con.rollback();  // 🔴 Rollback nếu có lỗi
+                e.printStackTrace();
+            } finally {
+                con.setAutoCommit(true);  // ✅ Bật lại autoCommit sau khi xong
             }
-
-            con.commit();  // ✅ Commit nếu mọi thứ thành công
-            updateStm.close();
-            System.out.println("Cập nhật giỏ hàng thành công.");
-
         } catch (Exception e) {
-            con.rollback();  // 🔴 Rollback nếu có lỗi
             e.printStackTrace();
-        } finally {
-            con.setAutoCommit(true);  // ✅ Bật lại autoCommit sau khi xong
         }
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
-
 
     public boolean deleteCartDetailByID(int userID, int cartDetailID) {
         if (userID <= 0 || cartDetailID <= 0) {
@@ -252,16 +254,142 @@ public class CartDAO extends DBContext {
         }
         return cartDetail;
     }
-    
+
+    public static User getUserByID(int userID) {
+        User user = null;
+        String query = "SELECT * FROM user WHERE user_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userID);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setDoB(rs.getTimestamp("DoB"));
+                user.setGender(rs.getInt("gender"));
+                user.setAvtLink(rs.getString("avt_link"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setUpdatedAt(rs.getTimestamp("updated_at"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static List<User> getAllUser() {
+        List<User> user = new ArrayList<>();
+        String query = "SELECT * FROM user";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                User u = new User();
+                u.setUserId(rs.getInt("user_id"));
+                u.setDoB(rs.getTimestamp("DoB"));
+                u.setGender(rs.getInt("gender"));
+                u.setAvtLink(rs.getString("avt_link"));
+                u.setFirstName(rs.getString("first_name"));
+                u.setLastName(rs.getString("last_name"));
+                u.setEmail(rs.getString("email"));
+                u.setPhoneNumber(rs.getString("phone_number"));
+                u.setCreatedAt(rs.getTimestamp("created_at"));
+                u.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                user.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static List<UserAddress> getUserAddresses(int userID) {
+        List<UserAddress> addr = new ArrayList<>();
+        String query = "SELECT * FROM user_address WHERE user_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userID);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                UserAddress ua = new UserAddress();
+                ua.setUserID(rs.getInt("user_id"));
+                ua.setAddressID(rs.getInt("address_id"));
+                ua.setAddressLine(rs.getString("address_content"));
+
+                addr.add(ua);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return addr;
+    }
+
+    public static UserAddress getUserAddressById(int addressID) {
+        String query = "SELECT * FROM user_address WHERE address_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, addressID);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                UserAddress ua = new UserAddress();
+                ua.setUserID(rs.getInt("user_id"));
+                ua.setAddressID(rs.getInt("address_id"));
+                ua.setAddressLine(rs.getString("address_content"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static boolean insertAddress(int userID, String addressContent) {
+        String query = "INSERT INTO user_address (user_id, address_content) VALUES (?, ?)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userID);
+            stm.setString(2, addressContent);
+            return stm.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         CartDAO cDAO = new CartDAO();
+        UserDAO uDAO = new UserDAO();
+        int userID = 2; // Đảm bảo user này tồn tại trong bảng user
+        String newAddress = "456 Đường XYZ, Quận 2, TP.HCM";
         //        System.out.println(cDAO.getCartIDByUserID(1));
         //        cDAO.createCartForUserID(1);
         //        System.out.println(cDAO.getCartIDByUserID(1));
-        //        for (CartDetail c : cDAO.getAllCartDetailByUserID(4)) {
-        //            System.out.println(c);
-        //        }
-        cDAO.getCartDetailByID(1);
-        System.out.println(cDAO.getCartDetailByID(1));
+//        for (UserAddress u : uDAO.getUserAddresses(2)) {
+//            System.out.println(u);
+//        }
+//        cDAO.getUserByID(1);
+//        System.out.println(cDAO.getUserByID(1));
+//        boolean isInserted = cDAO.insertAddress(userID, newAddress);
+//        if (isInserted) {
+//            System.out.println("Thêm địa chỉ thành công!");
+//        } else {
+//            System.out.println("Thêm địa chỉ thất bại!");
+//        }
     }
 }

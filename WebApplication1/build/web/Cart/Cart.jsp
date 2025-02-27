@@ -148,7 +148,8 @@
                     </table>
 
                     <div style="text-align: right; margin-top: 20px;">
-                        <button type="button" class="btn btn-primary" onclick="submitCheckout()">Checkout</button>
+                        <button type="button" class="btn btn-primary" id="checkoutButton" onclick="submitCheckout()" disabled>Checkout</button>
+
                     </div>
 
                 </div>
@@ -182,7 +183,7 @@
 
                 selectedItems.forEach(item => {
                     selectedValues.push(item.value);
-                });
+                }); 
 
                 if (selectedValues.length === 0) {
                     alert("Please select at least one item to checkout.");
@@ -192,6 +193,31 @@
                 document.getElementById('selectedItems').value = selectedValues.join(",");
                 document.getElementById('checkoutForm').submit();
             }
+            document.addEventListener("DOMContentLoaded", function () {
+                const checkboxes = document.querySelectorAll('.itemCheckbox');
+                const checkoutButton = document.getElementById('checkoutButton');
+                const selectAll = document.getElementById('selectAll');
+
+                function updateCheckoutButton() {
+                    const anyChecked = document.querySelector('.itemCheckbox:checked') !== null;
+                    checkoutButton.disabled = !anyChecked;
+                }
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateCheckoutButton);
+                });
+
+                // Nếu có checkbox "Chọn tất cả", xử lý sự kiện click để đồng bộ
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = selectAll.checked;
+                        });
+                        updateCheckoutButton();
+                    });
+                }
+            });
+
         </script>
         <c:import url="/Template/footer1.jsp" />
     </body>

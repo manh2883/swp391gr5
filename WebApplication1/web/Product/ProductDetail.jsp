@@ -294,6 +294,7 @@
                                         </span>
                                     </form>
 
+                                            
 
 
 <!--                                    <p><b>Category:</b>${product.categoryName}</p>

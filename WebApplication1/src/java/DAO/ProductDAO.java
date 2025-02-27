@@ -725,18 +725,9 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) {
         ProductDAO pDAO = new ProductDAO();
-
-//        System.out.println(getVariantByColorAndSize("P002", "Black", "M"));
-        CartDAO cDAO = new CartDAO();
-        System.out.println("Start");
-        for (CartDetail cd : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(cd);
-        }
-        System.out.println("========");
-        ProductDAO.addToCart("p001", "Red", "M", 4);
-        System.out.println("========");
-        for (CartDetail cd : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(cd);
+        
+        for(Product p: pDAO.getAllProducts()){
+            System.out.println(p);
         }
     }
 }

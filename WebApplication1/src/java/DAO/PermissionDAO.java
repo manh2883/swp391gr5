@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import models.Permission;
 
 /**
@@ -31,10 +32,11 @@ public class PermissionDAO {
     }
 
     public static boolean checkPermissionForRole(String permissionName, int roleId) {
-        ArrayList<Permission> list = getPermissionByName(permissionName);
+        ArrayList<Object> list = getPermissionByName(permissionName);
 
-        for (Permission p : list) {
-            if (roleId == p.getRoleId()) {
+        for (Object p : list) {
+            HashMap<String, Object> map = (HashMap<String, Object>) p;
+            if (roleId == Integer.valueOf((int) map.get("role_id"))) {
                 return true;
             }
         }
@@ -74,12 +76,13 @@ public class PermissionDAO {
         return list;
     }
 
-    public static ArrayList<Permission> getPermissionByName(String permissionName) {
+    public static ArrayList<Object> getPermissionByName(String permissionName) {
         String query = """
-                       SELECT permission.permission_id, permission_name, role_id from permission 
-                       join role_permission on permission.permission_id = role_permission.permission_id 
-                       where permission_name = ?""";
-        ArrayList<Permission> list = new ArrayList<>();
+                   SELECT permission.permission_id, permission_name, role_id 
+                   FROM permission 
+                   JOIN role_permission ON permission.permission_id = role_permission.permission_id 
+                   WHERE permission_name = ?""";
+        ArrayList<Object> list = new ArrayList<>();
 
         try {
             DBContext db = new DBContext();
@@ -89,10 +92,10 @@ public class PermissionDAO {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                Permission per = new Permission();
-                per.setPermissionId(rs.getInt("permission_id"));
-                per.setPermissionName(rs.getString("permission_name"));
-                per.setRoleId(rs.getInt("role_id"));
+                HashMap<String, Object> per = new HashMap<>();
+                per.put("permission_id", rs.getInt("permission_id"));
+                per.put("permission_name", rs.getString("permission_name"));
+                per.put("role_id", rs.getInt("role_id"));
                 list.add(per);
             }
 
@@ -120,16 +123,16 @@ public class PermissionDAO {
 
     public static void main(String[] args) {
         PermissionDAO pDAO = new PermissionDAO();
+//
+//        System.out.println("Cac quyen cua roleId = 1:");
+//        for (Permission p : pDAO.getPermissionById(1)) {
+//            System.out.println(p);
+//        }
+//        System.out.println("-------------");
+//        for (Permission p : pDAO.getPermissionByName("ViewProducts")) {
+//            System.out.println(p);
+//        }
 
-        System.out.println("Cac quyen cua roleId = 1:");
-        for (Permission p : pDAO.getPermissionById(1)) {
-            System.out.println(p);
-        }
-        System.out.println("-------------");
-        for (Permission p : pDAO.getPermissionByName("ViewProducts")) {
-            System.out.println(p);
-        }
-        
-        System.out.println(pDAO.checkPermission(1, "ViewProducts"));
+        System.out.println(pDAO.checkPermissionForRole("ProductList", 1));
     }
 }

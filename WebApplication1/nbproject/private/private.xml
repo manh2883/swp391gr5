@@ -12,11 +12,22 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/D:/SWP/swp391gr5/WebApplication1/web/Cart/Checkout.jsp</file>
             <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/controllers/CheckoutServlet.java</file>
             <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/DAO/CartDAO.java</file>
             <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/Models/UserAddress.java</file>
             <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/Models/User.java</file>
+=======
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/AdminDashBoard/CustomerList.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Home/ViewPublicProductList.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/left_side_bar_admin.jspf</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/SettingDAO.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Product/ProductListManager.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/admin/AdminDashBoardServlet.java</file>
+>>>>>>> 3d88f6d264e658b3c30ba25d29f6d3f907b521a0
         </group>
     </open-files>
 </project-private>

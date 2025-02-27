@@ -67,7 +67,7 @@
                                 <c:choose>
                                     <c:when test="${not empty account and account.roleId != 2 and  not empty account.roleId}">
                                         <li class="dropdown">
-                                            <a href="${pageContext.request.contextPath}/DashBoard">Dashboard</a>
+                                            <a href="${pageContext.request.contextPath}/RedirectDashBoard">Dashboard</a>
                                         </li>
                                     </c:when>
                                     <c:otherwise>

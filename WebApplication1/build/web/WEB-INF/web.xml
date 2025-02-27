@@ -84,6 +84,13 @@
         <servlet-name>MyOrderServlet</servlet-name>
         <servlet-class>controllers.MyOrderServlet</servlet-class>
     </servlet>
+<<<<<<< HEAD
+=======
+    <servlet>
+        <servlet-name>RedirectDashBoardServlet</servlet-name>
+        <servlet-class>controllers.RedirectDashBoardServlet</servlet-class>
+    </servlet>
+>>>>>>> 3d88f6d264e658b3c30ba25d29f6d3f907b521a0
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -168,6 +175,13 @@
         <servlet-name>MyOrderServlet</servlet-name>
         <url-pattern>/MyOrderServlet</url-pattern>
     </servlet-mapping>
+<<<<<<< HEAD
+=======
+    <servlet-mapping>
+        <servlet-name>RedirectDashBoardServlet</servlet-name>
+        <url-pattern>/RedirectDashBoard</url-pattern>
+    </servlet-mapping>
+>>>>>>> 3d88f6d264e658b3c30ba25d29f6d3f907b521a0
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>
     </welcome-file-list>

@@ -18,19 +18,23 @@ public class Product {
     private double price;
     private String brandName;
     private String categoryName;
+    private String categoryId;
+    private String imagesPath;
     private Date createAt;
     private String imgUrl;
     
     public Product() {
     }
 
-    public Product(String productId, String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
+    public Product(String productId, String name, String description, double price, String brandName, String categoryName,String categoryId,String imagesPath, Timestamp createAt, String imgUrl) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.brandName = brandName;
         this.categoryName = categoryName;
+        this.categoryId = categoryId;
+        this.imagesPath = imagesPath;
         this.createAt = createAt;
         if(imgUrl == null || imgUrl.isEmpty()) {
             this.imgUrl = "Images/RUN.jpg";
@@ -41,12 +45,14 @@ public class Product {
 
    
 
-    public Product(String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
+    public Product(String name, String description, double price, String brandName, String categoryName, String categoryId, String imagesPath, Timestamp createAt, String imgUrl) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.brandName = brandName;
         this.categoryName = categoryName;
+        this.categoryId = categoryId;
+        this.imagesPath = imagesPath;
         this.createAt = createAt;
         this.imgUrl = imgUrl;
     }
@@ -115,10 +121,30 @@ public class Product {
         this.imgUrl = imgUrl;
     }
 
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getImagesPath() {
+        return imagesPath;
+    }
+
+    public void setImagesPath(String imagesPath) {
+        this.imagesPath = imagesPath;
+    }
+
     @Override
     public String toString() {
-        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
+        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", categoryId=" + categoryId + ", imagesPath=" + imagesPath + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
     }
+    
+    
+
+    
 
     
 }

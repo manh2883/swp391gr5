@@ -44,7 +44,7 @@ public class OrderDAO {
 
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT orderId, userId, totalAmount, statusId, createAt FROM orders ORDER BY createAt DESC";
+        String query = "SELECT order_id, user_id, total_amount, status_id, created_at FROM orders ORDER BY created_at DESC";
 
         try {
             DBContext db = new DBContext();
@@ -57,9 +57,9 @@ public class OrderDAO {
                 int userId = rs.getInt("userId");
                 double totalAmount = rs.getDouble("totalAmount");
                 int statusId = rs.getInt("statusId");
-                String createAt = rs.getString("createAt");
+                String createdAt = rs.getString("createdAt");
 
-//                orders.add(new Order(orderId, userId, totalAmount, statusId, createAt));
+//                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class OrderDAO {
 
     public List<Order> getOrdersByStatus(String status) {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT orderId, userId, totalAmount, statusId, createAt FROM orders WHERE statusId = ? ORDER BY createAt DESC";
+        String query = "SELECT order_id, user_id, total_amount, status_id, created_at FROM orders WHERE status_id = ? ORDER BY created_at DESC";
 
         try {
 
@@ -84,9 +84,9 @@ public class OrderDAO {
                 int userId = rs.getInt("userId");
                 double totalAmount = rs.getDouble("totalAmount");
                 int statusId = rs.getInt("statusId");
-                String createAt = rs.getString("createAt");
+                String createdAt = rs.getString("createdAt");
 
-//                orders.add(new Order(orderId, userId, totalAmount, statusId, createAt));
+//                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class OrderDAO {
 
     public List<Order> getOrdersByUserIdAndStatus(int userId, String status) {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT orderId, totalAmount, statusId, createAt FROM orders WHERE userId = ? AND statusId = ? ORDER BY createAt DESC";
+        String query = "SELECT order_id, total_amount, status_id, created_at FROM orders WHERE user_id = ? AND status_id = ? ORDER BY created_at DESC";
 
         try {
 
@@ -111,9 +111,9 @@ public class OrderDAO {
                 int orderId = rs.getInt("orderId");
                 double totalAmount = rs.getDouble("totalAmount");
                 int statusId = rs.getInt("statusId");
-                String createAt = rs.getString("createAt");
+                String createdAt = rs.getString("createdAt");
 
-//                orders.add(new Order(orderId, userId, totalAmount, statusId, createAt));
+//                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +123,7 @@ public class OrderDAO {
     
     public static List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
-        String query = "SELECT orderDetailId, orderId, productId, quantity, price FROM order_details WHERE orderId = ?";
+        String query = "SELECT order_detail_id, order_id, product_id, quantity, price FROM order_detail WHERE order_id = ?";
         
         try {
             DBContext db = new DBContext();
@@ -133,18 +133,20 @@ public class OrderDAO {
             ResultSet rs = stm.executeQuery();
             
             while (rs.next()) {
-                int orderDetailId = rs.getInt("orderDetailId");
+                String orderdetailId = rs.getString("orderdetailId");               
                 int productId = rs.getInt("productId");
                 int quantity = rs.getInt("quantity");
                 double price = rs.getDouble("price");
                 
-//                orderDetails.add(new OrderDetail(orderDetailId, orderId, productId, quantity, price));
+//                orderDetails.add(new OrderDetail(orderdetailId, orderId, productId, quantity, price));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return orderDetails;
     }
-    
+    public static void main(String[] args) {
+        System.out.println(getOrderDetailsByOrderId(1));
+    }
 
 }

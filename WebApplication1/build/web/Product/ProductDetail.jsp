@@ -189,7 +189,12 @@
                             </div>
 
                             <div class="shipping text-center">
-                                <img src="${pageContext.request.contextPath}/Images/Home/shipping.jpg" alt="" />
+<!--                                <img src="${pageContext.request.contextPath}/Images/Home/shipping.jpg" alt="" />-->
+                                <img src="${product.imagePath}" alt="Product Image" width="300">
+                                <p>Name: ${product.name}</p>
+                                <p>Description: ${product.description}</p>
+                                <p>Price: ${product.price} $</p>
+
                             </div>
 
                         </div>
@@ -294,7 +299,7 @@
                                         </span>
                                     </form>
 
-                                            
+
 
 
 <!--                                    <p><b>Category:</b>${product.categoryName}</p>

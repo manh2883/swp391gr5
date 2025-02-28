@@ -16,34 +16,30 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Add Product</h2>
-        <form action="AddProduct" method="post">
-            <div class="mb-3">
-                <label for="product_id" class="form-label">Product ID</label>
-                <input type="text" class="form-control" id="product_id" name="product_id" required>
-            </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="brand_id" class="form-label">Brand ID</label>
-                <input type="number" class="form-control" id="brand_id" name="brand_id" required>
-            </div>
-            <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" step="0.01" class="form-control" id="price" name="price" required>
-            </div>
-            <div class="mb-3">
-                <label for="category_id" class="form-label">Category ID</label>
-                <input type="number" class="form-control" id="category_id" name="category_id" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Product</button>
-            <a href="products" class="btn btn-secondary">Cancel</a>
-        </form>
+        <form action="AddProductServlet" method="post" enctype="multipart/form-data">
+    <label>Name:</label>
+    <input type="text" name="name" required>
+    
+    <label>Description:</label>
+    <input type="text" name="description" required>
+    
+    <label>Price:</label>
+    <input type="number" name="price" step="0.01" required>
+    
+    <label>Category:</label>
+    <select name="category_id">
+        <option value="1">Category 1</option>
+        <option value="2">Category 2</option>
+    </select>
+    
+    <label>Image:</label>
+    <input type="file" name="image" accept="image/*" required>
+    
+    <button type="submit">Add Product</button>
+     <a href="products" class="btn btn-secondary">Cancel</a>
+
+</form>
+
         <div>
             ${message}
         </div>

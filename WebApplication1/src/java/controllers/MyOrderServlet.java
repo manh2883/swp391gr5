@@ -64,7 +64,7 @@ public class MyOrderServlet extends HttpServlet {
         Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
         
         if (userId == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("Order/OrderInformation.jsp");
             return;
         }
         
@@ -83,7 +83,7 @@ public class MyOrderServlet extends HttpServlet {
         }
         
         request.setAttribute("Orders", orders);
-        request.getRequestDispatcher("Order_List.jsp").forward(request, response);
+        request.getRequestDispatcher("Order/OrderList.jsp").forward(request, response);
     }
 
     /**
@@ -97,7 +97,7 @@ public class MyOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
     }
 
     /**

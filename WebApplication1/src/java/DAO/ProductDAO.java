@@ -116,22 +116,23 @@ public class ProductDAO extends DBContext {
     }
 
     public void addProduct(Product product) {
-        String query = "INSERT INTO Product (name, price, description, stock, category_id) VALUES (?, ?, ?, ?, ?)";
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(1, product.getName());
-            stm.setDouble(2, product.getPrice());
-            stm.setString(3, product.getDescription());
-            stm.setString(5, product.getCategoryName());
-            stm.executeUpdate();
-            stm.close();
-            con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    String query = "INSERT INTO Product (name, price, description, category_id, image_path) VALUES (?, ?, ?, ?, ?)";
+    try {
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        PreparedStatement stm = con.prepareStatement(query);
+        stm.setString(1, product.getName());
+        stm.setDouble(2, product.getPrice());
+        stm.setString(3, product.getDescription());
+        stm.setString(4, product.getCategoryId());
+        stm.setString(5, product.getImagesPath());
+        stm.executeUpdate();
+        stm.close();
+        con.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     public void updateProduct(Product product) {
         String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, category_id = ? WHERE product_id = ?";
@@ -442,7 +443,7 @@ public class ProductDAO extends DBContext {
             stm.setInt(3, variantId);
 
             int quantity = getStockForVariantProduct(productId, getColorForVariantProduct(productId, variantId), getSizeForVariantProduct(productId, variantId));
-            stm.setInt(4, quantity + 1);
+            stm.setInt(4,1);
             stm.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             stm.executeUpdate();
             stm.close();

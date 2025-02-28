@@ -26,7 +26,12 @@
                 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
                 <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57-precomposed.png">
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">-->
-                <link href="${pageContext.request.contextPath}/CSS/footer.css" rel="stylesheet">        
+        <link href="${pageContext.request.contextPath}/CSS/footer.css" rel="stylesheet">        
+        <style>
+            li{
+                background: transparent;
+            }
+        </style>
         
     </head>
     <body >
@@ -54,7 +59,7 @@
                                     <li><a href="">Mens</a></li>
                                     <li><a href="">Womens</a></li>
                                     <li><a href="">Gift Cards</a></li>
-                                    <li><a href="">Shoes</a></li>
+                                    <li style="background: transparent"><a href="">Shoes</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -64,7 +69,7 @@
                                 <ul class="nav nav-pills nav-stacked d-flex flex-column">
                                     <li><a href="">Terms of Use</a></li>
                                     <li><a href="">Privecy Policy</a></li>
-                                    <li><a href="">Refund Policy</a></li>
+                                    <li style="background: transparent"><a href="">Refund Policy</a></li>
                                     <li><a href="">Billing System</a></li>
                                     <li><a href="">Ticket System</a></li>
                                 </ul>
@@ -74,7 +79,7 @@
                             <div class="single-widget">
                                 <h2>About Shopper</h2>
                                 <ul class="nav nav-pills nav-stacked d-flex flex-column">
-                                    <li><a href="">Company Information</a></li>
+                                    <li style="background: transparent"><a href="">Company Information</a></li>
                                     <li><a href="">Careers</a></li>
                                     <li><a href="">Store Location</a></li>
                                     <li><a href="">Affillate Program</a></li>
@@ -95,7 +100,7 @@
             </div>
 
         </footer><!--/Footer-->
-        <script src="${pageContext.request.contextPath}/js/jquery.scrollUp.min.js"></script>
+
 
     </body>
 

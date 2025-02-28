@@ -34,7 +34,7 @@ public class AdminDashBoardServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoardServlet</title>");            
+            out.println("<title>Servlet AdminDashBoardServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet AdminDashBoardServlet at " + request.getContextPath() + "</h1>");
@@ -55,6 +55,14 @@ public class AdminDashBoardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        //side bar open
+        request.setAttribute("defaultDropdown", "userManager");
+        // set title
+        request.setAttribute("title", "Admin Dashboard");
+        // set breadcrumbs
+        request.setAttribute("breadcrumbs", "Customer List");
+    
         request.getRequestDispatcher("AdminDashBoard/CustomerList.jsp").forward(request, response);
     }
 
@@ -69,7 +77,7 @@ public class AdminDashBoardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**

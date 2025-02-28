@@ -1,120 +1,155 @@
-<%-- any content can be specified here e.g.: --%>
-
 <%@ page pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<nav id="sidebar" class="sidebar-wrapper">
 
-    <div class="sidebar-content" data-simplebar style="height: calc(100% - 60px);">
-        <!--        <div class="sidebar-brand">
-                    <a href="index.html">
-                        <img src="${pageContext.request.contextPath}/Images/Doctor/logo-dark.png" height="24" class="logo-light-mode" alt="">
-                        <img src="${pageContext.request.contextPath}/Images/Doctor/logo-light.png" height="24" class="logo-dark-mode" alt="">
+<%
+    String defaultDropdown = (String) request.getAttribute("defaultDropdown");
+%>
+
+<div class="left-sidebar">
+    <h2>Admin Dashboard</h2>
+    <div class="panel-group category-products" id="accordian">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#productManager">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        Product Manager
                     </a>
-                </div>-->
+                </h4>
+            </div>
+            <div id="productManager" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
+                        <li><a href="#">Displayed Category</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        <div class="left-sidebar" >
-            <ul class="sidebar-menu pt-3">
-                <li><a href="index.html"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
-                <li><a href="appointment.html"><i class="uil uil-stethoscope me-2 d-inline-block"></i>Appointment</a></li>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#userManager">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        User Manager
+                    </a>
+                </h4>
+            </div>
+            <div id="userManager" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="#">User List</a></li>
+                        <li><a href="#">Create New User</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Doctors</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="doctors.html">Doctors</a></li>
-                            <li><a href="add-doctor.html">Add Doctor</a></li>
-                            <li><a href="dr-profile.html">Profile</a></li>
-                        </ul>
-                    </div>
-                </li>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#saleDashboard">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        Sale Dashboard
+                    </a>
+                </h4>
+            </div>
+            <div id="saleDashboard" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="#">Order List</a></li>
+                        <li><a href="#">Sale Statistic</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-wheelchair me-2 d-inline-block"></i>Patients</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="patients.html">All Patients</a></li>
-                            <li><a href="add-patient.html">Add Patients</a></li>
-                            <li><a href="patient-profile.html">Profile</a></li>
-                        </ul>
-                    </div>
-                </li>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#marketingDashboard">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        Marketing Dashboard
+                    </a>
+                </h4>
+            </div>
+            <div id="marketingDashboard" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="#">Marketing Campaigns</a></li>
+                        <li><a href="#">Statistics</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-apps me-2 d-inline-block"></i>Apps</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="chat.html">Chat</a></li>
-                            <li><a href="email.html">Email</a></li>
-                            <li><a href="calendar.html">Calendar</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-shopping-cart me-2 d-inline-block"></i>Pharmacy</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="shop.html">Shop</a></li>
-                            <li><a href="product-detail.html">Shop Detail</a></li>
-                            <li><a href="shopcart.html">Shopcart</a></li>
-                            <li><a href="checkout.html">Checkout</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-flip-h me-2 d-inline-block"></i>Blogs</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="blogs.html">Blogs</a></li>
-                            <li><a href="blog-detail.html">Blog Detail</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-file me-2 d-inline-block"></i>Pages</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="faqs.html">FAQs</a></li>
-                            <li><a href="review.html">Reviews</a></li>
-                            <li><a href="invoice-list.html">Invoice List</a></li>
-                            <li><a href="invoice.html">Invoice</a></li>
-                            <li><a href="terms.html">Terms & Policy</a></li>
-                            <li><a href="privacy.html">Privacy Policy</a></li>
-                            <li><a href="error.html">404 !</a></li>
-                            <li><a href="blank-page.html">Blank Page</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="sidebar-dropdown">
-                    <a href="javascript:void(0)"><i class="uil uil-sign-in-alt me-2 d-inline-block"></i>Authentication</a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li><a href="login.html">Login</a></li>
-                            <li><a href="signup.html">Signup</a></li>
-                            <li><a href="forgot-password.html">Forgot Password</a></li>
-                            <li><a href="lock-screen.html">Lock Screen</a></li>
-                            <li><a href="thankyou.html">Thank you...!</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li><a href="components.html"><i class="uil uil-cube me-2 d-inline-block"></i>Components</a></li>
-
-                <li><a href="../landing/index-two.html" target="_blank"><i class="uil uil-window me-2 d-inline-block"></i>Landing page</a></li>
-            </ul>
-
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><a href="#">Permission</a></h4>
+            </div>
         </div>
     </div>
+</div>
 
-    <!--    <ul class="sidebar-footer list-unstyled mb-0">
-            <li class="list-inline-item mb-0 ms-1">
-                <a href="#" class="btn btn-icon btn-pills btn-soft-primary">
-                    <i class="uil uil-comment icons"></i>
-                </a>
-            </li>
-        </ul>-->
-</nav>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let panelTitles = document.querySelectorAll(".panel-title a");
+
+        panelTitles.forEach(panel => {
+            panel.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                let targetId = this.getAttribute("href").substring(1); // Lấy ID của dropdown
+                let targetPanel = document.getElementById(targetId);
+                if (!targetPanel)
+                    return;
+
+                let icon = this.querySelector(".fa");
+                let isActive = targetPanel.classList.contains("show");
+
+                let bsCollapse = new bootstrap.Collapse(targetPanel, {toggle: true});
+
+                // Nếu panel đang mở => Đóng nó
+                if (isActive) {
+                    bsCollapse.hide();
+                    if (icon)
+                        icon.classList.replace("fa-minus", "fa-plus");
+                } else {
+                    // Đóng tất cả các panel khác
+                    document.querySelectorAll(".panel-collapse.show").forEach(p => {
+                        let bsCollapseOther = new bootstrap.Collapse(p, {toggle: false});
+                        bsCollapseOther.hide();
+                        let otherIcon = p.previousElementSibling.querySelector(".fa");
+                        if (otherIcon)
+                            otherIcon.classList.replace("fa-minus", "fa-plus");
+                    });
+
+                    // Mở panel hiện tại
+                    bsCollapse.show();
+                    if (icon)
+                        icon.classList.replace("fa-plus", "fa-minus");
+                }
+            });
+        });
+
+        // Kiểm tra có cần mở dropdown mặc định không
+        let defaultPanelId = "<%= defaultDropdown %>";
+        if (defaultPanelId && defaultPanelId !== "none") {
+            let defaultPanel = document.getElementById(defaultPanelId);
+            if (defaultPanel) {
+                let defaultIcon = defaultPanel.previousElementSibling.querySelector(".fa");
+                let bsCollapse = new bootstrap.Collapse(defaultPanel, {toggle: true});
+                if (defaultIcon)
+                    defaultIcon.classList.replace("fa-plus", "fa-minus");
+            }
+        }
+    });
+</script>
+
+
+
+
+
 

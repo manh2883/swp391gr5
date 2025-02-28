@@ -80,11 +80,14 @@ public class ProductListManagerServlet extends HttpServlet {
                     
                     
                     
-                    
-                    
-                    
+                    //side bar open
+                    request.setAttribute("defaultDropdown", "productManager");
+                    // set title
+                    request.setAttribute("title", "Admin Dashboard");
+                    // set breadcrumbs
+                    request.setAttribute("breadcrumbs", "Product List");
                     request.setAttribute("ProductList", ProductList);
-                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
                 }
             } else {
                 request.setAttribute("message", "role not found");

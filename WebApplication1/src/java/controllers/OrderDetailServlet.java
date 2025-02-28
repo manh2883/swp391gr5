@@ -65,7 +65,7 @@ public class OrderDetailServlet extends HttpServlet {
     List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
 
         request.setAttribute("orderDetails", orderDetails);
-        request.getRequestDispatcher("order_detail.jsp").forward(request, response);
+        request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
     }
 
     /**

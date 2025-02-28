@@ -13,6 +13,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -27,6 +30,7 @@ public class AddProductServlet extends HttpServlet {
     public void init() throws ServletException {
         productDAO = new ProductDAO();
     }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,7 +48,7 @@ public class AddProductServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddProductServlet</title>");            
+            out.println("<title>Servlet AddProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet AddProductServlet at " + request.getContextPath() + "</h1>");
@@ -79,18 +83,39 @@ public class AddProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String productId = request.getParameter("product_id");
         String name = request.getParameter("name");
         String description = request.getParameter("description");
-        int brandId = Integer.parseInt(request.getParameter("brand_id"));
         double price = Double.parseDouble(request.getParameter("price"));
         int categoryId = Integer.parseInt(request.getParameter("category_id"));
-        
-//        //Product product = new Product(productId, name, description, "nike", price, categoryId);
-//        productDAO.addProduct(product);
-//        System.out.println(product);
-//        request.setAttribute("message", product);
-//        //response.sendRedirect("Product/ProductList.jsp");
+
+        // Xử lý upload ảnh
+        Part filePart = request.getPart("image"); // Lấy file từ form
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        String uploadPath = getServletContext().getRealPath("") + "images/products";
+
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        // Lưu ảnh vào thư mục
+        String filePath = uploadPath + File.separator + fileName;
+        filePart.write(filePath);
+
+        // Lưu đường dẫn ảnh vào database
+        String imagePath = "images/products/" + fileName;
+
+        // Tạo đối tượng Product
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setCategoryId("shirt");
+        product.getImagesPath();
+
+        productDAO.addProduct(product);
+
+        response.sendRedirect("ProductListServlet"); // Chuyển hướng sau khi thêm sản phẩm
         request.getRequestDispatcher("Product/AddProduct.jsp").forward(request, response);
     }
 

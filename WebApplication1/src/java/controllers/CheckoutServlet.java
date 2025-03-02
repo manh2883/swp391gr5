@@ -5,12 +5,12 @@
 package controllers;
 
 import DAO.CartDAO;
+import DAO.OrderDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
 import Models.User;
 import Models.UserAddress;
-import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -69,28 +69,22 @@ public class CheckoutServlet extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         if (account == null) {
-            response.sendRedirect("Login");
+            response.sendRedirect("Login.jsp");
             return;
         }
 
-        User user = CartDAO.getUserByID(account.getAccountId());
-        List<UserAddress> addressList = CartDAO.getUserAddresses(user.getUserId());
+        User user = (User) session.getAttribute("user");
+        List<UserAddress> userAddresses = (List<UserAddress>) session.getAttribute("userAddresses");
+        List<CartDetail> checkoutItems = (List<CartDetail>) session.getAttribute("checkoutItems");
 
-        String selectedAddressId = request.getParameter("addressId");
-        UserAddress selectedAddress = null;
-
-        if (selectedAddressId != null && !selectedAddressId.equals("new")) {
-            selectedAddress = CartDAO.getUserAddressById(Integer.parseInt(selectedAddressId));
-        } else if (!addressList.isEmpty()) {
-            selectedAddress = addressList.get(0);
-        } else {
-            selectedAddress = new UserAddress();
+        if (user == null || checkoutItems == null || checkoutItems.isEmpty()) {
+            response.sendRedirect("ViewCart");
+            return;
         }
 
-        session.setAttribute("selectedAddress", selectedAddress);
         request.setAttribute("user", user);
-        request.setAttribute("addressList", addressList);
-        request.setAttribute("selectedAddress", selectedAddress);
+        request.setAttribute("userAddresses", userAddresses);
+        request.setAttribute("checkoutItems", checkoutItems);
 
         request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
     }
@@ -106,28 +100,7 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String[] selectedItems = request.getParameterValues("selectedItems");
-
-        if (selectedItems != null && selectedItems.length > 0) {
-            List<CartDetail> checkoutItems = new ArrayList<>();
-            for (String id : selectedItems) {
-                int cartDetailID = Integer.parseInt(id);
-                // Lấy CartDetail từ session hoặc database dựa trên cartDetailID
-                CartDAO cDAO = new CartDAO();
-                cDAO.getCartDetailByID(cartDetailID);
-                if (cDAO.getCartDetailByID(cartDetailID) != null) {
-                    checkoutItems.add(cDAO.getCartDetailByID(cartDetailID));
-                }
-            }
-            // Lưu checkoutItems vào session hoặc request để sử dụng trong trang thanh toán
-            request.setAttribute("checkoutItems", checkoutItems);
-            // Chuyển đến trang thanh toán
-            RequestDispatcher dispatcher = request.getRequestDispatcher("Cart/Checkout.jsp");
-            dispatcher.forward(request, response);
-        } else {
-            // Không có sản phẩm nào được chọn
-            response.sendRedirect("ViewCart");
-        }
+        
     }
 
     /**

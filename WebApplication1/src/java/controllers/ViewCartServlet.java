@@ -8,6 +8,8 @@ import DAO.CartDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
+import Models.User;
+import Models.UserAddress;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -139,7 +142,54 @@ public class ViewCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            response.sendRedirect("Login/Login.jsp");
+            return;
+        }
+        int accountId = account.getAccountId();
+        UserDAO userDAO = new UserDAO();
+        int userId = userDAO.getUserIDByAccountID(accountId);
+        User user = userDAO.getUserById(userId);
+        if (user == null) {
+            request.setAttribute("message", "User not found.");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            return;
+        }
+        // Lấy danh sách địa chỉ của user
+        List<UserAddress> userAddresses = userDAO.getUserAddresses(userId);
+
+        // Lấy danh sách các sản phẩm đã chọn từ request
+        String[] selectedItems = request.getParameterValues("selectedItems");
+
+        if (selectedItems != null && selectedItems.length > 0) {
+            List<CartDetail> checkoutItems = new ArrayList<>();
+            CartDAO cDAO = new CartDAO();
+
+            for (String id : selectedItems) {
+                try {
+                    int cartDetailID = Integer.parseInt(id.trim());
+                    CartDetail cartDetail = cDAO.getCartDetailByID(cartDetailID); // Lấy 1 lần duy nhất
+                    if (cartDetail != null) {
+                        checkoutItems.add(cartDetail);
+                    }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace(); // Debug lỗi nếu có ID không hợp lệ
+                }
+            }
+
+            // Lưu vào session để sử dụng ở checkout.jsp
+            session.setAttribute("checkoutItems", checkoutItems);
+            session.setAttribute("user", user);
+            session.setAttribute("userAddresses", userAddresses);
+
+            response.sendRedirect("Cart/Checkout.jsp");
+        } else {
+            // Nếu không có sản phẩm nào được chọn, quay lại giỏ hàng
+            response.sendRedirect("ViewCart");
+        }
     }
 
     /**

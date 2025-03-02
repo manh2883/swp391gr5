@@ -61,7 +61,7 @@ public class UserDAO extends DBContext {
     }
 
     public static User getUserById(int id) {
-        String query = "SELECT * FROM User where User.user_id = ?";
+        String query = "SELECT * FROM User where user_id = ?";
 
         try {
             DBContext db = new DBContext();
@@ -306,19 +306,25 @@ public class UserDAO extends DBContext {
         return address;
     }
     
+    public static boolean insertAddress(int userID, String addressContent) {
+        String query = "INSERT INTO user_address (user_id, address_content) VALUES (?, ?)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userID);
+            stm.setString(2, addressContent);
+            return stm.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
     public static void main(String[] args) {
-        List<User> userList = getAllUser();
-        for (User user : userList) {
-            System.out.println(user);
-        }
-
-        System.out.println("------------------");
-//        User testUser = new User("abc@abc.com", "03431020232", null, new Date(2012, 12, 12), "Konoha", 0, "abc", "abc");
-//        createUser(testUser);
-
-        userList = getAllUser();
-        for (User user : userList) {
-            System.out.println(user);
-        }
+        UserDAO uDao = new UserDAO();
+        System.out.println(uDao.getUserIDByAccountID(4));
+        System.out.println(uDao.getUserById(4));
     }
 }

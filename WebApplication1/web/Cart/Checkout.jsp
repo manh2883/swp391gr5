@@ -46,94 +46,126 @@
         <c:import url="/Template/header2.jsp" />
         <section id="cart_items">
             <div class="container">
-                <!-- Breadcrumbs -->
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
-                        <li><a href="home.jsp">Trang chủ</a></li>
-                        <li class="active">Thanh toán</li>
+                        <li><a href="#">Home</a></li>
+                        <li class="active">Check out</li>
                     </ol>
-                </div>
+                </div><!--/breadcrums-->
 
-                <div class="checkout-informations">
+                <div class="shopper-informations">
                     <div class="row">
-                        <!-- Thông tin hóa đơn -->
-                        <div class="col-sm-7 clearfix">
+                        <div class="col-sm-5 clearfix">
                             <div class="bill-to">
-                                <p>Thông tin hóa đơn</p>
-                                <form action="SaveCheckoutDetails" method="post">
-                                    <div class="form-two">
-                                        <label>Chọn địa chỉ:</label>
-                                        <select name="addressId" id="addressDropdown" onchange="updateAddressFields()">
-                                            <option value="new">Thêm địa chỉ mới</option>
-                                            <c:forEach var="addr" items="${user.addressList}">
-                                                <option value="${addr.id}" 
-                                                        data-name="${addr.name}"
-                                                        data-email="${addr.email}"
-                                                        data-phone="${addr.phone}"
-                                                        data-address1="${addr.addressLine1}"
-                                                        data-address2="${addr.addressLine2}">
-                                                    ${addr.displayName}
-                                                </option>
+                                <p>Bill To</p>
+                                <div class="form-one">
+                                    <p>${message1}</p>
+                                    <p>${message2}</p>
+                                    <form>
+                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>
+                                        <input type="text" name="firstName" placeholder="First Name*" value="${user.firstName}" required>
+                                        <input type="text" name="lastName" placeholder="Last Name*" value="${user.lastName}" required>
+                                    </form>
+                                </div>
+                                <div class="form-two">
+                                    <form>
+                                        <select name="address" id="address" class="form-control" onchange="toggleAddressInput(this)">
+                                            <option value="">-- Select Address --</option>
+                                            <c:forEach var="addr" items="${userAddresses}">
+                                                <option value="${addr.addressLine}">${addr.addressLine}</option>
                                             </c:forEach>
+                                            <option value="Other">Other</option>
                                         </select>
-
-                                        <label>Họ và tên:</label>
-                                        <input type="text" id="name" name="name" placeholder="Họ và tên *" required>
-
-                                        <label>Email:</label>
-                                        <input type="email" id="email" name="email" placeholder="Email *" required>
-
-                                        <label>Số điện thoại:</label>
-                                        <input type="text" id="phone" name="phone" placeholder="Số điện thoại *" required>
-
-                                        <label>Địa chỉ 1:</label>
-                                        <input type="text" id="address1" name="address1" placeholder="Địa chỉ 1 *" required>
-
-                                        <label>Ghi chú:</label>
-                                        <textarea name="notes" placeholder="Ghi chú về đơn hàng của bạn" rows="3"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-default">Tiến hành thanh toán</button>
-                                </form>
+                                        <input type="text" name="newAddress" id="newAddress" class="form-control mt-2"
+                                               placeholder="Enter new address" style="display:none;" />
+                                        <input type="text" name="phone" placeholder="Phone *" value="${user.phoneNumber}" required>
+                                    </form>
+                                </div>
                             </div>
                         </div>
+                        <div class="col-sm-4">
+                            <div class="order-message">
+                                <p>Shipping Order</p>
+                                <textarea name="message"  placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
+                                <label><input type="checkbox"> Shipping to bill address</label>
+                            </div>	
+                        </div>					
                     </div>
                 </div>
-
-
-                <!-- Tùy chọn thanh toán -->
-                <div class="payment-options">
-                    <span>
-                        <label><input type="radio" name="paymentMethod" value="creditCard"> Thẻ tín dụng</label>
-                    </span>
-                    <span>
-                        <label><input type="radio" name="paymentMethod" value="paypal" checked> QR</label>
-                    </span>
+                <div class="review-payment">
+                    <h2>Review & Payment</h2>
                 </div>
 
-                <script>
-                    function updateAddressFields() {
-                        var dropdown = document.getElementById("addressDropdown");
-                        var selectedOption = dropdown.options[dropdown.selectedIndex];
+                <div class="table-responsive cart_info">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="item" items="${checkoutItems}">
+                                <tr>
+                                    <td>${item.product.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.product.price}</td>
+                                    <td>${item.quantity * item.product.price}</td>
+                                </tr>
+                            </c:forEach>
+                            <tr>
+                                <td colspan="3">Cart Sub Total</td>
+                                <td>${cartTotal}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">Total (Shipping 20 included)</td>
+                                <td><strong>${cartTotal + 20}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="payment-options">
+                    <span>
+                        <label><input type="radio" name="paymentMethod" value="BankTransfer" required> Bank Transfer</label>
+                    </span>
+                    <span>
+                        <label><input type="radio" name="paymentMethod" value="QR"> QR Payment</label>
+                    </span>
+                </div>
+                <!-- Nút xác nhận đơn hàng -->
+                <div class="text-right mt-3">
+                    <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
+                </div>
+        </section> <!--/#cart_items-->
+        <script>
+            // Load trạng thái thanh toán khi F5
+            document.addEventListener("DOMContentLoaded", function () {
+                let savedPayment = sessionStorage.getItem("selectedPayment");
+                if (savedPayment) {
+                    document.querySelector(`input[name="paymentMethod"][value="${savedPayment}"]`).checked = true;
+                }
+            });
 
-                        if (selectedOption.value === "new") {
-                            // Xóa dữ liệu để nhập mới
-                            document.getElementById("name").value = "";
-                            document.getElementById("email").value = "";
-                            document.getElementById("phone").value = "";
-                            document.getElementById("address1").value = "";
-                        } else {
-                            // Lấy dữ liệu từ option được chọn
-                            document.getElementById("name").value = selectedOption.getAttribute("data-name");
-                            document.getElementById("email").value = selectedOption.getAttribute("data-email");
-                            document.getElementById("phone").value = selectedOption.getAttribute("data-phone");
-                            document.getElementById("address1").value = selectedOption.getAttribute("data-address1");
-                        }
-                    }
+            // Lưu lại trạng thái khi chọn
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+                input.addEventListener("change", function () {
+                    sessionStorage.setItem("selectedPayment", this.value);
+                });
+            });
 
-                </script>
-
-
-        </section>
+            function toggleAddressInput(selectElement) {
+                let newAddressInput = document.getElementById("newAddress");
+                if (selectElement.value === "Other") {
+                    newAddressInput.style.display = "block";
+                    newAddressInput.required = true;
+                } else {
+                    newAddressInput.style.display = "none";
+                    newAddressInput.required = false;
+                }
+            }
+        </script>
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jquery.scrollUp.min.js"></script>

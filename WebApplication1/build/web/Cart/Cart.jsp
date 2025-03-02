@@ -70,9 +70,7 @@
                     </form>
 
                     <!-- Form cho hành động Checkout -->
-                    <form action="Checkout" method="post" id="checkoutForm">
-                        <input type="hidden" name="selectedItems" id="selectedItems">
-                    </form>
+                    <form action="ViewCart" method="post" id="checkoutForm"></form>
 
                     <table class="table table-condensed">
                         <thead>
@@ -162,63 +160,55 @@
         <script src="js/jquery.prettyPhoto.js"></script>
         <script src="js/main.js"></script>
         <script>
-                            document.getElementById('selectAll').onclick = function () {
-                                var checkboxes = document.getElementsByClassName('itemCheckbox');
-                                for (var checkbox of checkboxes) {
-                                    checkbox.checked = this.checked;
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const checkboxes = document.querySelectorAll('.itemCheckbox');
+                                const checkoutButton = document.getElementById('checkoutButton');
+                                const selectAll = document.getElementById('selectAll');
+
+                                function updateCheckoutButton() {
+                                    checkoutButton.disabled = !document.querySelector('.itemCheckbox:checked');
                                 }
-                            };
+
+                                checkboxes.forEach(checkbox => {
+                                    checkbox.addEventListener('change', updateCheckoutButton);
+                                });
+
+                                if (selectAll) {
+                                    selectAll.addEventListener('change', function () {
+                                        checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
+                                        updateCheckoutButton();
+                                    });
+                                }
+                            });
+
+                            function submitCartForm(cartDetailID, action) {
+                                document.getElementById('cartDetailID').value = cartDetailID;
+                                document.getElementById('action').value = action;
+                                document.getElementById('cartForm').submit();
+                            }
+
+                            function submitCheckout() {
+                                const selectedItems = document.querySelectorAll('.itemCheckbox:checked');
+                                if (selectedItems.length === 0) {
+                                    alert("Please select at least one item to checkout.");
+                                    return;
+                                }
+
+                                const checkoutForm = document.getElementById('checkoutForm');
+                                checkoutForm.innerHTML = ""; // Xóa input cũ nếu có
+
+                                selectedItems.forEach(item => {
+                                    let input = document.createElement("input");
+                                    input.type = "hidden";
+                                    input.name = "selectedItems"; // Servlet sẽ nhận mảng `selectedItems[]`
+                                    input.value = item.value;
+                                    checkoutForm.appendChild(input);
+                                });
+
+                                checkoutForm.submit();
+                            }
         </script>
 
-        <script>
-            function submitCartForm(cartDetailID, action) {
-                document.getElementById('cartDetailID').value = cartDetailID;
-                document.getElementById('action').value = action;
-                document.getElementById('cartForm').submit();
-            }
-
-            function submitCheckout() {
-                const selectedItems = document.querySelectorAll('.itemCheckbox:checked');
-                let selectedValues = [];
-
-                selectedItems.forEach(item => {
-                    selectedValues.push(item.value);
-                }); 
-
-                if (selectedValues.length === 0) {
-                    alert("Please select at least one item to checkout.");
-                    return;
-                }
-
-                document.getElementById('selectedItems').value = selectedValues.join(",");
-                document.getElementById('checkoutForm').submit();
-            }
-            document.addEventListener("DOMContentLoaded", function () {
-                const checkboxes = document.querySelectorAll('.itemCheckbox');
-                const checkoutButton = document.getElementById('checkoutButton');
-                const selectAll = document.getElementById('selectAll');
-
-                function updateCheckoutButton() {
-                    const anyChecked = document.querySelector('.itemCheckbox:checked') !== null;
-                    checkoutButton.disabled = !anyChecked;
-                }
-
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateCheckoutButton);
-                });
-
-                // Nếu có checkbox "Chọn tất cả", xử lý sự kiện click để đồng bộ
-                if (selectAll) {
-                    selectAll.addEventListener('change', function () {
-                        checkboxes.forEach(checkbox => {
-                            checkbox.checked = selectAll.checked;
-                        });
-                        updateCheckoutButton();
-                    });
-                }
-            });
-
-        </script>
         <c:import url="/Template/footer1.jsp" />
     </body>
 </html>

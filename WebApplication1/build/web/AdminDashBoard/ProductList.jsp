@@ -8,7 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="true" %>
 
-<c:if test="${empty sessionScope.account or sessionScope.account.roleId != 1}">
+<c:if test="${empty sessionScope.account}">
     <c:redirect url="/Home/Error404.jsp" />
 </c:if>
 

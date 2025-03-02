@@ -2,27 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controllers;
+package controllers.admin;
 
 import DAO.PermissionDAO;
-import DAO.ProductDAO;
-import Models.Account;
-import Models.Product;
-import com.mysql.cj.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author Dell
+ * @author Acer
  */
-public class ProductListManagerServlet extends HttpServlet {
+public class PermissionManagerServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +39,10 @@ public class ProductListManagerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductListManagerServlet</title>");
+            out.println("<title>Servlet PermissionManagerServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductListManagerServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet PermissionManagerServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,41 +60,20 @@ public class ProductListManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ config hoặc DB
 
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        int role = 0;
-        if (account != null) {
-            role = account.getRoleId();
-            if (role != 0) {
-                PermissionDAO pDAO = new PermissionDAO();
-                if (!pDAO.checkPermissionForRole("ProductList", role)) {
-                    request.setAttribute("message", "no permission");
-                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
-                } else {
-                    //Main Process
-                    ProductDAO pdDAO = new ProductDAO();
-                    ArrayList<Product> ProductList = pdDAO.getAllProducts();
-
-                    //side bar open
-                    request.setAttribute("defaultDropdown", "productManager");
-                    // set title
-                    request.setAttribute("title", "Admin Dashboard");
-                    // set breadcrumbs
-                    request.setAttribute("breadcrumbs", "Product List");
-                    request.setAttribute("ProductList", ProductList);
-                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
-
-                }
-            } else {
-                request.setAttribute("message", "role not found");
-                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
-            }
-        } else {
-            request.setAttribute("message", "account not found");
-            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
-        }
-
+        PermissionDAO perDAO = new PermissionDAO();
+//          List<String> roles = perDAo.get
+        List<Object[]> permissions = perDAO.getRolePermissionList(roleIds);
+        List<String> roles = perDAO.getRoleList(roleIds);
+        
+        
+        
+        request.setAttribute("title", "Permission Manager");
+        request.setAttribute("breadcrumbs", "Permission Manager");
+        request.setAttribute("permissions", permissions);
+        request.setAttribute("roleIds", roles);
+        request.getRequestDispatcher("AdminDashBoard/Permission.jsp").forward(request, response);
     }
 
     /**
@@ -110,7 +87,18 @@ public class ProductListManagerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        int permissionId = Integer.parseInt(request.getParameter("permissionId"));
+        int roleId = Integer.parseInt(request.getParameter("roleId"));
+
+        try {
+            // Gọi DAO để cập nhật quyền trong database
+            PermissionDAO.togglePermission(permissionId, roleId);
+        } catch (SQLException ex) {
+            Logger.getLogger(PermissionManagerServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Redirect về trang cũ để cập nhật giao diện
+        response.sendRedirect("PermissionManager");
     }
 
     /**

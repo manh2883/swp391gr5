@@ -20,7 +20,7 @@
         <servlet-name>ProductDetailServlet</servlet-name>
         <servlet-class>controllers.ProductDetailServlet</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>AddProductServlet</servlet-name>
         <servlet-class>controllers.AddProductServlet</servlet-class>
     </servlet>
@@ -91,6 +91,10 @@
     <servlet>
         <servlet-name>RedirectDashBoardServlet</servlet-name>
         <servlet-class>controllers.RedirectDashBoardServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PermissionManagerServlet</servlet-name>
+        <servlet-class>controllers.admin.PermissionManagerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -183,6 +187,10 @@
     <servlet-mapping>
         <servlet-name>RedirectDashBoardServlet</servlet-name>
         <url-pattern>/RedirectDashBoard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PermissionManagerServlet</servlet-name>
+        <url-pattern>/PermissionManager</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>

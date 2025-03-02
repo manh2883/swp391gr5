@@ -7,8 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="true" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:if test="${empty sessionScope.account}">
+<c:if test="${empty sessionScope.account }">
     <c:redirect url="/Home/Error404.jsp" />
 </c:if>
 
@@ -95,75 +96,37 @@
 
                     <div class="col-sm-9">
                         <div class="table-responsive cart_info">
-                            <table class="table table-condensed">
+
+                            <table class="table table-bordered">
                                 <thead>
-                                    <tr class="cart_menu">
-                                        <td class="price">ID</td>
-                                        <td class="image" style="width: 150px ">Item</td>
-                                       
-                                        <td class="price">Net Price</td>
-                                        <td class="price">Current Price</td>
-                                        <td class="total">Name</td>
-                                        
-                                        <td class="total">Visibility</td>
-                                        <td class="total">Category</td>
-                                        <td class="total">Brand</td>
-                                        <td></td>
+                                    <tr>
+                                        <th>Permission</th>
+                                            <c:forEach var="role" items="${roleIds}">
+                                            <th>${role}</th>
+                                            </c:forEach>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:choose>
-                                        <c:when test="${not empty ProductList}">
-                                            <c:forEach var="product" items="${ProductList}">
-                                                <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
-                                                    <td class="cart_price">
-                                                        <p>${product.productId}</p> <!-- Thay bằng giá từ DB nếu có -->
-                                                    </td>
-                                                    <td class="cart_product">
-                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}">
-                                                            <img src="${pageContext.request.contextPath}/${product.imgUrl}" alt="${product.name}" class="product-img"></a>
-                                                    </td>
-                                                    <td class="cart_price">
-                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
-                                                    </td>
-                                                    <td class="cart_price">
-                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
-                                                    </td>
-                                                    <td class="cart_quantity">
-                                                        <div> 
-                                                            <p>${product.name}</p>
-                                                        </div>
-                                                    </td>
-                                                    
-                                                     <td>
-                                                        <div> 
-                                                            <p>Yes</p> 
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div> 
-                                                            <p>${product.categoryName}</p> 
-                                                        </div>
-                                                    </td>
-                                                    <td >
-                                                        <div> 
-                                                            <p>${product.brandName}</p>
-                                                        </div>
-                                                    </td>
-                                                    <td class="cart_product">
-                                                        <a href="ProductDetail?name=${product.name}"></a>
-                                                    </td>
-                                                </tr>
+                                    <c:forEach var="row" items="${permissions}">
+                                        <tr>
+                                            <td>${row[1]}</td> <!-- Permission Name -->
+                                            <c:forEach var="index" begin="2" end="${fn:length(row) - 1}">
+                                                <td>
+                                                    <form method="post" action="PermissionManager">
+
+                                                        <input type="hidden" name="permissionId" value="${row[0]}">
+                                                        <input type="hidden" name="roleId" value="${index-1}">
+                                                        <button type="submit" class="btn btn-sm ${row[index] ? 'btn-success' : 'btn-danger'}">
+                                                            ${row[index] ? 'ON' : 'OFF'}
+                                                        </button>
+                                                    </form>
+                                                </td>
                                             </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <tr>
-                                                <td colspan="6" style="text-align: center;">No items in Product List.</td>
-                                            </tr>
-                                        </c:otherwise>
-                                    </c:choose>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
+
                         </div>
                         <!-- Pagination -->
                         <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
@@ -183,6 +146,26 @@
         <c:import url="/Template/footer1.jsp" />
     </body>
     <script>
-
+//        function togglePermission(button) {
+//            let permissionId = button.getAttribute("data-permission-id");
+//            let roleId = button.getAttribute("data-role-id");
+//            let currentState = button.getAttribute("data-state") === "true";
+//            let newState = !currentState;
+//
+//            $.post("RolePermissionServlet", {
+//                permissionId: permissionId,
+//                roleId: roleId,
+//                newState: newState
+//            }).done(function (response) {
+//                if (response === "success") {
+//                    button.setAttribute("data-state", newState);
+//                    button.textContent = newState ? "ON" : "OFF";
+//                    button.classList.toggle("btn-success", newState);
+//                    button.classList.toggle("btn-danger", !newState);
+//                }
+//            }).fail(function () {
+//                alert("Lỗi cập nhật quyền");
+//            });
+//        }
     </script>
 </html>

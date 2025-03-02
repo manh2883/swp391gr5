@@ -6,7 +6,7 @@
 %>
 
 <div class="left-sidebar">
-    <h2>Admin Dashboard</h2>
+    <h2>Marketing Dashboard</h2>
     <div class="panel-group category-products" id="accordian">
 
         <div class="panel panel-default">
@@ -21,9 +21,8 @@
             <div id="productManager" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
+                        <li><a href="#">Product List</a></li>
                         <li><a href="#">Displayed Category</a></li>
-                          <li><a href="${pageContext.request.contextPath}/AddProduct">Add New Product</a></li>
                     </ul>
                 </div>
             </div>

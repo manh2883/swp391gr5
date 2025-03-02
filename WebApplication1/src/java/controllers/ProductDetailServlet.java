@@ -88,7 +88,7 @@ public class ProductDetailServlet extends HttpServlet {
             }
 
         } else {
-            request.setAttribute("message", "product not found");
+            request.setAttribute("message", "productId not found");
             request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         }
     }

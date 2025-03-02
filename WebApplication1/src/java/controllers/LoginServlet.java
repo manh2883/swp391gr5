@@ -32,8 +32,7 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        }
-    
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -73,8 +72,11 @@ public class LoginServlet extends HttpServlet {
         Account acc = aDAO.login(userName, passWord);
 
         if (acc != null) {
-            HttpSession session = request.getSession();
+
 //            session.setAttribute("userName", acc.getUsername());
+            HttpSession session = request.getSession();
+            
+
             session.setAttribute("account", new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
             request.getRequestDispatcher("Home").forward(request, response);
         } else {

@@ -65,8 +65,8 @@
 
             }
             .product-img {
-                width: 242px;
-                height: 225px;
+                width: 121px;
+                height: 112px;
                 object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
@@ -84,7 +84,7 @@
             <div class="container">
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
-                        <li><a href="#">Home</a></li>
+                        <li><a href="${pageContext.request.contextPath}">Home</a></li>
                         <li class="active">${breadcrumbs}</li>
                     </ol>
                 </div>
@@ -94,69 +94,71 @@
                     </div>
 
                     <div class="col-sm-9">
-                        <div class="table-responsive cart_info ">
-                            <!-- Form cho các hành động cập nhật giỏ hàng -->
-                            <form action="ViewCart" method="get" id="cartForm">
-                                <input type="hidden" name="cartDetailID" id="cartDetailID">
-                                <input type="hidden" name="action" id="action">
-                            </form>
-
-                            <!-- Form cho hành động Checkout -->
-                            <form action="Checkout" method="post" id="checkoutForm">
-                                <input type="hidden" name="selectedItems" id="selectedItems">
-                            </form>
-
+                        <div class="table-responsive cart_info">
                             <table class="table table-condensed">
                                 <thead>
                                     <tr class="cart_menu">
-
-                                        <td class="image">Customer</td>
-                                        <!--image + name + contact-->
-                                        <td class="description"></td>
-                                        <td class="price">User Name</td>
-                                        <td class="quantity">Status</td>
-                                        <td class="quantity">Orders</td>
-                                        <td class="quantity">Total Spending</td>
-                                        <td class="total">Ave.Amount/Order</td>
-
+                                        <td class="price">ID</td>
+                                        <td class="image" style="width: 150px ">Item</td>
+                                       
+                                        <td class="price">Net Price</td>
+                                        <td class="price">Current Price</td>
+                                        <td class="total">Name</td>
+                                        
+                                        <td class="total">Visibility</td>
+                                        <td class="total">Category</td>
+                                        <td class="total">Brand</td>
+                                        <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <c:choose>
-                                        <c:when test="${not empty cartDetails}">
-                                            <c:set var="totalPrice" value="0" scope="page" />
-                                            <c:forEach var="cart" items="${cartDetails}">
-                                                <tr>
-                                                    <td class="cart_product">
-                                                        <!--Image-->
-                                                        <a href=""><img src="${pageContext.request.contextPath}/${cart.product.imgUrl}" alt=""></a>
+                                        <c:when test="${not empty ProductList}">
+                                            <c:forEach var="product" items="${ProductList}">
+                                                <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
+                                                    <td class="cart_price">
+                                                        <p>${product.productId}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
-                                                    <td class="cart_description">
-                                                        <h4><a href="">Product ${cart.productID}</a></h4>
-                                                        <p>Email: ${cart.cartDetailID}</p>
-                                                        <p>Phone: ${cart.productVariantID}</p>
+                                                    <td class="cart_product">
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}">
+                                                            <img src="${pageContext.request.contextPath}/${product.imgUrl}" alt="${product.name}" class="product-img"></a>
                                                     </td>
                                                     <td class="cart_price">
-                                                        <p>${cart.product.price}</p>
+                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
+                                                    </td>
+                                                    <td class="cart_price">
+                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
                                                     <td class="cart_quantity">
-                                                        <p>${cart.product.price}</p>
+                                                        <div> 
+                                                            <p>${product.name}</p>
+                                                        </div>
                                                     </td>
-
-
-                                                    <td class="cart_price">
-                                                        <button type="button" class="cart_quantity_delete btn" 
-                                                                onclick="submitCartForm(${cart.cartDetailID}, 'delete')">
-                                                            <i class="fa fa-times"></i>
-                                                        </button>
+                                                    
+                                                     <td>
+                                                        <div> 
+                                                            <p>Yes</p> 
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div> 
+                                                            <p>${product.categoryName}</p> 
+                                                        </div>
+                                                    </td>
+                                                    <td >
+                                                        <div> 
+                                                            <p>${product.brandName}</p>
+                                                        </div>
+                                                    </td>
+                                                    <td class="cart_product">
+                                                        <a href="ProductDetail?name=${product.name}"></a>
                                                     </td>
                                                 </tr>
-
                                             </c:forEach>
                                         </c:when>
                                         <c:otherwise>
                                             <tr>
-                                                <td colspan="7" style="text-align: center;">No items in your cart.</td>
+                                                <td colspan="6" style="text-align: center;">No items in Product List.</td>
                                             </tr>
                                         </c:otherwise>
                                     </c:choose>

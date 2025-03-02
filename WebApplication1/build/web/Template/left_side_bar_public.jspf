@@ -60,6 +60,7 @@
                                             <span class="pull-right">(${brand[2]})</span>
                                             ${brand[1]}
                                         </a>
+                                       <!--[ ${brand[0]}${brand[1]}${brand[2]}]-->
                                     </li>
                                 </c:forEach>
                             </ul>

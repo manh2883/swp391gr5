@@ -14,12 +14,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -63,7 +66,7 @@ public class PublicProductListServlet extends HttpServlet {
         }
 
         // Left side category
-        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        Map<Integer, String> cList = SettingDAO.getPublicProductCategory();
         if (cList != null && !cList.isEmpty()) {
             request.setAttribute("categoryList", cList);
         }
@@ -78,41 +81,28 @@ public class PublicProductListServlet extends HttpServlet {
         if (productList != null && !productList.isEmpty()) {
             // DungPT code here
 
-            Iterator<Map.Entry<Product, Map<Boolean, String>>> iterator = productList.iterator();
-
             // get Parameter
             String categoryParam = request.getParameter("category");
             String brandParam = request.getParameter("brand");
 
             // tao category
-            Integer category = (categoryParam != null && !categoryParam.isEmpty()) ? Integer.valueOf(categoryParam) : null;
-            Integer brand = (brandParam != null && !brandParam.isEmpty()) ? Integer.valueOf(brandParam) : null;
+            Long category = (categoryParam != null && !categoryParam.isEmpty()) ? Long.valueOf(categoryParam) : null;
+            Long brand = (brandParam != null && !brandParam.isEmpty()) ? Long.valueOf(brandParam) : null;
 
-            while (iterator.hasNext()) {
-                Map.Entry<Product, Map<Boolean, String>> entry = iterator.next();
-                Product product = entry.getKey();
-
-                // Lọc theo category
-                if (category != null) {
-                    String categoryName = ProductDAO.getCategoryNameById(category);
-                    if (!categoryName.equals(product.getCategoryName())) {
-                        iterator.remove(); // Xóa nếu không khớp
-                        continue; // Tiếp tục vòng lặp, tránh kiểm tra brand nếu đã bị xóa
-                    }
-
-                }
-
-                // Lọc theo brand
-                if (brand != null) {
-                    String brandName = ProductDAO.getBrandNameById(brand);
-                    if (!brandName.equals(product.getBrandName())) {
-                        iterator.remove(); // Xóa nếu không khớp
-                    }
-
-                }
+            List<Product> productFilter = new ArrayList<>();
+            try {
+                productFilter = ProductDAO.productFilterList(null,null,brand,category,null,null,null,null,null,null);
+                productList = ProductDAO.productFilterView(productFilter);
+            } catch (SQLException ex) {
+                Logger.getLogger(PublicProductListServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-// Truyền currentLink về JSP
+            
+            productList = ProductDAO.productFilterView(productFilter);
+            
+            
+            
+            
+            // Truyền currentLink về JSP
             if (category != null) {
                 currentLink.append("category=").append(category).append("&");
             }

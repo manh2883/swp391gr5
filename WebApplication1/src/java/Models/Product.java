@@ -18,6 +18,7 @@ public class Product {
     private double price;
     private String brandName;
     private String categoryName;
+//    private int categoryId;
     private Date createAt;
     private String imgUrl;
     
@@ -119,6 +120,8 @@ public class Product {
     public String toString() {
         return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
     }
+
+
 
     
 }

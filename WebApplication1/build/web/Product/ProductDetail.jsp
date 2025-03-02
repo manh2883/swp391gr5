@@ -188,9 +188,6 @@
                                 </div>
                             </div>
 
-                            <div class="shipping text-center">
-                                <img src="${pageContext.request.contextPath}/Images/Home/shipping.jpg" alt="" />
-                            </div>
 
                         </div>
                     </div><!--
@@ -294,17 +291,13 @@
                                         </span>
                                     </form>
 
-                                            
 
 
-<!--                                    <p><b>Category:</b>${product.categoryName}</p>
-<p><b>Availability:</b> In Stock</p>
-<p><b>Condition:</b> New</p>
-<p><b>Brand:</b> E-SHOPPER</p>-->
-<!--                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>-->
-                                </div><!--/product-information-->
+
+                                    
+                                </div>/product-information
                             </div>
-                        </div><!--/product-details-->
+                        </div>/product-details
 
                         <div class="category-tab shop-details-tab"><!--category-tab-->
                             <div class="col-sm-12">

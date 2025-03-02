@@ -47,7 +47,7 @@
                                 <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
                                 <li class="dropdown"><a href="${pageContext.request.contextPath}/ViewBlogs">Shop<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
-                                        <li><a href="${pageContext.request.contextPath}/ViewProduct">Products</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/PublicProductList">Products</a></li>
                                         <!--                                        <li><a href="product-details.html">Product Details</a></li> 
                                                                                 <li><a href="checkout.html">Checkout</a></li> 
                                                                                 <li><a href="cart.html">Cart</a></li> -->
@@ -71,7 +71,7 @@
                                         </li>
                                     </c:when>
                                     <c:otherwise>
-                                      
+
                                     </c:otherwise>
                                 </c:choose>
 

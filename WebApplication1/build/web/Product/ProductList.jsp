@@ -15,7 +15,7 @@
 
     <c:forEach var="product" items="${productList}">
         <div>
-            <img src="${product.imagePath}" alt="Product Image" width="100">
+            <img src="${product.imgUrl}" alt="Product Image" width="100">
             <p>${product.name}</p>
             <p>${product.price} $</p>
             <a href="ProductDetail.jsp?productId=${product.id}">View Details</a>

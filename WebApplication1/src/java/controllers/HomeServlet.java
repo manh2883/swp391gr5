@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
@@ -41,7 +41,7 @@ public class HomeServlet extends HttpServlet {
          
         ProductDAO pDAO = new ProductDAO();
         SliderDAO sDAO = new SliderDAO();
-
+        SettingDAO setDAO = new SettingDAO();
         // Left side brand
        List<Object[]> bList = SettingDAO.getPublicBrandList();
         if (bList != null && !bList.isEmpty()) {
@@ -49,7 +49,7 @@ public class HomeServlet extends HttpServlet {
         }
 
         // Left side category
-        Map<Integer, String> cList = ProductDAO.getAllProductCategory();
+        Map<Integer, String> cList = setDAO.getPublicProductCategory();
         if (cList != null && !cList.isEmpty()) {
             request.setAttribute("categoryList", cList);
         }

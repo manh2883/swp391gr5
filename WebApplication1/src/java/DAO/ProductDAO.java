@@ -74,6 +74,167 @@ public class ProductDAO extends DBContext {
         return imgUrl;
     }
 
+    public static ArrayList<Product> getAllProductsByVisibility(boolean isVisible) {
+        ArrayList<Product> products = new ArrayList<>();
+        String query = """
+                       SELECT distinct product.product_id,product.description, product.name, price, brand.name, 
+                       product_category.category_name,  product.created_at 
+                       FROM tpfshopwearv2.product 
+                        left join brand on product.brand_id = brand.brand_id 
+                        left join product_category on product.category_id = product_category.category_id
+                        left join product_variant on product.product_id = product_variant.product_id
+                        left join product_image on product_variant.variant_id = product_image.product_variant_id
+                        where product.is_visible = ? and product_category.is_visible = ?
+                       order by product.product_id asc;""";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setBoolean(1, isVisible);
+            stm.setBoolean(2, isVisible);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+
+                Product product = new Product();
+
+                product.setBrandName(rs.getString(5));
+                product.setProductId(rs.getString("product_Id"));
+                product.setName(rs.getString("name"));
+                product.setPrice(rs.getDouble("price"));
+                product.setDescription(rs.getString("description"));
+                product.setCategoryName(rs.getString(6));
+                product.setCreateAt(rs.getTimestamp("created_at"));
+                product.setImgUrl(getImgUrlForProductID(rs.getString("product_Id")));
+
+                products.add(product);
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+
+        }
+        return products;
+    }
+
+    public static List<Product> productFilterList(String productId, String productName, Long brandId, Long categoryId,
+            Double minPrice, Double maxPrice, Integer isVisible, Integer categoryVisible,
+            Timestamp startDate, Timestamp endDate) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+
+        String query = """
+            SELECT p.product_id, p.name AS product_name, p.description, b.name AS brand_name, 
+                               pc.category_name, 
+                               COALESCE((SELECT MIN(pp.price) FROM product_price pp 
+                                        WHERE pp.product_id = p.product_id 
+                                        AND NOW() BETWEEN pp.start_price_date AND pp.end_price_date), p.price) AS current_price, 
+                               p.created_at, p.price as net_price
+                        FROM product p
+                        JOIN product_category pc ON p.category_id = pc.category_id
+                        JOIN brand b ON p.brand_id = b.brand_id
+                        WHERE 1=1 """;
+
+        List<Object> params = new ArrayList<>();
+
+        // Search by product ID
+        if (productId != null && !productId.isEmpty()) {
+            query += " AND p.product_id = ?";
+            params.add(productId);
+        }
+
+        // Search by product name
+        if (productName != null && !productName.isEmpty()) {
+            query += " AND p.name LIKE ?";
+            params.add("%" + productName + "%");
+        }
+
+        // Search by brand ID
+        if (brandId != null) {
+            query += " AND p.brand_id = ?";
+            params.add(brandId);
+        }
+
+        // Search by category ID
+        if (categoryId != null) {
+            query += " AND p.category_id = ?";
+            params.add(categoryId);
+        }
+
+        // Search by price range
+        if (minPrice != null) {
+            query += " AND (pp.price >= ? OR (pp.price IS NULL AND p.price >= ?))";
+            params.add(minPrice);
+            params.add(minPrice);
+        }
+        if (maxPrice != null) {
+            query += " AND (pp.price <= ? OR (pp.price IS NULL AND p.price <= ?))";
+            params.add(maxPrice);
+            params.add(maxPrice);
+        }
+
+        // Filter by product visibility
+        if (isVisible != null) {
+            query += " AND p.is_visible = ?";
+            params.add(isVisible);
+        }
+
+        // Filter by category visibility
+        if (categoryVisible != null) {
+            query += " AND pc.is_visible = ?";
+            params.add(categoryVisible);
+        }
+
+        // Search by creation date range
+        if (startDate != null) {
+            query += " AND p.created_at >= ?";
+            params.add(startDate);
+        }
+        if (endDate != null) {
+            query += " AND p.created_at <= ?";
+            params.add(endDate);
+        }
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getString("product_id"));
+                product.setName(rs.getString("product_name"));
+                product.setDescription(rs.getString("description"));
+                product.setBrandName(rs.getString("brand_name"));
+                product.setCategoryName(rs.getString("category_name"));
+                product.setPrice(rs.getDouble("net_price"));
+                product.setCreateAt(rs.getTimestamp("created_at"));
+                product.setImgUrl(getImgUrlForProductID(rs.getString("product_id")));
+                productList.add(product);
+            }
+        }
+        return productList;
+    }
+
+    
+    
+    public static List<Map.Entry<Product, Map<Boolean, String>>> productFilterView(List<Product> productList){
+         Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
+       
+
+        // Tìm số `b` lớn nhất chia hết cho 3, b ≤ min(9, totalProducts)
+        
+        // Nếu quantity <= 0, lấy tất cả sản phẩm
+        for (Product p : productList) {
+            
+            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            
+        }
+
+        // Chuyển Map thành List để dễ phân trang
+        return new ArrayList<>(productMap.entrySet());
+    }
     public static ArrayList<Product> getAllProducts() {
         ArrayList<Product> products = new ArrayList<>();
         String query = """
@@ -84,11 +245,13 @@ public class ProductDAO extends DBContext {
                         left join product_category on product.category_id = product_category.category_id
                         left join product_variant on product.product_id = product_variant.product_id
                         left join product_image on product_variant.variant_id = product_image.product_variant_id
+                      
                        order by product.product_id asc;""";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
+
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
@@ -116,23 +279,23 @@ public class ProductDAO extends DBContext {
     }
 
     public void addProduct(Product product) {
-    String query = "INSERT INTO Product (name, price, description, category_id, image_path) VALUES (?, ?, ?, ?, ?)";
-    try {
-        DBContext db = new DBContext();
-        java.sql.Connection con = db.getConnection();
-        PreparedStatement stm = con.prepareStatement(query);
-        stm.setString(1, product.getName());
-        stm.setDouble(2, product.getPrice());
-        stm.setString(3, product.getDescription());
-        stm.setString(4, product.getCategoryId());
-        stm.setString(5, product.getImagesPath());
-        stm.executeUpdate();
-        stm.close();
-        con.close();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        String query = "INSERT INTO Product (name, price, description, category_id, image_path) VALUES (?, ?, ?, ?, ?)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, product.getName());
+            stm.setDouble(2, product.getPrice());
+            stm.setString(3, product.getDescription());
+            stm.setString(4, product.getCategoryId());
+            stm.setString(5, product.getImagesPath());
+            stm.executeUpdate();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
 
     public void updateProduct(Product product) {
         String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, category_id = ? WHERE product_id = ?";
@@ -244,12 +407,12 @@ public class ProductDAO extends DBContext {
             // Thiết lập tham số
             stm.setString(1, productId.toUpperCase());
             if (hasColor && hasSize) {
-                stm.setString(2, color.toUpperCase());
-                stm.setString(3, size.toUpperCase());
+                stm.setString(2, color.toUpperCase().trim());
+                stm.setString(3, size.toUpperCase().trim() );
             } else if (hasColor) {
-                stm.setString(2, color.toUpperCase());
+                stm.setString(2, color.toUpperCase().trim());
             } else if (hasSize) {
-                stm.setString(2, size.toUpperCase());
+                stm.setString(2, size.toUpperCase().trim());
             }
 
             System.out.println("Executing query: " + query);
@@ -443,7 +606,7 @@ public class ProductDAO extends DBContext {
             stm.setInt(3, variantId);
 
             int quantity = getStockForVariantProduct(productId, getColorForVariantProduct(productId, variantId), getSizeForVariantProduct(productId, variantId));
-            stm.setInt(4,1);
+            stm.setInt(4, 1);
             stm.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             stm.executeUpdate();
             stm.close();
@@ -655,12 +818,16 @@ public class ProductDAO extends DBContext {
         }
         return productList;
     }
-
+    
     public static List<Map.Entry<Product, Map<Boolean, String>>> getProductListPublic(int quantity) {
         Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
-        List<Product> allProducts = getAllProducts(); // Lấy toàn bộ sản phẩm
-        int count = 0;
+        List<Product> allProducts = getAllProductsByVisibility(true); // Lấy toàn bộ sản phẩm
 
+        // Tìm số `b` lớn nhất chia hết cho 3, b ≤ min(9, totalProducts)
+        int max_b = Math.min(9, allProducts.size());
+        quantity = max_b - (max_b % 3); // Giảm xuống số chia hết cho 3
+
+        int count = 0;
         // Nếu quantity <= 0, lấy tất cả sản phẩm
         for (Product p : allProducts) {
             if (quantity > 0 && count >= quantity) {
@@ -674,12 +841,8 @@ public class ProductDAO extends DBContext {
         return new ArrayList<>(productMap.entrySet());
     }
 
-    public static List<Map.Entry<Product, Map<Boolean, String>>> getProductListAfterFilter() {
-        List<Map.Entry<Product, Map<Boolean, String>>> productList = getProductListPublic(0);
-        return productList;
-    }
-
-    public static  String getBrandNameById(int id) {
+  
+    public static String getBrandNameById(int id) {
 
         String query = "SELECT brand.name from brand where brand.brand_id = ?";
         String name = null;
@@ -724,11 +887,11 @@ public class ProductDAO extends DBContext {
         return name;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         ProductDAO pDAO = new ProductDAO();
-        
-        for(Product p: pDAO.getAllProducts()){
-            System.out.println(p);
+
+        for (Product p : pDAO.productFilterList(null, "", null, null, null, null, 1, 1, null, null)) {
+            System.out.println(p.getProductId() + ", " + p.getName() +", " + p.getBrandName() + ", " + p.getCategoryName() + ", " + p.getPrice());
         }
     }
 }

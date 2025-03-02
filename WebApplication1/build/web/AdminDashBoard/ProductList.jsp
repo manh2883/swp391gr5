@@ -65,8 +65,8 @@
 
             }
             .product-img {
-                width: 242px;
-                height: 225px;
+                width: 121px;
+                height: 112px;
                 object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
@@ -98,10 +98,14 @@
                             <table class="table table-condensed">
                                 <thead>
                                     <tr class="cart_menu">
-                                        <td class="image">Item</td>
-                                        <td class="description"></td>
-                                        <td class="price">Price</td>
+                                        <td class="price">ID</td>
+                                        <td class="image" style="width: 150px ">Item</td>
+                                       
+                                        <td class="price">Net Price</td>
+                                        <td class="price">Current Price</td>
                                         <td class="total">Name</td>
+                                        
+                                        <td class="total">Visibility</td>
                                         <td class="total">Category</td>
                                         <td class="total">Brand</td>
                                         <td></td>
@@ -112,15 +116,15 @@
                                         <c:when test="${not empty ProductList}">
                                             <c:forEach var="product" items="${ProductList}">
                                                 <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
-
-                                                    <td class="cart_product">
-                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}"><img src="${pageContext.request.contextPath}/Images/cart/one.png" alt=""></a>
+                                                    <td class="cart_price">
+                                                        <p>${product.productId}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
-                                                    <td class="cart_description">
-                                                        <h4>${product.productId}</h4>
-                                                        <c:if test="${cart.productVariantID > 0}">
-                                                            <p>Variant: ${cart.productVariantID}</p>
-                                                        </c:if>
+                                                    <td class="cart_product">
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}">
+                                                            <img src="${pageContext.request.contextPath}/${product.imgUrl}" alt="${product.name}" class="product-img"></a>
+                                                    </td>
+                                                    <td class="cart_price">
+                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
                                                     <td class="cart_price">
                                                         <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
@@ -128,6 +132,12 @@
                                                     <td class="cart_quantity">
                                                         <div> 
                                                             <p>${product.name}</p>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                     <td>
+                                                        <div> 
+                                                            <p>Yes</p> 
                                                         </div>
                                                     </td>
                                                     <td>

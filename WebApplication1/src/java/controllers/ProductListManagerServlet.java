@@ -88,6 +88,9 @@ public class ProductListManagerServlet extends HttpServlet {
                     request.setAttribute("breadcrumbs", "Product List");
                     request.setAttribute("ProductList", ProductList);
                     request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
+                    
+                    
+                    
                 }
             } else {
                 request.setAttribute("message", "role not found");

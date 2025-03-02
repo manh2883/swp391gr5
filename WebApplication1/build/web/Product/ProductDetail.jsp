@@ -188,14 +188,6 @@
                                 </div>
                             </div>
 
-                            <div class="shipping text-center">
-<!--                                <img src="${pageContext.request.contextPath}/Images/Home/shipping.jpg" alt="" />-->
-                                <img src="${product.imagePath}" alt="Product Image" width="300">
-                                <p>Name: ${product.name}</p>
-                                <p>Description: ${product.description}</p>
-                                <p>Price: ${product.price} $</p>
-
-                            </div>
 
                         </div>
                     </div><!--
@@ -302,14 +294,10 @@
 
 
 
-<!--                                    <p><b>Category:</b>${product.categoryName}</p>
-<p><b>Availability:</b> In Stock</p>
-<p><b>Condition:</b> New</p>
-<p><b>Brand:</b> E-SHOPPER</p>-->
-<!--                                    <a href=""><img src="${pageContext.request.contextPath}/Images/ProductDetail/share.png" class="share img-responsive"  alt="" /></a>-->
-                                </div><!--/product-information-->
+                                    
+                                </div>/product-information
                             </div>
-                        </div><!--/product-details-->
+                        </div>/product-details
 
                         <div class="category-tab shop-details-tab"><!--category-tab-->
                             <div class="col-sm-12">

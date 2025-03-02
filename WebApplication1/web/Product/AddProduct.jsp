@@ -16,7 +16,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Add Product</h2>
-        <form action="AddProductServlet" method="post" enctype="multipart/form-data">
+        <form action="AddProduct" method="post" enctype="multipart/form-data">
     <label>Name:</label>
     <input type="text" name="name" required>
     
@@ -24,12 +24,16 @@
     <input type="text" name="description" required>
     
     <label>Price:</label>
-    <input type="number" name="price" step="0.01" required>
+    <input type="number" name="price" step="1" required>
     
     <label>Category:</label>
-    <select name="category_id">
-        <option value="1">Category 1</option>
-        <option value="2">Category 2</option>
+    <select name="categoryName">
+        <option value="1">T-shirt</option>
+        <option value="2">Pant</option>
+        <option value="3">Shirt</option>
+        <option value="4">Underwear</option>
+        <option value="5">Short</option>
+        <option value="6">Jacket</option>
     </select>
     
     <label>Image:</label>

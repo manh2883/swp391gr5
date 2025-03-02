@@ -115,24 +115,121 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-    public void addProduct(Product product) {
-    String query = "INSERT INTO Product (name, price, description, category_id, image_path) VALUES (?, ?, ?, ?, ?)";
-    try {
-        DBContext db = new DBContext();
-        java.sql.Connection con = db.getConnection();
-        PreparedStatement stm = con.prepareStatement(query);
-        stm.setString(1, product.getName());
-        stm.setDouble(2, product.getPrice());
-        stm.setString(3, product.getDescription());
-        stm.setString(4, product.getCategoryId());
-        stm.setString(5, product.getImagesPath());
-        stm.executeUpdate();
-        stm.close();
-        con.close();
-    } catch (SQLException e) {
-        e.printStackTrace();
+    public void addProduct(Product product, String color, String size, int stock, String backLink) throws SQLException {
+        String query = "INSERT INTO Product (product_Id, name, price, description, category_id) VALUES (?, ?, ?, ?, ?)";
+        try {
+            
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, getNextProductCode());
+            stm.setString(2, product.getName());
+            stm.setDouble(3, product.getPrice());
+            stm.setString(4, product.getDescription());
+            stm.setString(5, product.getCategoryName());
+            stm.executeUpdate();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Product pr = getProductById(getLastProductId()) ;
+        if(pr != null ){
+            createVariantForProductId(pr.getProductId(), color, size, stock);
+            int variantId = getVariantByColorAndSize(pr.getProductId(), color, size);
+            if(variantId!=-1){
+                createImgForVariantId(pr.getProductId(), variantId, backLink);
+            }
+        }
+        
+        
     }
-}
+    
+    public static void createImgForVariantId(String productId, int productVariantId, String backLink){
+        
+        String query = "INSERT INTO `tpfshopwearv2`.`product_image` ( `product_id`, `product_variant_id`, `description`, `back_link`) VALUES (?, ?, ?, ?);";
+        
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            stm.setInt(2, productVariantId);
+            stm.setString(3, "");
+            stm.setString(4, backLink);
+
+            stm.executeUpdate();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    public static void createVariantForProductId(String productId, String color, String size, int stock) {
+        String query = "INSERT INTO `tpfshopwearv2`.`product_variant` ( `product_id`, `color`, `size`, `stock`) VALUES (?, ?, ?, ?);";
+        
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            stm.setString(2, color);
+            stm.setString(3, size);
+            stm.setInt(4, stock);
+
+            stm.executeUpdate();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+
+    public static String getLastProductId() throws SQLException {
+        String maxProductId = null;
+        String sql = "SELECT MAX(product_id) AS max_id FROM product";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+
+            if (rs.next()) {
+                maxProductId = rs.getString("max_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return maxProductId;
+    }
+
+    public static String getNextProductCode() throws SQLException {
+        String lastCode = getLastProductId();
+        if (lastCode == null || lastCode.isEmpty()) {
+            return "P001"; // Mã sản phẩm đầu tiên nếu database chưa có sản phẩm nào
+        }
+
+        // Tách phần chữ (P, Q, R...) và phần số (001, 002...)
+        String prefix = lastCode.substring(0, 1);  // Lấy ký tự đầu tiên
+        int number = Integer.parseInt(lastCode.substring(1)); // Lấy số và chuyển thành int
+
+        // Tăng số
+        number++;
+
+        // Nếu vượt quá 999, đổi prefix sang ký tự tiếp theo
+        if (number > 999) {
+            prefix = String.valueOf((char) (prefix.charAt(0) + 1)); // Chuyển sang chữ tiếp theo (P → Q)
+            number = 1; // Reset số về 001
+        }
+
+        // Format số thành 3 chữ số (001, 002, ...)
+        return prefix + String.format("%03d", number);
+    }
 
     public void updateProduct(Product product) {
         String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, category_id = ? WHERE product_id = ?";
@@ -443,7 +540,7 @@ public class ProductDAO extends DBContext {
             stm.setInt(3, variantId);
 
             int quantity = getStockForVariantProduct(productId, getColorForVariantProduct(productId, variantId), getSizeForVariantProduct(productId, variantId));
-            stm.setInt(4,1);
+            stm.setInt(4, 1);
             stm.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             stm.executeUpdate();
             stm.close();
@@ -679,7 +776,7 @@ public class ProductDAO extends DBContext {
         return productList;
     }
 
-    public static  String getBrandNameById(int id) {
+    public static String getBrandNameById(int id) {
 
         String query = "SELECT brand.name from brand where brand.brand_id = ?";
         String name = null;
@@ -724,20 +821,11 @@ public class ProductDAO extends DBContext {
         return name;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         ProductDAO pDAO = new ProductDAO();
+        
+        Product p = new Product();
+        pDAO.addProduct(p, null, null, 10, null);
 
-//        System.out.println(getVariantByColorAndSize("P002", "Black", "M"));
-        CartDAO cDAO = new CartDAO();
-        System.out.println("Start");
-        for (CartDetail cd : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(cd);
-        }
-        System.out.println("========");
-        ProductDAO.addToCart("p001", "Red", "M", 4);
-        System.out.println("========");
-        for (CartDetail cd : cDAO.getAllCartDetailByUserID(4)) {
-            System.out.println(cd);
-        }
     }
 }

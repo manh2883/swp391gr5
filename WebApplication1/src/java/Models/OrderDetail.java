@@ -10,17 +10,17 @@ package Models;
  */
  public class OrderDetail {
     
-    private String orderdetailId;
+    private int orderdetailId;
     private int orderId;
-    private int productId;
-    private String productvariantId;
+    private String productId;
+    private int productvariantId;
     private int quantity;
     private int price;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(String orderdetailId, int orderId, int productId, String productvariantId, int quantity, int price) {
+    public OrderDetail(int orderdetailId, int orderId, String productId, int productvariantId, int quantity, int price) {
         this.orderdetailId = orderdetailId;
         this.orderId = orderId;
         this.productId = productId;
@@ -29,11 +29,11 @@ package Models;
         this.price = price;
     }
 
-    public String getOrderdetailId() {
+    public int getOrderdetailId() {
         return orderdetailId;
     }
 
-    public void setOrderdetailId(String orderdetailId) {
+    public void setOrderdetailId(int orderdetailId) {
         this.orderdetailId = orderdetailId;
     }
 
@@ -45,19 +45,19 @@ package Models;
         this.orderId = orderId;
     }
 
-    public int getProductId() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
-    public String getProductvariantId() {
+    public int getProductvariantId() {
         return productvariantId;
     }
 
-    public void setProductvariantId(String productvariantId) {
+    public void setProductvariantId(int productvariantId) {
         this.productvariantId = productvariantId;
     }
 
@@ -81,8 +81,6 @@ package Models;
     public String toString() {
         return "OrderDetail{" + "orderdetailId=" + orderdetailId + ", orderId=" + orderId + ", productId=" + productId + ", productvariantId=" + productvariantId + ", quantity=" + quantity + ", price=" + price + '}';
     }
-    
-    
-    
+
     
 }

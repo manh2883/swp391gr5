@@ -70,7 +70,7 @@ public class ViewCartServlet extends HttpServlet {
         // Lấy account từ session
         Account account = (Account) session.getAttribute("account");
         if (account == null) {
-            response.sendRedirect(request.getContextPath() + "Login/Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
@@ -146,7 +146,7 @@ public class ViewCartServlet extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         if (account == null) {
-            response.sendRedirect("Login/Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
         int accountId = account.getAccountId();

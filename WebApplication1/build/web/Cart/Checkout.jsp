@@ -112,23 +112,23 @@
                                     <td>${item.product.name}</td>
                                     <td>${item.quantity}</td>
                                     <td>${item.product.price}</td>
-                                    <td>${item.quantity * item.product.price}</td>
+                                    <td class="subtotal">
+                                        <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
+                                        ${itemTotal}
+                                        <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
+                                    </td>
                                 </tr>
                             </c:forEach>
                             <tr>
-                                <td colspan="3">Cart Sub Total</td>
-                                <td>${cartTotal}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">Total (Shipping 20 included)</td>
-                                <td><strong>${cartTotal + 20}</strong></td>
+                                <td colspan="3">Total</td>
+                                <td><strong>${cartTotal}</strong></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="payment-options">
                     <span>
-                        <label><input type="radio" name="paymentMethod" value="BankTransfer" required> Bank Transfer</label>
+                        <label><input type="radio" name="paymentMethod" value="BankTransfer"> Bank Transfer</label>
                     </span>
                     <span>
                         <label><input type="radio" name="paymentMethod" value="QR"> QR Payment</label>
@@ -142,16 +142,17 @@
         <script>
             // Load trạng thái thanh toán khi F5
             document.addEventListener("DOMContentLoaded", function () {
-                let savedPayment = sessionStorage.getItem("selectedPayment");
+                // Giữ trạng thái phương thức thanh toán sau khi F5
+                const savedPayment = localStorage.getItem("selectedPayment");
                 if (savedPayment) {
                     document.querySelector(`input[name="paymentMethod"][value="${savedPayment}"]`).checked = true;
                 }
             });
 
-            // Lưu lại trạng thái khi chọn
-            document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
-                input.addEventListener("change", function () {
-                    sessionStorage.setItem("selectedPayment", this.value);
+            // Lưu lựa chọn vào localStorage khi thay đổi
+            document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
+                radio.addEventListener("change", function () {
+                    localStorage.setItem("selectedPayment", this.value);
                 });
             });
 
@@ -165,6 +166,20 @@
                     newAddressInput.required = false;
                 }
             }
+            function updateCheckoutTotal() {
+                let total = 0;
+                document.querySelectorAll(".checkout-item").forEach(row => {
+                    let price = parseFloat(row.querySelector(".item-price").innerText.replace(/[^0-9.]/g, "")) || 0;
+                    let quantity = parseInt(row.querySelector(".item-quantity").innerText) || 0;
+                    total += price * quantity;
+                });
+
+                // Cập nhật tổng vào phần Cart Sub Total
+                document.getElementById("checkoutTotal").innerText = total.toLocaleString("en-US", {style: "currency", currency: "USD"});
+            }
+
+            // Tính lại tổng khi trang tải
+            document.addEventListener("DOMContentLoaded", updateCheckoutTotal);
         </script>
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>

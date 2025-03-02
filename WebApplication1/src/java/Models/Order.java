@@ -4,6 +4,7 @@
  */
 package Models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -14,17 +15,16 @@ public class Order {
     
     private int orderId;
     private int userId;
-    private int totalamount;
+    private BigDecimal totalamount;
     private String statusId;
     private Date createAt;
-    private String paymentmethod;
+    private int paymentmethod;
     private String address;
-    
 
     public Order() {
     }
 
-    public Order(int orderId, int userId, int totalamount, String statusId, Date createAt, String paymentmethod, String address) {
+    public Order(int orderId, int userId, BigDecimal totalamount, String statusId, Date createAt, int paymentmethod, String address) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
@@ -50,11 +50,11 @@ public class Order {
         this.userId = userId;
     }
 
-    public int getTotalamount() {
+    public BigDecimal getTotalamount() {
         return totalamount;
     }
 
-    public void setTotalamount(int totalamount) {
+    public void setTotalamount(BigDecimal totalamount) {
         this.totalamount = totalamount;
     }
 
@@ -74,11 +74,11 @@ public class Order {
         this.createAt = createAt;
     }
 
-    public String getPaymentmethod() {
+    public int getPaymentmethod() {
         return paymentmethod;
     }
 
-    public void setPaymentmethod(String paymentmethod) {
+    public void setPaymentmethod(int paymentmethod) {
         this.paymentmethod = paymentmethod;
     }
 
@@ -95,8 +95,6 @@ public class Order {
         return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", paymentmethod=" + paymentmethod + ", address=" + address + '}';
     }
 
+    
    
-    
-    
-    
 }

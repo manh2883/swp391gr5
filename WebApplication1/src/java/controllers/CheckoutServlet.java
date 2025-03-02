@@ -4,11 +4,9 @@
  */
 package controllers;
 
-import DAO.CartDAO;
-import DAO.OrderDAO;
-import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
+import Models.OrderDetail;
 import Models.User;
 import Models.UserAddress;
 import java.io.IOException;
@@ -19,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,7 +68,7 @@ public class CheckoutServlet extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         if (account == null) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
@@ -100,17 +99,40 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        }
+
+        // 2. Lấy thông tin từ request
+        String selectedAddress = request.getParameter("address");
+        String newAddress = request.getParameter("newAddress");
+        String finalAddress = (selectedAddress.equals("Other")) ? newAddress : selectedAddress;
+        String paymentMethod = request.getParameter("paymentMethod");
+        // 3. Lấy giỏ hàng từ session
+        List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
+        if (cartDetails == null || cartDetails.isEmpty()) {
+            request.setAttribute("message", "Giỏ hàng trống! Vui lòng chọn sản phẩm.");
+            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
+            return;
+        }
+
         
-    }
+        }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
+        /**
+         * Returns a short description of the servlet.
+         *
+         * @return a String containing servlet description
+         */
+        @Override
+        public String getServletInfo
+        
+            () {
         return "Short description";
-    }// </editor-fold>
+        }// </editor-fold>
 
-}
+    }

@@ -118,7 +118,7 @@ public class ProductDAO extends DBContext {
     public void addProduct(Product product, String color, String size, int stock, String backLink) throws SQLException {
         String query = "INSERT INTO Product (product_Id, name, price, description, category_id) VALUES (?, ?, ?, ?, ?)";
         try {
-            
+
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
@@ -133,22 +133,21 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Product pr = getProductById(getLastProductId()) ;
-        if(pr != null ){
+        Product pr = getProductById(getLastProductId());
+        if (pr != null) {
             createVariantForProductId(pr.getProductId(), color, size, stock);
             int variantId = getVariantByColorAndSize(pr.getProductId(), color, size);
-            if(variantId!=-1){
+            if (variantId != -1) {
                 createImgForVariantId(pr.getProductId(), variantId, backLink);
             }
         }
-        
-        
+
     }
-    
-    public static void createImgForVariantId(String productId, int productVariantId, String backLink){
-        
+
+    public static void createImgForVariantId(String productId, int productVariantId, String backLink) {
+
         String query = "INSERT INTO `tpfshopwearv2`.`product_image` ( `product_id`, `product_variant_id`, `description`, `back_link`) VALUES (?, ?, ?, ?);";
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -164,12 +163,12 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     public static void createVariantForProductId(String productId, String color, String size, int stock) {
         String query = "INSERT INTO `tpfshopwearv2`.`product_variant` ( `product_id`, `color`, `size`, `stock`) VALUES (?, ?, ?, ?);";
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -186,8 +185,6 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
     }
-    
-    
 
     public static String getLastProductId() throws SQLException {
         String maxProductId = null;
@@ -821,9 +818,122 @@ public class ProductDAO extends DBContext {
         return name;
     }
 
+    public static List<Product> productFilterList(String productId, String productName, Long brandId, Long categoryId,
+            Double minPrice, Double maxPrice, Integer isVisible, Integer categoryVisible,
+            Timestamp startDate, Timestamp endDate) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+
+        String query = """
+            SELECT p.product_id, p.name AS product_name, p.description, b.name AS brand_name, 
+                               pc.category_name, 
+                               COALESCE((SELECT MIN(pp.price) FROM product_price pp 
+                                        WHERE pp.product_id = p.product_id 
+                                        AND NOW() BETWEEN pp.start_price_date AND pp.end_price_date), p.price) AS current_price, 
+                               p.created_at, p.price as net_price
+                        FROM product p
+                        JOIN product_category pc ON p.category_id = pc.category_id
+                        JOIN brand b ON p.brand_id = b.brand_id
+                        WHERE 1=1 """;
+
+        List<Object> params = new ArrayList<>();
+
+        // Search by product ID
+        if (productId != null && !productId.isEmpty()) {
+            query += " AND p.product_id = ?";
+            params.add(productId);
+        }
+
+        // Search by product name
+        if (productName != null && !productName.isEmpty()) {
+            query += " AND p.name LIKE ?";
+            params.add("%" + productName + "%");
+        }
+
+        // Search by brand ID
+        if (brandId != null) {
+            query += " AND p.brand_id = ?";
+            params.add(brandId);
+        }
+
+        // Search by category ID
+        if (categoryId != null) {
+            query += " AND p.category_id = ?";
+            params.add(categoryId);
+        }
+
+        // Search by price range
+        if (minPrice != null) {
+            query += " AND (pp.price >= ? OR (pp.price IS NULL AND p.price >= ?))";
+            params.add(minPrice);
+            params.add(minPrice);
+        }
+        if (maxPrice != null) {
+            query += " AND (pp.price <= ? OR (pp.price IS NULL AND p.price <= ?))";
+            params.add(maxPrice);
+            params.add(maxPrice);
+        }
+
+        // Filter by product visibility
+        if (isVisible != null) {
+            query += " AND p.is_visible = ?";
+            params.add(isVisible);
+        }
+
+        // Filter by category visibility
+        if (categoryVisible != null) {
+            query += " AND pc.is_visible = ?";
+            params.add(categoryVisible);
+        }
+
+        // Search by creation date range
+        if (startDate != null) {
+            query += " AND p.created_at >= ?";
+            params.add(startDate);
+        }
+        if (endDate != null) {
+            query += " AND p.created_at <= ?";
+            params.add(endDate);
+        }
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getString("product_id"));
+                product.setName(rs.getString("product_name"));
+                product.setDescription(rs.getString("description"));
+                product.setBrandName(rs.getString("brand_name"));
+                product.setCategoryName(rs.getString("category_name"));
+                product.setPrice(rs.getDouble("net_price"));
+                product.setCreateAt(rs.getTimestamp("created_at"));
+                product.setImgUrl(getImgUrlForProductID(rs.getString("product_id")));
+                productList.add(product);
+            }
+        }
+        return productList;
+    }
+    public static List<Map.Entry<Product, Map<Boolean, String>>> productFilterView(List<Product> productList){
+         Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
+    
+            for (Product p : productList) {
+            
+            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            
+        }
+
+        // Chuyển Map thành List để dễ phân trang
+        return new ArrayList<>(productMap.entrySet());
+    }
+
+    
+    
     public static void main(String[] args) throws SQLException {
         ProductDAO pDAO = new ProductDAO();
-        
+
         Product p = new Product();
         pDAO.addProduct(p, null, null, 10, null);
 

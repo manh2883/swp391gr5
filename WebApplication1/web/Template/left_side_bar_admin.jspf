@@ -23,6 +23,7 @@
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
                         <li><a href="#">Displayed Category</a></li>
+                          <li><a href="${pageContext.request.contextPath}/AddProduct">Add New Product</a></li>
                     </ul>
                 </div>
             </div>

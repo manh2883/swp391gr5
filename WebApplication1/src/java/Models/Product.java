@@ -18,36 +18,21 @@ public class Product {
     private double price;
     private String brandName;
     private String categoryName;
-//    private int categoryId;
+    private int categoryId;
     private Date createAt;
     private String imgUrl;
     
     public Product() {
     }
 
-    public Product(String productId, String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
+    public Product(String productId, String name, String description, double price, String brandName, String categoryName, int categoryId, Date createAt, String imgUrl) {
         this.productId = productId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.brandName = brandName;
         this.categoryName = categoryName;
-        this.createAt = createAt;
-        if(imgUrl == null || imgUrl.isEmpty()) {
-            this.imgUrl = "Images/RUN.jpg";
-        }else{
-            this.imgUrl = imgUrl;
-        }
-    }
-
-   
-
-    public Product(String name, String description, double price, String brandName, String categoryName, Timestamp createAt, String imgUrl) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.brandName = brandName;
-        this.categoryName = categoryName;
+        this.categoryId = categoryId;
         this.createAt = createAt;
         this.imgUrl = imgUrl;
     }
@@ -100,11 +85,19 @@ public class Product {
         this.categoryName = categoryName;
     }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public Date getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Timestamp createAt) {
+    public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
 
@@ -118,8 +111,10 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
+        return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", categoryId=" + categoryId + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
     }
+
+    
 
 
 

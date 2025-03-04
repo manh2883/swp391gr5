@@ -171,11 +171,7 @@ public class CartDAO extends DBContext {
         }
     }
 
-    public boolean deleteCartDetailByID(int userID, int cartDetailID) {
-        if (userID <= 0 || cartDetailID <= 0) {
-            throw new IllegalArgumentException("userID và cartDetailID phải lớn hơn 0.");
-        }
-
+    public static boolean deleteCartDetailByID(int userID, int cartDetailID) {
         String query = "DELETE cd FROM cart_detail cd "
                 + "JOIN cart c ON cd.cart_id = c.cart_id "
                 + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";

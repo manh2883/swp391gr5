@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import DAO.CartDAO;
 import DAO.OrderDAO;
 import DAO.ProductDAO;
 import DAO.UserDAO;
@@ -146,7 +147,7 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
             //  Thêm vào danh sách OrderDetail
-            OrderDetail orderDetail = new OrderDetail(0, 0, productId, variantId, quantity, (int) price);
+            OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
             orderDetails.add(orderDetail);
             // Tính tổng tiền
             totalAmount += (int) (price * quantity);
@@ -166,7 +167,10 @@ public class CheckoutServlet extends HttpServlet {
         if (orderId > 0) {
             session.removeAttribute("checkoutItems"); // Xóa giỏ hàng sau khi đặt hàng thành công
 //            response.sendRedirect(request.getContextPath() + "/Home/test.jsp"); // Chuyển đến My Order
-             request.setAttribute("message", "Đặt hàng thành công: "+orderId);
+            request.setAttribute("message", "Đặt hàng thành công: "+orderId);
+            for(OrderDetail ode : orderDetails){
+                CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+            }
             request.getRequestDispatcher("/Home/test.jsp").forward(request, response);
         } else {
             request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");

@@ -1034,14 +1034,14 @@ public class ProductDAO extends DBContext {
         return new ArrayList<>(productMap.entrySet());
     }
 
-    public int getStockByProductAndVariant(String productId, int variantId) {
+    public static int getStockByProductAndVariant(String productId, int variantId) {
         String query = "SELECT stock FROM product_variant WHERE product_id = ? AND variant_id = ?";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, productId);
-
+            stm.setInt(2, variantId);
             try (ResultSet rs = stm.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("stock");
@@ -1054,6 +1054,6 @@ public class ProductDAO extends DBContext {
     }
 
     public static void main(String[] args) throws SQLException {
-
+        System.out.println(getStockByProductAndVariant("P003", 5));
     }
 }

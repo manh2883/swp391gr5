@@ -1,40 +1,46 @@
 <%-- 
-    Document   : OrderDetail
-    Created on : Feb 27, 2025, 5:43:43 AM
+    Document   : MyOrder
+    Created on : Mar 4, 2025, 9:46:00 AM
     Author     : Dell
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.List"%>
-<%@page import="Models.OrderDetail"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Order Detail</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <h2>Order Detail</h2>
-    
-    <table border="1">
-        <tr>
-            <th>Product name</th>
-            <th>Stock</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-        <% List<OrderDetail> orderDetails = (List<OrderDetail>) request.getAttribute("orderDetails");
-           if (orderDetails != null) {
-               for (OrderDetail detail : orderDetails) { %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%@ page import="DAO.OrderDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="Models.Order" %>
+
+<div class="container mt-4">
+    <h2>My Orders</h2>
+    <p>${message}</p>
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td><%= detail.getProductName() %></td>
-                <td><%= detail.getQuantity() %></td>
-                <td><%= detail.getPrice() %> VND</td>
-                <td><%= detail.getTotal() %> VND</td>
+                <th>STT</th>
+                <th>Product</th>
+                <th>Size, Color</th>
+                <th>Quantity</th>
+                <th>Price</th>
             </tr>
-        <% } } %>
+        </thead>
+        <tbody>
+            <c:forEach var="order" items="${orderDetailList}">
+                <tr>
+                    
+                    <td><c:out value="${order[0].orderdetailId}" /></td>
+                    <td><c:out value="${order[1].name}" /></td>
+                    <td>$<c:out value="${order[2]}" /></td>
+                    <td><c:out value="${order[0].quantity}" /></td>
+                     <td><c:out value="${order[0].price}" /></td>
+                    <td>
+                        <a href="OrderDetail.jsp?orderId=${order.orderId}" class="btn btn-primary">View</a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </tbody>
     </table>
-    
-    <a href="OrderList.jsp">Back to Order List</a>
-</body>
-</html>
+</div>
+
+
+

@@ -20,45 +20,27 @@ import java.sql.ResultSet;
  */
 public class OrderDAO {
 
-    public List<Order> getOrdersByUserId(int userId) {
+    public static List<Order> getAllOrderListByStatus(int status) {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT order_id, total_amount, status_id, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC";
+        String query = "SELECT * FROM orders WHERE status_id = ? ORDER BY created_at  DESC";
 
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setInt(1, userId);
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                int orderId = rs.getInt("order_id");
-                String totalamount = rs.getString("total_amount");
-                String statusId = rs.getString("status_id");
-
-//                orders.add(orderId, userId, totalamount, statusId);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return orders;
-    }
-
-    public List<Order> getAllOrders() {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT order_id, user_id, total_amount, status_id, created_at FROM orders ORDER BY created_at DESC";
-
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, status);
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                int orderId = rs.getInt("orderId");
-                int userId = rs.getInt("userId");
-                double totalAmount = rs.getDouble("totalAmount");
-                int statusId = rs.getInt("statusId");
-                String createdAt = rs.getString("createdAt");
+                Order order = new Order();
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId(rs.getInt("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setAddress(rs.getString("address"));
+                orders.add(order);
 
 //                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
             }
@@ -68,32 +50,6 @@ public class OrderDAO {
         return orders;
     }
 
-    public List<Order> getOrdersByStatus(String status) {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT order_id, user_id, total_amount, status_id, created_at FROM orders WHERE status_id = ? ORDER BY created_at DESC";
-
-        try {
-
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(1, status);
-            ResultSet rs = stm.executeQuery();
-
-            while (rs.next()) {
-                int orderId = rs.getInt("orderId");
-                int userId = rs.getInt("userId");
-                double totalAmount = rs.getDouble("totalAmount");
-                int statusId = rs.getInt("statusId");
-                String createdAt = rs.getString("createdAt");
-
-//                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return orders;
-    }
     
     public static List<Order> getOrderListByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
@@ -127,7 +83,7 @@ public class OrderDAO {
 
     public List<Order> getOrdersByUserIdAndStatus(int userId, String status) {
         List<Order> orders = new ArrayList<>();
-        String query = "SELECT order_id, total_amount, status_id, created_at FROM orders WHERE user_id = ? AND status_id = ? ORDER BY created_at DESC";
+        String query = "SELECT * FROM orders WHERE user_id = ? AND status_id = ? ORDER BY created_at DESC";
 
         try {
 
@@ -139,22 +95,53 @@ public class OrderDAO {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                int orderId = rs.getInt("orderId");
-                double totalAmount = rs.getDouble("totalAmount");
-                int statusId = rs.getInt("statusId");
-                String createdAt = rs.getString("createdAt");
-
-//                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
+                Order order = new Order();
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId(rs.getInt("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setAddress(rs.getString("address"));
+                orders.add(order);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return orders;
     }
+    
+    public static Order getOrderInformationById(int orderId) {
+        
+        String query = "SELECT * FROM orders WHERE order_id = ? limit 1";
+        Order order = new Order();
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, orderId);
+            ResultSet rs = stm.executeQuery();
+            
+            while (rs.next()) {
+                
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId(rs.getInt("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setAddress(rs.getString("address"));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return order;
+    }
 
     public static List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
-        String query = "SELECT order_detail_id, order_id, product_id, quantity, price FROM order_detail WHERE order_id = ?";
+        String query = "SELECT * FROM order_detail WHERE order_id = ?";
 
         try {
             DBContext db = new DBContext();
@@ -164,18 +151,40 @@ public class OrderDAO {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                String orderdetailId = rs.getString("orderdetailId");
-                int productId = rs.getInt("productId");
-                int quantity = rs.getInt("quantity");
-                double price = rs.getDouble("price");
-
-//                orderDetails.add(new OrderDetail(orderdetailId, orderId, productId, quantity, price));
+                OrderDetail orderdt = new OrderDetail();
+                
+                orderdt.setOrderdetailId(rs.getInt("order_detail_id"));
+                orderdt.setOrderId(rs.getInt("order_id"));
+                orderdt.setProductId(rs.getString("product_id"));
+                orderdt.setProductvariantId(rs.getInt("product_variant_id"));
+                orderdt.setQuantity(rs.getInt("quantity"));
+                orderdt.setPrice(rs.getInt("price"));
+                
+                orderDetails.add(orderdt);
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return orderDetails;
     }
+    
+    public static ArrayList<Object[]> getOrderDetailViewByOrderId(int orderId){
+         List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
+         ArrayList<Object[]> view = new ArrayList<>();
+         for(OrderDetail od: orderDetails){
+             Object[] oj = new Object[3];
+         oj[0] = od;
+         oj[1] = ProductDAO.getProductById(od.getProductId());
+         oj[2] = ProductDAO.getVariantInformation(od.getProductId(), od.getProductvariantId());
+         view.add(oj);
+             
+         }
+         return view;
+         
+    }
+    
+    
 
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;
@@ -229,34 +238,12 @@ public class OrderDAO {
     }
 
     public static void main(String[] args) {
-//          // 1. Tạo một đơn hàng giả lập
-//        Order order = new Order();
-//        order.setUserId(4); // ID user có sẵn trong database
-//        order.setTotalamount(new BigDecimal("500.00")); // Tổng tiền
-//        order.setPaymentmethod(1); // Giả sử 2 là "QR Payment"
-//        order.setAddress("123 Test Street, City");
-//
-//        // 2. Tạo danh sách chi tiết đơn hàng (List<OrderDetail>)
-//        List<OrderDetail> orderDetails = new ArrayList<>();
-//        
-//        OrderDetail item1 = new OrderDetail();
-//        item1.setProductId("P001"); // Mã sản phẩm có sẵn
-//        item1.setProductvariantId(1); // ID biến thể sản phẩm
-//        item1.setQuantity(2);
-//        item1.setPrice(250); // Giá mỗi sản phẩm
-//        
-//        orderDetails.add(item1);
-//
-//        // 3. Gọi hàm createOrder() từ DAO
-//        OrderDAO orderDAO = new OrderDAO();
-//        long orderId = orderDAO.createOrder(order, orderDetails);
-//        
-//        // 4. Kiểm tra kết quả
-//        if (orderId != -1) {
-//            System.out.println("✅ Đơn hàng được tạo thành công! Order ID: " + orderId);
-//        } else {
-//            System.out.println("❌ Tạo đơn hàng thất bại.");
-//        }
+        for( Object[] oj: getOrderDetailViewByOrderId(1)){
+            System.out.println(oj[0]);
+            System.out.println(oj[1]);
+            System.out.println(oj[2]);
+        }
+
     }
 
 }

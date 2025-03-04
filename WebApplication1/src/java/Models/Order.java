@@ -20,11 +20,14 @@ public class Order {
     private Date createAt;
     private int paymentmethod;
     private String address;
+    private String orderNote;
+    private String userReceive;
+    private String contact;
 
     public Order() {
     }
 
-    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, int paymentmethod, String address) {
+    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, int paymentmethod, String address, String orderNote, String userReceive, String contact) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
@@ -32,6 +35,9 @@ public class Order {
         this.createAt = createAt;
         this.paymentmethod = paymentmethod;
         this.address = address;
+        this.orderNote = orderNote;
+        this.userReceive = userReceive;
+        this.contact = contact;
     }
 
     public int getOrderId() {
@@ -90,11 +96,34 @@ public class Order {
         this.address = address;
     }
 
+    public String getOrderNote() {
+        return orderNote;
+    }
+
+    public void setOrderNote(String orderNote) {
+        this.orderNote = orderNote;
+    }
+
+    public String getUserReceive() {
+        return userReceive;
+    }
+
+    public void setUserReceive(String userReceive) {
+        this.userReceive = userReceive;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
     @Override
     public String toString() {
-        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", paymentmethod=" + paymentmethod + ", address=" + address + '}';
+        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", paymentmethod=" + paymentmethod + ", address=" + address + ", orderNote=" + orderNote + ", userReceive=" + userReceive + ", contact=" + contact + '}';
     }
 
     
-   
 }

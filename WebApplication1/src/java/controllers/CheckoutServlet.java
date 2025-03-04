@@ -4,8 +4,13 @@
  */
 package controllers;
 
+import DAO.CartDAO;
+import DAO.OrderDAO;
+import DAO.ProductDAO;
+import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
+import Models.Order;
 import Models.OrderDetail;
 import Models.User;
 import Models.UserAddress;
@@ -16,8 +21,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -106,12 +112,15 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
-
+        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
         // 2. Lấy thông tin từ request
         String selectedAddress = request.getParameter("address");
         String newAddress = request.getParameter("newAddress");
         String finalAddress = (selectedAddress.equals("Other")) ? newAddress : selectedAddress;
         String paymentMethod = request.getParameter("paymentMethod");
+        String orderNote = request.getParameter("orderNote");
+        String userReceive = request.getParameter("name");
+        String contact = request.getParameter("contact");
         // 3. Lấy giỏ hàng từ session
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         if (cartDetails == null || cartDetails.isEmpty()) {
@@ -120,19 +129,63 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        
+        // 4. Tạo danh sách OrderDetail và tính tổng tiền
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        int totalAmount = 0;
+
+        for (CartDetail item : cartDetails) {
+            String productId = item.getProductID();
+            int variantId = (int) item.getProductVariantID();
+            int quantity = item.getQuantity();
+            ProductDAO productDAO = new ProductDAO();
+            int stock = productDAO.getStockByProductAndVariant(productId, variantId);
+            // Lấy giá từ bảng product_price
+            double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+            if (quantity > stock) {
+                request.setAttribute("message", "Không còn sản phẩm!");
+                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+                return;
+            }
+            //  Thêm vào danh sách OrderDetail
+            OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
+            orderDetails.add(orderDetail);
+            // Tính tổng tiền
+            totalAmount += (int) (price * quantity);
         }
+        // 5. Tạo Order
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Date createAt = new Date(timestamp.getTime()); // Chuyển Timestamp -> Date
 
-        /**
-         * Returns a short description of the servlet.
-         *
-         * @return a String containing servlet description
-         */
-        @Override
-        public String getServletInfo
-        
-            () {
-        return "Short description";
-        }// </editor-fold>
+        // Nếu Order chấp nhận double totalAmount
+        Order order = new Order(0, userId, totalAmount, 1,
+                createAt, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
 
+        // 6. Ghi vào database
+        OrderDAO orderDAO = new OrderDAO();
+        long orderId = orderDAO.createOrder(order, orderDetails);
+
+        if (orderId > 0) {
+            session.removeAttribute("checkoutItems"); // Xóa giỏ hàng sau khi đặt hàng thành công
+//            response.sendRedirect(request.getContextPath() + "/Home/test.jsp"); // Chuyển đến My Order
+            request.setAttribute("message", "Đặt hàng thành công: "+orderId);
+            for(OrderDetail ode : orderDetails){
+                CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+            }
+            request.getRequestDispatcher("/Home/test.jsp").forward(request, response);
+        } else {
+            request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
+            request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+        }
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}

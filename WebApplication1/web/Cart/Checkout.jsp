@@ -44,31 +44,26 @@
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
-        <section id="cart_items">
-            <div class="container">
-                <div class="breadcrumbs">
-                    <ol class="breadcrumb">
-                        <li><a href="#">Home</a></li>
-                        <li class="active">Check out</li>
-                    </ol>
-                </div><!--/breadcrums-->
-
-                <div class="shopper-informations">
-                    <div class="row">
-                        <div class="col-sm-5 clearfix">
-                            <div class="bill-to">
-                                <p>Bill To</p>
-                                <div class="form-one">
-                                    <p>${message1}</p>
-                                    <p>${message2}</p>
-                                    <form>
-                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>
-                                        <input type="text" name="firstName" placeholder="First Name*" value="${user.firstName}" required>
-                                        <input type="text" name="lastName" placeholder="Last Name*" value="${user.lastName}" required>
-                                    </form>
-                                </div>
-                                <div class="form-two">
-                                    <form>
+        <form action="Checkout" method="post">
+            <section id="cart_items">
+                <div class="container">
+                    <div class="breadcrumbs">
+                        <ol class="breadcrumb">
+                            <li><a href="#">Home</a></li>
+                            <li class="active">Check out</li>
+                        </ol>
+                    </div>
+                    <p style="color: red">${message}</p>
+                    <div class="shopper-informations">
+                        <div class="row">
+                            <div class="col-sm-5 clearfix">
+                                <div class="bill-to">
+                                    <p>Bill To</p>
+                                    <div class="form-one">
+<!--                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>-->
+                                        <input type="text" name="name" placeholder="Name*" value="${user.firstName} ${user.lastName}" required>
+                                    </div>
+                                    <div class="form-two">
                                         <select name="address" id="address" class="form-control" onchange="toggleAddressInput(this)">
                                             <option value="">-- Select Address --</option>
                                             <c:forEach var="addr" items="${userAddresses}">
@@ -78,67 +73,73 @@
                                         </select>
                                         <input type="text" name="newAddress" id="newAddress" class="form-control mt-2"
                                                placeholder="Enter new address" style="display:none;" />
-                                        <input type="text" name="phone" placeholder="Phone *" value="${user.phoneNumber}" required>
-                                    </form>
+                                        <input type="text" name="contact" placeholder="Contact*" value="${user.phoneNumber}" required>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="col-sm-4">
+                                <div class="order-message">
+                                    <p>Shipping Order</p>
+                                    <textarea name="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
+                                    <label><input type="checkbox"> Shipping to bill address</label>
+                                </div>
+                            </div>                  
                         </div>
-                        <div class="col-sm-4">
-                            <div class="order-message">
-                                <p>Shipping Order</p>
-                                <textarea name="message"  placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
-                                <label><input type="checkbox"> Shipping to bill address</label>
-                            </div>	
-                        </div>					
+                    </div>
+
+                    <div class="review-payment">
+                        <h2>Review & Payment</h2>
+                    </div>
+
+                    <div class="table-responsive cart_info">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:set var="cartTotal" value="0" />
+                                <c:forEach var="item" items="${checkoutItems}">
+                                    <tr>
+                                        <td>${item.product.name}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.product.price}</td>
+                                        <td class="subtotal">
+                                            <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
+                                            ${itemTotal}
+                                            <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <tr>
+                                    <td colspan="3">Total</td>
+                                    <td><strong>${cartTotal}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="payment-options">
+                        <span>
+                            <label><input type="radio" name="paymentMethod" value="1" required> Bank Transfer</label>
+                        </span>
+                        <span>
+                            <label><input type="radio" name="paymentMethod" value="1" required> QR Payment</label>
+                        </span>
+                    </div>
+
+                    <!-- Nút xác nhận đơn hàng -->
+                    <div class="text-right mt-3">
+                        <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
                     </div>
                 </div>
-                <div class="review-payment">
-                    <h2>Review & Payment</h2>
-                </div>
+            </section>
+        </form>
 
-                <div class="table-responsive cart_info">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="item" items="${checkoutItems}">
-                                <tr>
-                                    <td>${item.product.name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.product.price}</td>
-                                    <td class="subtotal">
-                                        <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
-                                        ${itemTotal}
-                                        <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <tr>
-                                <td colspan="3">Total</td>
-                                <td><strong>${cartTotal}</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="payment-options">
-                    <span>
-                        <label><input type="radio" name="paymentMethod" value="BankTransfer"> Bank Transfer</label>
-                    </span>
-                    <span>
-                        <label><input type="radio" name="paymentMethod" value="QR"> QR Payment</label>
-                    </span>
-                </div>
-                <!-- Nút xác nhận đơn hàng -->
-                <div class="text-right mt-3">
-                    <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
-                </div>
-        </section> <!--/#cart_items-->
         <script>
             // Load trạng thái thanh toán khi F5
             document.addEventListener("DOMContentLoaded", function () {

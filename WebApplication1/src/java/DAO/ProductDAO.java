@@ -41,7 +41,7 @@ public class ProductDAO extends DBContext {
         return null;
 
     }
-    
+
     public static String getVariantInformation(String productId, int variantId) {
         Object[] obj = null; // Trả về null nếu không tìm thấy dữ liệu
         String query = "SELECT color, size FROM product_variant WHERE product_id = ? AND variant_id = ?";
@@ -63,7 +63,6 @@ public class ProductDAO extends DBContext {
 
 //                System.out.println("Color: " + obj[0]);
 //                System.out.println("Size: " + obj[1]);
-
                 // Tạo chuỗi kết quả, bỏ qua giá trị null
                 StringJoiner joiner = new StringJoiner(", ");
                 if (obj[0] != null) {
@@ -84,7 +83,7 @@ public class ProductDAO extends DBContext {
 
         return str;
     }
-    
+
     public static String getImgUrlForProductID(String Id) {
         String imgUrl = "Images/RUN.jpg";
         String query = """
@@ -1035,7 +1034,26 @@ public class ProductDAO extends DBContext {
         return new ArrayList<>(productMap.entrySet());
     }
 
+    public int getStockByProductAndVariant(String productId, int variantId) {
+        String query = "SELECT stock FROM product_variant WHERE product_id = ? AND variant_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("stock");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Trả về -1 nếu không tìm thấy
+    }
+
     public static void main(String[] args) throws SQLException {
-        
+
     }
 }

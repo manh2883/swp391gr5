@@ -53,7 +53,7 @@
                             <li class="active">Check out</li>
                         </ol>
                     </div>
-                    <p>${message}</p>
+                    <p style="color: red">${message}</p>
                     <div class="shopper-informations">
                         <div class="row">
                             <div class="col-sm-5 clearfix">

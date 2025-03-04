@@ -136,12 +136,12 @@ public class CheckoutServlet extends HttpServlet {
             String productId = item.getProductID();
             int variantId = (int) item.getProductVariantID();
             int quantity = item.getQuantity();
-
+            ProductDAO productDAO = new ProductDAO();
+            int stock = productDAO.getStockByProductAndVariant(productId, variantId);
             // Lấy giá từ bảng product_price
             double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
-            System.out.println(price +productId +variantId);
-            if (price <= 0) {
-                request.setAttribute("message", "Lỗi lấy giá sản phẩm!");
+            if (quantity > stock) {
+                request.setAttribute("message", "Không còn sản phẩm!");
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
             }

@@ -5,7 +5,12 @@
 package controllers;
 
 import DAO.OrderDAO;
+import DAO.PermissionDAO;
+import DAO.ProductDAO;
+import DAO.UserDAO;
+import Models.Account;
 import Models.Order;
+import Models.Product;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -14,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 /**
  *
@@ -38,7 +44,7 @@ public class MyOrderServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MyOrderServlet</title>");            
+            out.println("<title>Servlet MyOrderServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet MyOrderServlet at " + request.getContextPath() + "</h1>");
@@ -60,30 +66,44 @@ public class MyOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId");
-        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-        
-        if (userId == null) {
-            response.sendRedirect("Order/OrderInformation.jsp");
-            return;
-        }
-        
-        String statusFilter = request.getParameter("status");
-        OrderDAO orderDAO = new OrderDAO();
-        List<Order> orders;
-        
-        if (isAdmin != null && isAdmin) {
-            orders = (statusFilter == null || statusFilter.isEmpty())
-                    ? orderDAO.getAllOrders()
-                    : orderDAO.getOrdersByStatus(statusFilter);
+
+        Account account = (Account) session.getAttribute("account");
+
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("MyOrderList", role) || !pDAO.checkPermissionForRole("OrderManager", role)) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                } else {
+                    //Main Process
+                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+                    if(userId != -1){
+                        List<Order> orders = OrderDAO.getOrderListByUserId(userId);
+                        request.setAttribute("orders", orders);
+                         request.setAttribute("message", orders.size());
+                        request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
+                    }
+
+//                    //side bar open
+//                    request.setAttribute("defaultDropdown", "productManager");
+//                    // set title
+//                    request.setAttribute("title", "Admin Dashboard");
+//                    // set breadcrumbs
+//                    request.setAttribute("breadcrumbs", "Product List");
+//                    request.setAttribute("ProductList", ProductList);
+//                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("message", "role not found");
+                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            }
         } else {
-            orders = (statusFilter == null || statusFilter.isEmpty())
-                    ? orderDAO.getOrdersByUserId(userId)
-                    : orderDAO.getOrdersByUserIdAndStatus(userId, statusFilter);
+            request.setAttribute("message", "account not found");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
         }
-        
-        request.setAttribute("Orders", orders);
-        request.getRequestDispatcher("Order/OrderList.jsp").forward(request, response);
     }
 
     /**

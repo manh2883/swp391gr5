@@ -21,9 +21,11 @@
             <a href="ProductDetail.jsp?productId=${product.id}">View Details</a>
         </div>
     </c:forEach>
-
-
-<!--    <div th:each="product : ${products}">
+    
+    
+   
+<!--
+    <div th:each="product : ${products}">
     <h2 th:text="${product.name}"></h2>
     <p th:text="${product.description}"></p>
     <p>Price: $<span th:text="${product.price}"></span></p>

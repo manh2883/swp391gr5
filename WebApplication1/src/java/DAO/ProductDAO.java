@@ -228,38 +228,99 @@ public class ProductDAO extends DBContext {
         return prefix + String.format("%03d", number);
     }
 
-    public void updateProduct(Product product) {
-        String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, category_id = ? WHERE product_id = ?";
+    public static boolean updateProductVariant(String productId, String color, String size, int stock) {
+        String query = "UPDATE ProductVariant SET size = ?, color = ?, stock = ? WHERE variant_id = ?";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(1, product.getName());
-            stm.setDouble(2, product.getPrice());
-            stm.setString(3, product.getDescription());
-//            
-            stm.executeUpdate();
-            stm.close();
-            con.close();
+            ResultSet rs = stm.executeQuery();
+
+//            getVariantByColorAndSize(productId, color, size);
+            int variantId = getVariantByColorAndSize(productId, color, size);
+            if (variantId == -1) {
+                return false;
+            }
+
+            stm.setString(1, size);
+            stm.setString(2, color);
+            stm.setInt(3, stock);
+            stm.setInt(4, variantId);
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void deleteProduct(int id) {
-        String query = "DELETE FROM Product WHERE product_id = ?";
+    public static boolean deleteProductVariant(String productId, String color, String size) {
+        int variantId = getVariantByColorAndSize(productId, color, size);
+        if (variantId == -1) {
+            return false; // Không tìm thấy biến thể
+        }
+
+        String query = "DELETE FROM product_variant WHERE variant_id = ?";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            stm.setInt(1, id);
-            stm.executeUpdate();
 
-            stm.close();
-            con.close();
+            stm.setInt(1, variantId);
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public List<Map<String, Object>> getProductVariants(String productId) {
+        List<Map<String, Object>> variants = new ArrayList<>();
+        String query = "SELECT variant_id, color, size, stock FROM product_variant WHERE product_id = ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, productId);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> variant = new HashMap<>();
+                variant.put("variant_id", rs.getInt("variant_id"));
+                variant.put("color", rs.getString("color"));
+                variant.put("size", rs.getString("size"));
+                variant.put("stock", rs.getInt("stock"));
+                variants.add(variant);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return variants;
+    }
+
+    public boolean updateProduct(Product product) {
+        String query = "UPDATE Product SET name = ?, description = ?, brand_id = ?, price = ?, category_id = ? WHERE product_id = ?";
+        try {
+
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, product.getName());
+            stm.setString(2, product.getDescription());
+            stm.setString(3, product.getBrandName());
+            stm.setInt(4, (int) product.getPrice());
+            stm.setString(5, product.getCategoryName());
+            stm.setString(6, product.getProductId());
+
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0; // Trả về true nếu cập nhật thành công
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public List<String> getAllSizebyProductId(String productId) {
@@ -916,21 +977,20 @@ public class ProductDAO extends DBContext {
         }
         return productList;
     }
-    public static List<Map.Entry<Product, Map<Boolean, String>>> productFilterView(List<Product> productList){
-         Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
-    
-            for (Product p : productList) {
-            
+
+    public static List<Map.Entry<Product, Map<Boolean, String>>> productFilterView(List<Product> productList) {
+        Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
+
+        for (Product p : productList) {
+
             productMap.put(p, getProcductNotifyInformation(p.getProductId()));
-            
+
         }
 
         // Chuyển Map thành List để dễ phân trang
         return new ArrayList<>(productMap.entrySet());
     }
 
-    
-    
     public static void main(String[] args) throws SQLException {
         ProductDAO pDAO = new ProductDAO();
 

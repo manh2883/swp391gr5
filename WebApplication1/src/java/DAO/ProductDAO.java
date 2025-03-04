@@ -992,10 +992,6 @@ public class ProductDAO extends DBContext {
     }
 
     public static void main(String[] args) throws SQLException {
-        ProductDAO pDAO = new ProductDAO();
-
-        Product p = new Product();
-        pDAO.addProduct(p, null, null, 10, null);
-
+        
     }
 }

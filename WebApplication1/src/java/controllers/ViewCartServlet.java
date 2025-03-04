@@ -185,7 +185,7 @@ public class ViewCartServlet extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("userAddresses", userAddresses);
 
-            response.sendRedirect("Cart/Checkout.jsp");
+            request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
         } else {
             // Nếu không có sản phẩm nào được chọn, quay lại giỏ hàng
             response.sendRedirect("ViewCart");

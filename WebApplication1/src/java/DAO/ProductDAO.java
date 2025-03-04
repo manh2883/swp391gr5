@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  *
@@ -40,7 +41,50 @@ public class ProductDAO extends DBContext {
         return null;
 
     }
+    
+    public static String getVariantInformation(String productId, int variantId) {
+        Object[] obj = null; // Trả về null nếu không tìm thấy dữ liệu
+        String query = "SELECT color, size FROM product_variant WHERE product_id = ? AND variant_id = ?";
+        String str = null;
+        try {
+            DBContext db = new DBContext();
 
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+            stm.setInt(2, variantId);
+
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                obj = new Object[2];
+                obj[0] = rs.getString("color");
+                obj[1] = rs.getString("size");
+
+//                System.out.println("Color: " + obj[0]);
+//                System.out.println("Size: " + obj[1]);
+
+                // Tạo chuỗi kết quả, bỏ qua giá trị null
+                StringJoiner joiner = new StringJoiner(", ");
+                if (obj[0] != null) {
+                    joiner.add(obj[0].toString());
+                }
+                if (obj[1] != null) {
+                    joiner.add(obj[1].toString());
+                }
+
+                String st = joiner.toString(); // Nếu cả 2 đều null, str sẽ là chuỗi rỗng ""
+                str = st;
+//                System.out.println("Result String: " + st);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return str;
+    }
+    
     public static String getImgUrlForProductID(String Id) {
         String imgUrl = "Images/RUN.jpg";
         String query = """

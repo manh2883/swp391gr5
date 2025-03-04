@@ -34,7 +34,7 @@
                     <td><c:out value="${order[0].quantity}" /></td>
                      <td><c:out value="${order[0].price}" /></td>
                     <td>
-                        <a href="OrderDetail.jsp?orderId=${order.orderId}" class="btn btn-primary">View</a>
+                    <a href="OrderDetail.jsp?orderId=${order.orderId}" class="btn btn-primary">View</a>
                     </td>
                 </tr>
             </c:forEach>

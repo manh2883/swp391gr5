@@ -96,7 +96,7 @@
                                                         <a href="profile.html" style="background-color: transparent; ">My Profile</a>
                                                     </li >
                                                     <li style="width: 100%">
-                                                        <a href="orders.html" style="background-color: transparent; ">My Orders</a>
+                                                        <a href="${pageContext.request.contextPath}/MyOrder" style="background-color: transparent; ">My Orders</a>
                                                     </li>
                                                     <li style="width: 100%">
                                                         <a href="${pageContext.request.contextPath}/Logout" style="background-color: transparent; ">Log Out</a>

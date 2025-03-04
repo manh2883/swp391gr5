@@ -15,8 +15,8 @@ public class Order {
     
     private int orderId;
     private int userId;
-    private BigDecimal totalamount;
-    private String statusId;
+    private int totalamount;
+    private int statusId;
     private Date createAt;
     private int paymentmethod;
     private String address;
@@ -24,7 +24,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(int orderId, int userId, BigDecimal totalamount, String statusId, Date createAt, int paymentmethod, String address) {
+    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, int paymentmethod, String address) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
@@ -50,19 +50,19 @@ public class Order {
         this.userId = userId;
     }
 
-    public BigDecimal getTotalamount() {
+    public int getTotalamount() {
         return totalamount;
     }
 
-    public void setTotalamount(BigDecimal totalamount) {
+    public void setTotalamount(int totalamount) {
         this.totalamount = totalamount;
     }
 
-    public String getStatusId() {
+    public int getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(String statusId) {
+    public void setStatusId(int statusId) {
         this.statusId = statusId;
     }
 

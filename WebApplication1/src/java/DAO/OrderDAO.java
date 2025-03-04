@@ -94,6 +94,36 @@ public class OrderDAO {
         }
         return orders;
     }
+    
+    public static List<Order> getOrderListByUserId(int userId) {
+        List<Order> orders = new ArrayList<>();
+        String query = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
+
+        try {
+
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setInt(1, userId);
+
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId(rs.getInt("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setAddress(rs.getString("address"));
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
 
     public List<Order> getOrdersByUserIdAndStatus(int userId, String status) {
         List<Order> orders = new ArrayList<>();
@@ -161,7 +191,7 @@ public class OrderDAO {
                 
                 // 1. Chèn vào bảng orders
                 orderstm.setLong(1, order.getUserId());
-                orderstm.setBigDecimal(2, order.getTotalamount());
+                orderstm.setInt(2, order.getTotalamount());
                 orderstm.setLong(3, 1); // 1 là trạng thái "Pending"
                 orderstm.setLong(4, order.getPaymentmethod());
                 orderstm.setString(5, order.getAddress());

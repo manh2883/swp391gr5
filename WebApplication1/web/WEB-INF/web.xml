@@ -178,11 +178,11 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>OrderDetailServlet</servlet-name>
-        <url-pattern>/OrderDetailServlet</url-pattern>
+        <url-pattern>/OrderDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MyOrderServlet</servlet-name>
-        <url-pattern>/MyOrderServlet</url-pattern>
+        <url-pattern>/MyOrder</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RedirectDashBoardServlet</servlet-name>

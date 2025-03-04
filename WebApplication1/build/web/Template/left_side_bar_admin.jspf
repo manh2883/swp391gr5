@@ -86,9 +86,19 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
+        <div class="panel panel-default" >
             <div class="panel-heading">
-                <h4 class="panel-title"><a href="#">Permission</a></h4>
+                <h4 class="panel-title">
+                    <a href="#permissionManager">Permission</a>
+                </h4>
+            </div>
+                <div id="permissionManager" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/PermissionManager">View Permission</a></li>
+                       
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

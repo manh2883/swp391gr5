@@ -117,6 +117,9 @@ public class CheckoutServlet extends HttpServlet {
         String newAddress = request.getParameter("newAddress");
         String finalAddress = (selectedAddress.equals("Other")) ? newAddress : selectedAddress;
         String paymentMethod = request.getParameter("paymentMethod");
+        String orderNote = request.getParameter("orderNote");
+        String userReceive = request.getParameter("name");
+        String contact = request.getParameter("contact");
         // 3. Lấy giỏ hàng từ session
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         if (cartDetails == null || cartDetails.isEmpty()) {
@@ -154,7 +157,7 @@ public class CheckoutServlet extends HttpServlet {
 
         // Nếu Order chấp nhận double totalAmount
         Order order = new Order(0, userId, totalAmount, 1,
-                createAt, Integer.parseInt(paymentMethod), finalAddress);
+                createAt, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
 
         // 6. Ghi vào database
         OrderDAO orderDAO = new OrderDAO();

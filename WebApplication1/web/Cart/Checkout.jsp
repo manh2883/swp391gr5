@@ -60,9 +60,8 @@
                                 <div class="bill-to">
                                     <p>Bill To</p>
                                     <div class="form-one">
-                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>
-                                        <input type="text" name="firstName" placeholder="First Name*" value="${user.firstName}" required>
-                                        <input type="text" name="lastName" placeholder="Last Name*" value="${user.lastName}" required>
+<!--                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>-->
+                                        <input type="text" name="name" placeholder="Name*" value="${user.firstName} ${user.lastName}" required>
                                     </div>
                                     <div class="form-two">
                                         <select name="address" id="address" class="form-control" onchange="toggleAddressInput(this)">
@@ -74,16 +73,16 @@
                                         </select>
                                         <input type="text" name="newAddress" id="newAddress" class="form-control mt-2"
                                                placeholder="Enter new address" style="display:none;" />
-                                        <input type="text" name="phone" placeholder="Phone *" value="${user.phoneNumber}" required>
+                                        <input type="text" name="contact" placeholder="Contact*" value="${user.phoneNumber}" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="order-message">
                                     <p>Shipping Order</p>
-                                    <textarea name="message" placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
+                                    <textarea name="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
                                     <label><input type="checkbox"> Shipping to bill address</label>
-                                </div>  
+                                </div>
                             </div>                  
                         </div>
                     </div>

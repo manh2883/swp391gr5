@@ -188,7 +188,7 @@ public class OrderDAO {
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;
         String orderSQL = "INSERT INTO orders (user_id, total_amount, status_id, "
-                + "payment_method, created_at, address) VALUES (?, ?, ?, ?, NOW(), ?)";
+                + "payment_method, created_at, address, note, user_receive, contact) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?)";
         String detailSQL = "INSERT INTO order_detail (order_id, product_id, "
                 + "product_variant_id, quantity, price) VALUES (?, ?, ?, ?, ?)";
         try {
@@ -203,7 +203,10 @@ public class OrderDAO {
                 orderstm.setLong(3, 1); // 1 là trạng thái "Pending"
                 orderstm.setLong(4, order.getPaymentmethod());
                 orderstm.setString(5, order.getAddress());
-
+                orderstm.setString(6, order.getOrderNote());
+                orderstm.setString(7, order.getUserReceive());
+                orderstm.setString(8, order.getContact());
+                
                 orderstm.executeUpdate();
                 try (ResultSet rs = orderstm.getGeneratedKeys()) {
                     if (rs.next()) {

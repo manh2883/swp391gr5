@@ -4,6 +4,7 @@
  */
 package Models;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -15,16 +16,16 @@ public class Order {
     private int orderId;
     private int userId;
     private int totalamount;
-    private String statusId;
-    private Date createAt;
-    private String paymentmethod;
+    private int statusId;
+    private Timestamp createAt;
+    private int paymentmethod;
     private String address;
     
 
     public Order() {
     }
 
-    public Order(int orderId, int userId, int totalamount, String statusId, Date createAt, String paymentmethod, String address) {
+    public Order(int orderId, int userId, int totalamount, int statusId, Timestamp createAt, int paymentmethod, String address) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
@@ -58,27 +59,27 @@ public class Order {
         this.totalamount = totalamount;
     }
 
-    public String getStatusId() {
+    public int getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(String statusId) {
+    public void setStatusId(int statusId) {
         this.statusId = statusId;
     }
 
-    public Date getCreateAt() {
+    public Timestamp getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(Timestamp createAt) {
         this.createAt = createAt;
     }
 
-    public String getPaymentmethod() {
+    public int getPaymentmethod() {
         return paymentmethod;
     }
 
-    public void setPaymentmethod(String paymentmethod) {
+    public void setPaymentmethod(int paymentmethod) {
         this.paymentmethod = paymentmethod;
     }
 
@@ -95,6 +96,7 @@ public class Order {
         return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", paymentmethod=" + paymentmethod + ", address=" + address + '}';
     }
 
+    
    
     
     

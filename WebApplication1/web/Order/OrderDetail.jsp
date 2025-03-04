@@ -35,6 +35,6 @@
         <% } } %>
     </table>
     
-    <a href="order_list.jsp">Back to Order List</a>
+    <a href="OrderList.jsp">Back to Order List</a>
 </body>
 </html>

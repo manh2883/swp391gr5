@@ -6,12 +6,17 @@ package controllers;
 
 import Models.OrderDetail;
 import DAO.OrderDAO;
+import DAO.PermissionDAO;
+import DAO.UserDAO;
+import Models.Account;
+import Models.Order;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -59,13 +64,60 @@ public class OrderDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
 
-        int orderId = Integer.parseInt(request.getParameter("orderId"));
-        OrderDAO orderDAO = new OrderDAO();
-    List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
+        Account account = (Account) session.getAttribute("account");
 
-        request.setAttribute("orderDetails", orderDetails);
-        request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+
+//                String orderIdStr = request.getParameter("orderId");
+//                int orderId = Integer.valueOf(orderIdStr);
+                Order order = OrderDAO.getOrderInformationById(1);
+                
+                if (order != null) {
+                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+
+                    if (!pDAO.checkPermissionForRole("ViewOrderDetail", role) || userId != order.getUserId()) {
+                        request.setAttribute("message", "no permission");
+                        request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                    } else {
+                        //Main Process
+                        
+                        ArrayList<Object[]> obj = OrderDAO.getOrderDetailViewByOrderId(1);
+                        request.setAttribute("orderDetailList", obj);
+                        request.setAttribute("OrderInfomation", order);
+                        request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
+                        
+
+                        //                    //side bar open
+                        //                    request.setAttribute("defaultDropdown", "productManager");
+                        //                    // set title
+                        //                    request.setAttribute("title", "Admin Dashboard");
+                        //                    // set breadcrumbs
+                        //                    request.setAttribute("breadcrumbs", "Product List");
+                        //                    request.setAttribute("ProductList", ProductList);
+                        //                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
+                        
+                    }
+
+                } else {
+                    request.setAttribute("message", "order not found");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                }
+
+            } else {
+                request.setAttribute("message", "role not found");
+                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            }
+        } else {
+            request.setAttribute("message", "account not found");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+        }
     }
 
     /**

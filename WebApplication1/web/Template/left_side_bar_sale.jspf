@@ -12,6 +12,25 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#myProfile">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        Account
+                    </a>
+                </h4>
+            </div>
+            <div id="myProfile" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/MyProfile">My Profile</a></li>
+                        <li><a href="#">Change Password</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
                     <a data-toggle="collapse" href="#productManager">
                         <span class="badge pull-right"><i class="fa fa-plus"></i></span>
                         Product Manager
@@ -21,8 +40,9 @@
             <div id="productManager" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">Product List</a></li>
+                        <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
                         <li><a href="#">Displayed Category</a></li>
+                        <li><a href="${pageContext.request.contextPath}/AddProduct">Add New Product</a></li>
                     </ul>
                 </div>
             </div>
@@ -40,8 +60,9 @@
             <div id="userManager" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">User List</a></li>
-                        <li><a href="#">Create New User</a></li>
+
+                        <li><a href="#">Customer List</a></li>
+
                     </ul>
                 </div>
             </div>
@@ -63,31 +84,6 @@
                         <li><a href="#">Sale Statistic</a></li>
                     </ul>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" href="#marketingDashboard">
-                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
-                        Marketing Dashboard
-                    </a>
-                </h4>
-            </div>
-            <div id="marketingDashboard" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <ul>
-                        <li><a href="#">Marketing Campaigns</a></li>
-                        <li><a href="#">Statistics</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title"><a href="#">Permission</a></h4>
             </div>
         </div>
     </div>

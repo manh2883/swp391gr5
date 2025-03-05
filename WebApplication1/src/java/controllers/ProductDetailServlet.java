@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.Product;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -62,6 +64,17 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String productId = request.getParameter("productId");
+        // Left side brand
+        List<Object[]> bList = SettingDAO.getPublicBrandList();
+        if (bList != null && !bList.isEmpty()) {
+            request.setAttribute("brandList", bList);
+        }
+
+        // Left side category
+        Map<Integer, String> cList = SettingDAO.getPublicProductCategory();
+        if (cList != null && !cList.isEmpty()) {
+            request.setAttribute("categoryList", cList);
+        }
         if (productId != null) {
             ProductDAO productDAO = new ProductDAO();
             Product product = productDAO.getProductById(productId);

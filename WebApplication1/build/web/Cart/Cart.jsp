@@ -152,8 +152,6 @@
 
                 </div>
         </section> <!--/#cart_items-->
-
-
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jquery.scrollUp.min.js"></script>

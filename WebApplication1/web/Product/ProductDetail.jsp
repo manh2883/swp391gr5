@@ -45,8 +45,6 @@
             }
         </style>
     </head>
-
-
     <body>
         <header>
             <c:import url="/Template/header1.jsp" />

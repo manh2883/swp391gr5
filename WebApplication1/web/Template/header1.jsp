@@ -108,13 +108,6 @@
                                                         </c:otherwise>
                                                     </c:choose>
 
-
-
-
-
-
-
-
                                                 </a>
                                                 <ul class="sub-menu" role="menu"  >
                                                     <li style="width: 100%">

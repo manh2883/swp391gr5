@@ -7,11 +7,13 @@ package DAO;
 import DBContext.DBContext;
 import Models.Order;
 import Models.OrderDetail;
+import java.sql.Timestamp;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -238,12 +240,254 @@ public class OrderDAO {
         }
         return orderId;
     }
+    
+    public static List<Order> filterOrder(Long userId,Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
+            Long paymentMethod,String address, String userReceive, String contact ,Timestamp startDate, Timestamp endDate) throws SQLException
+             {
+        List<Order> orderList = new ArrayList<>();
+        String query = """
+    SELECT o.user_id ,o.order_id, o.total_amount, o.status_id, o.created_at, o.payment_Method, o.address, o.user_receive, o.contact, o.note
+    FROM orders o
+    JOIN order_status s ON o.status_id = s.order_status_id
+    WHERE 1=1 """;
 
-    public static void main(String[] args) {
-        for( Object[] oj: getOrderDetailViewByOrderId(1)){
-            System.out.println(oj[0]);
-            System.out.println(oj[1]);
-            System.out.println(oj[2]);
+        List<Object> params = new ArrayList<>();
+
+        if(userId != null){
+            query += " AND o.user_id = ?";
+            params.add(userId);
+        }
+        
+        // Search by order ID
+        if (orderId != null) {
+            query += " AND o.order_id = ?";
+            params.add(orderId);
+        }
+
+        // Search by total amount range
+        if (mintotalAmount != null && mintotalAmount >= 0) {
+            query += " AND o.total_amount >= ?";
+            params.add(mintotalAmount);
+        }
+        if (maxtotalAmount != null && maxtotalAmount > 0) {
+            query += " AND o.total_amount <= ?";
+            params.add(maxtotalAmount);
+        }
+
+        // Search by status ID
+        if (statusId != null) {
+            query += " AND o.status_id = ?";
+            params.add(statusId);
+        }
+
+        // Search by creation date range
+        if (startDate != null) {
+            query += " AND o.created_at >= ?";
+            params.add(startDate);
+        }
+        if (endDate != null) {
+            query += " AND o.created_at <= ?";
+            params.add(endDate);
+        }
+        
+        if(paymentMethod != null){
+            query += " AND o.payment_method = ?";
+            params.add(paymentMethod);
+        }
+        
+        if(address != null){
+            query += " AND o.address = ?";
+            params.add(address);
+        }
+        
+        if(userReceive != null){
+            query += " AND o.user_receive = ?";
+            params.add(userReceive);
+        }
+        
+        if(contact != null){
+            query += " AND o.contact = ?";
+            params.add(contact);
+        }
+        
+
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        PreparedStatement ps = con.prepareStatement(query);
+
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Order order = new Order();
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId((int) rs.getLong("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setStatusId(rs.getInt("status_id")); // Đảm bảo lấy status_id đúng
+                order.setAddress(rs.getString("address"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setUserReceive(rs.getString("user_receive"));
+                order.setContact(rs.getString("contact"));
+                order.setOrderNote(rs.getString("note"));
+                
+                orderList.add(order);
+            }
+        }
+
+        return orderList;
+    }
+
+    // Lấy tổng số đơn hàng sau khi lọc (totalRecords)
+    public int getTotalOrderCount(String search, String status, String fromDate, String toDate, String saleName) {
+        int totalRecords = 0;
+        String query = "SELECT COUNT(*) FROM orders WHERE 1=1";
+
+        if (search != null && !search.isEmpty()) {
+            query += " AND (order_id LIKE ? OR customer_name LIKE ?)";
+        }
+        if (status != null && !status.isEmpty()) {
+            query += " AND status_id = ?";
+        }
+        if (fromDate != null && !fromDate.isEmpty()) {
+            query += " AND created_at >= ?";
+        }
+        if (toDate != null && !toDate.isEmpty()) {
+            query += " AND created_at <= ?";
+        }
+        if (saleName != null && !saleName.isEmpty()) {
+            query += " AND sale_name LIKE ?";
+        }
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            int index = 1;
+            if (search != null && !search.isEmpty()) {
+                ps.setString(index++, "%" + search + "%");
+                ps.setString(index++, "%" + search + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (fromDate != null && !fromDate.isEmpty()) {
+                ps.setString(index++, fromDate);
+            }
+            if (toDate != null && !toDate.isEmpty()) {
+                ps.setString(index++, toDate);
+            }
+            if (saleName != null && !saleName.isEmpty()) {
+                ps.setString(index++, "%" + saleName + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                totalRecords = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return totalRecords;
+    }
+
+    // Lấy danh sách đơn hàng có phân trang
+    public List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate, String saleName, String sortBy, int offset, int limit) {
+        List<Order> orders = new ArrayList<>();
+        String query = "SELECT * FROM orders WHERE 1=1";
+
+//        if (search != null && !search.isEmpty()) {
+//            query += " AND (order_id LIKE ? OR customer_name LIKE ?)";
+//        }
+        if (status != null && !status.isEmpty()) {
+            query += " AND status_id = ?";
+        }
+        if (fromDate != null && !fromDate.isEmpty()) {
+            query += " AND created_at >= ?";
+        }
+        if (toDate != null && !toDate.isEmpty()) {
+            query += " AND created_at <= ?";
+        }
+        if (saleName != null && !saleName.isEmpty()) {
+            query += " AND sale_name LIKE ?";
+        }
+
+        // Sắp xếp theo yêu cầu
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "date":
+                    query += " ORDER BY created_at DESC";
+                    break;
+//                case "customer":
+//                    query += " ORDER BY customer_name ASC";
+//                    break;
+                case "total":
+                    query += " ORDER BY total_amount DESC";
+                    break;
+                case "status":
+                    query += " ORDER BY status_id ASC";
+                    break;
+                default:
+                    query += " ORDER BY created_at DESC";
+            }
+        } else {
+            query += " ORDER BY created_at DESC";
+        }
+
+        query += " LIMIT ?, ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+
+            int index = 1;
+            if (search != null && !search.isEmpty()) {
+                ps.setString(index++, "%" + search + "%");
+                ps.setString(index++, "%" + search + "%");
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (fromDate != null && !fromDate.isEmpty()) {
+                ps.setString(index++, fromDate);
+            }
+            if (toDate != null && !toDate.isEmpty()) {
+                ps.setString(index++, toDate);
+            }
+            if (saleName != null && !saleName.isEmpty()) {
+                ps.setString(index++, "%" + saleName + "%");
+            }
+            ps.setInt(index++, offset);
+            ps.setInt(index++, limit);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("order_id"));
+//                order.setCustomerName(rs.getString("customer_name"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public static void main(String[] args) throws SQLException {
+//        for( Object[] oj: getOrderDetailViewByOrderId(1)){
+//            System.out.println(oj[0]);
+//            System.out.println(oj[1]);
+//            System.out.println(oj[2]);
+//        }
+        for( Order or: filterOrder(null, null, null, null, null, null, null, null, null, null, null)){
+            System.out.println(or);
+            
         }
 
     }

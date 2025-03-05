@@ -77,12 +77,12 @@ public class OrderListServlet extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = null;
         try {
-            orders = OrderDAO.SearchOrder(null, null, null, null, null, null);
-        int totalRecords = orderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate, saleName);
-        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null);
         } catch (SQLException ex) {
             Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+        int totalRecords = orderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate, saleName);
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
         
         request.setAttribute("orders", orders);
         request.setAttribute("currentPage", page);

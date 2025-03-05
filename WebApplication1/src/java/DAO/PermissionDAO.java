@@ -241,7 +241,7 @@ public class PermissionDAO extends DBContext {
     public static void main(String[] args) {
         int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ tham số bên ngoài
         for(int i: roleIds){
-            System.out.println(checkPermissionForRole("ProductList", i));
+            System.out.println(checkPermissionForRole("ViewOrderDetail", i));
         }
     }
 }

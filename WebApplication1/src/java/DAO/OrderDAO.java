@@ -7,6 +7,7 @@ package DAO;
 import DBContext.DBContext;
 import Models.Order;
 import Models.OrderDetail;
+import Models.Product;
 import java.sql.Timestamp;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import models.OrderDetailViewDTO;
 
 /**
  *
@@ -51,7 +53,6 @@ public class OrderDAO {
         return orders;
     }
 
-    
     public static List<Order> getOrderListByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
@@ -111,9 +112,9 @@ public class OrderDAO {
         }
         return orders;
     }
-    
+
     public static Order getOrderInformationById(int orderId) {
-        
+
         String query = "SELECT * FROM orders WHERE order_id = ? limit 1";
         Order order = new Order();
         try {
@@ -122,9 +123,9 @@ public class OrderDAO {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, orderId);
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
-                
+
                 order.setUserId(rs.getInt("user_id"));
                 order.setOrderId(rs.getInt("order_id"));
                 order.setTotalamount(rs.getInt("total_amount"));
@@ -153,39 +154,48 @@ public class OrderDAO {
 
             while (rs.next()) {
                 OrderDetail orderdt = new OrderDetail();
-                
+
                 orderdt.setOrderdetailId(rs.getInt("order_detail_id"));
                 orderdt.setOrderId(rs.getInt("order_id"));
                 orderdt.setProductId(rs.getString("product_id"));
                 orderdt.setProductvariantId(rs.getInt("product_variant_id"));
                 orderdt.setQuantity(rs.getInt("quantity"));
                 orderdt.setPrice(rs.getInt("price"));
-                
+
                 orderDetails.add(orderdt);
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return orderDetails;
     }
-    
-    public static ArrayList<Object[]> getOrderDetailViewByOrderId(int orderId){
-         List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
-         ArrayList<Object[]> view = new ArrayList<>();
-         for(OrderDetail od: orderDetails){
-             Object[] oj = new Object[3];
-         oj[0] = od;
-         oj[1] = ProductDAO.getProductById(od.getProductId());
-         oj[2] = ProductDAO.getVariantInformation(od.getProductId(), od.getProductvariantId());
-         view.add(oj);
-             
-         }
-         return view;
-         
+
+    public static ArrayList<Object[]> getOrderDetailViewByOrderId(int orderId) {
+        List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
+
+        ArrayList<Object[]> view = new ArrayList<>();
+
+        for (OrderDetail oD : orderDetails) {
+//            OrderDetailViewDTO viewItem = new OrderDetailViewDTO();
+            Object[] viewItem = new Object[3];
+            String proId = oD.getProductId();
+            Product pro = ProductDAO.getProductById(proId);
+            String variant = ProductDAO.getVariantInformation(proId, oD.getProductvariantId());
+
+//            viewItem.setOrderDetail(oD);
+//            viewItem.setProduct(pro);
+//            viewItem.setVariantStr(variant);
+            viewItem[0] = oD;
+            viewItem[1] = pro;
+            viewItem[2] = variant;
+            System.out.println("[" + variant + "]");
+            view.add(viewItem);
+        }
+
+        return view;
+
     }
-    
-    
 
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;
@@ -198,7 +208,7 @@ public class OrderDAO {
             java.sql.Connection con = db.getConnection();
             con.setAutoCommit(false); // Tắt auto-commit để quản lý giao dịch thủ công
             try (PreparedStatement orderstm = con.prepareStatement(orderSQL, Statement.RETURN_GENERATED_KEYS); PreparedStatement detailstm = con.prepareStatement(detailSQL)) {
-                
+
                 // 1. Chèn vào bảng orders
                 orderstm.setLong(1, order.getUserId());
                 orderstm.setInt(2, order.getTotalamount());
@@ -208,12 +218,12 @@ public class OrderDAO {
                 orderstm.setString(6, order.getOrderNote());
                 orderstm.setString(7, order.getUserReceive());
                 orderstm.setString(8, order.getContact());
-                
+
                 orderstm.executeUpdate();
                 try (ResultSet rs = orderstm.getGeneratedKeys()) {
                     if (rs.next()) {
                         orderId = rs.getLong(1);
-                    }else{
+                    } else {
                         throw new Exception("Creating order failed, no ID obtained.");
                     }
                 }
@@ -240,10 +250,9 @@ public class OrderDAO {
         }
         return orderId;
     }
-    
-    public static List<Order> filterOrder(Long userId,Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
-            Long paymentMethod,String address, String userReceive, String contact ,Timestamp startDate, Timestamp endDate) throws SQLException
-             {
+
+    public static List<Order> filterOrder(Long userId, Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
+            Long paymentMethod, String address, String userReceive, String contact, Timestamp startDate, Timestamp endDate) throws SQLException {
         List<Order> orderList = new ArrayList<>();
         String query = """
     SELECT o.user_id ,o.order_id, o.total_amount, o.status_id, o.created_at, o.payment_Method, o.address, o.user_receive, o.contact, o.note
@@ -253,11 +262,11 @@ public class OrderDAO {
 
         List<Object> params = new ArrayList<>();
 
-        if(userId != null){
+        if (userId != null) {
             query += " AND o.user_id = ?";
             params.add(userId);
         }
-        
+
         // Search by order ID
         if (orderId != null) {
             query += " AND o.order_id = ?";
@@ -289,27 +298,26 @@ public class OrderDAO {
             query += " AND o.created_at <= ?";
             params.add(endDate);
         }
-        
-        if(paymentMethod != null){
+
+        if (paymentMethod != null) {
             query += " AND o.payment_method = ?";
             params.add(paymentMethod);
         }
-        
-        if(address != null){
+
+        if (address != null) {
             query += " AND o.address = ?";
             params.add(address);
         }
-        
-        if(userReceive != null){
+
+        if (userReceive != null) {
             query += " AND o.user_receive = ?";
             params.add(userReceive);
         }
-        
-        if(contact != null){
+
+        if (contact != null) {
             query += " AND o.contact = ?";
             params.add(contact);
         }
-        
 
         DBContext db = new DBContext();
         java.sql.Connection con = db.getConnection();
@@ -332,7 +340,7 @@ public class OrderDAO {
                 order.setUserReceive(rs.getString("user_receive"));
                 order.setContact(rs.getString("contact"));
                 order.setOrderNote(rs.getString("note"));
-                
+
                 orderList.add(order);
             }
         }
@@ -485,9 +493,12 @@ public class OrderDAO {
 //            System.out.println(oj[1]);
 //            System.out.println(oj[2]);
 //        }
-        for( Order or: filterOrder(null, null, null, null, null, null, null, null, null, null, null)){
-            System.out.println(or);
-            
+        for (Object[] oj : getOrderDetailViewByOrderId(1)) {
+            System.out.println("\n");
+            System.out.println(oj[0]);
+            System.out.println(oj[1]);
+            System.out.println(oj[2]);
+            System.out.println("===========================\n");
         }
 
     }

@@ -12,13 +12,11 @@
         <title>Test</title>
     </head>
     <body>
-        <div> abc </div>
-        <div>
-            ${colorList}
-        </div>
-        <div>
-            ${sizeList}
-        </div>
+        <div>Test Screen </div>
+
         <h1>${message}</h1>
+        <div>${orderDetailList}</div>
+        <div>${orderInformation}</div>
+
     </body>
 </html>

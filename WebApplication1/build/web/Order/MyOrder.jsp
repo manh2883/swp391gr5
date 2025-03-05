@@ -32,7 +32,7 @@
                     <td>$<c:out value="${order.totalamount}" /></td>
                     <td><c:out value="${order.statusId}" /></td>
                     <td>
-                        <a href="OrderDetail.jsp?orderId=${order.orderId}" class="btn btn-primary">View</a>
+                        <a href="OrderDetail?orderId=${order.orderId}" class="btn btn-primary">View</a>
                     </td>
                 </tr>
             </c:forEach>

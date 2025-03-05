@@ -74,7 +74,9 @@ public class ProductDAO extends DBContext {
 
                 String st = joiner.toString(); // Nếu cả 2 đều null, str sẽ là chuỗi rỗng ""
                 str = st;
-//                System.out.println("Result String: " + st);
+                
+                
+                System.out.println("Result String: " + st);
             }
 
         } catch (SQLException e) {
@@ -1055,5 +1057,6 @@ public class ProductDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         System.out.println(getStockByProductAndVariant("P003", 5));
+        System.out.println(getVariantInformation("P002", 3));
     }
 }

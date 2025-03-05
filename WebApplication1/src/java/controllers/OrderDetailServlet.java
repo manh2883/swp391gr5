@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import models.OrderDetailViewDTO;
 
 /**
  *
@@ -68,55 +69,69 @@ public class OrderDetailServlet extends HttpServlet {
 
         Account account = (Account) session.getAttribute("account");
 
-        int role = 0;
+        int role = -1;
         if (account != null) {
             role = account.getRoleId();
 
-            if (role != 0) {
+            if (role != -1) {
                 PermissionDAO pDAO = new PermissionDAO();
 
-//                String orderIdStr = request.getParameter("orderId");
-//                int orderId = Integer.valueOf(orderIdStr);
-                Order order = OrderDAO.getOrderInformationById(1);
-                
+                // Kiểm tra orderId có hợp lệ không
+                String orderIdStr = request.getParameter("orderId");
+                int oId = -1;
+                System.out.println("Received orderIdStr: " + orderIdStr);
+
+                if (orderIdStr == null || orderIdStr.trim().isEmpty()) {
+                    request.setAttribute("message", "orderId not found: " + orderIdStr + ", " + oId);
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+
+                }
+
+                // Kiểm tra xem orderId có phải số không
+                try {
+                    oId = Integer.parseInt(orderIdStr.trim());
+                } catch (NumberFormatException e) {
+                    request.setAttribute("message", "Invalid orderId: " + orderIdStr);
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+
+                }
+
+                Order order = null;
+                if (oId > 0) {
+                    order = OrderDAO.getOrderInformationById(oId);
+                }
+
                 if (order != null) {
                     int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
 
                     if (!pDAO.checkPermissionForRole("ViewOrderDetail", role) || userId != order.getUserId()) {
                         request.setAttribute("message", "no permission");
                         request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+
                     } else {
                         //Main Process
-                        
-                        ArrayList<Object[]> obj = OrderDAO.getOrderDetailViewByOrderId(1);
+                        ArrayList<Object[]> obj = OrderDAO.getOrderDetailViewByOrderId(oId);
                         request.setAttribute("orderDetailList", obj);
-                        request.setAttribute("OrderInfomation", order);
+                        request.setAttribute("orderInformation", order);
+                        request.setAttribute("message", order);
                         request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
-                        
+//                        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
 
-                        //                    //side bar open
-                        //                    request.setAttribute("defaultDropdown", "productManager");
-                        //                    // set title
-                        //                    request.setAttribute("title", "Admin Dashboard");
-                        //                    // set breadcrumbs
-                        //                    request.setAttribute("breadcrumbs", "Product List");
-                        //                    request.setAttribute("ProductList", ProductList);
-                        //                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
-                        
                     }
-
                 } else {
                     request.setAttribute("message", "order not found");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
-                }
 
+                }
             } else {
                 request.setAttribute("message", "role not found");
                 request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+
             }
         } else {
             request.setAttribute("message", "account not found");
             request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+
         }
     }
 

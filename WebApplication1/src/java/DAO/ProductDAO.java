@@ -74,8 +74,7 @@ public class ProductDAO extends DBContext {
 
                 String st = joiner.toString(); // Nếu cả 2 đều null, str sẽ là chuỗi rỗng ""
                 str = st;
-                
-                
+
                 System.out.println("Result String: " + st);
             }
 
@@ -297,6 +296,86 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static boolean updateStockForProductVariantId(int variantId, int stock) {
+        String query = "UPDATE ProductVariant SET  stock = ? WHERE variant_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            ResultSet rs = stm.executeQuery();
+
+            stm.setInt(2, stock);
+            stm.setInt(1, variantId);
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean decreaseStockAfterCreateOrder(String productId, int variantId, int quantity) {
+        String query = "UPDATE Product_Variant SET  stock = ? WHERE variant_id = ?";
+        boolean success = false;
+        int newStock = -1;
+        int oldStock = getStockByProductAndVariant(productId, variantId);
+
+        if (quantity > oldStock || quantity <= 0 || oldStock <= 0) {
+            return false;
+        } else {
+            newStock = oldStock - quantity;
+        }
+
+        if (newStock != oldStock && newStock >= 0) {
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection con = db.getConnection();
+                PreparedStatement stm = con.prepareStatement(query);
+
+                stm.setInt(2, variantId);
+                stm.setInt(1, newStock);
+                stm.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean increaseStockAfterCancelOrder(String productId, int variantId, int quantity) {
+        String query = "UPDATE Product_Variant SET  stock = ? WHERE variant_id = ?";
+        boolean success = false;
+        int newStock = -1;
+        int oldStock = getStockByProductAndVariant(productId, variantId);
+
+        if (quantity <= 0 || oldStock <= 0) {
+            return false;
+        } else {
+            newStock = oldStock + quantity;
+        }
+
+        if (newStock != oldStock && newStock >= 0) {
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection con = db.getConnection();
+                PreparedStatement stm = con.prepareStatement(query);
+
+                stm.setInt(2, variantId);
+                stm.setInt(1, newStock);
+
+                stm.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static boolean deleteProductVariant(String productId, String color, String size) {
@@ -1056,7 +1135,16 @@ public class ProductDAO extends DBContext {
     }
 
     public static void main(String[] args) throws SQLException {
-        System.out.println(getStockByProductAndVariant("P003", 5));
-        System.out.println(getVariantInformation("P002", 3));
+//        System.out.println(getStockByProductAndVariant("P003", 5));
+//        System.out.println(getVariantInformation("P002", 3));
+
+        System.out.println(getStockByProductAndVariant("P001", 1));
+        System.out.println("giam 100");
+        decreaseStockAfterCreateOrder("P001", 1, 100);
+        System.out.println(getStockByProductAndVariant("P001", 1));
+        System.out.println("tang 3");
+        increaseStockAfterCancelOrder("P001", 1, 30);
+        System.out.println(getStockByProductAndVariant("P001", 1));
+
     }
 }

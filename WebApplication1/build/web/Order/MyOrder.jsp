@@ -7,10 +7,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@ page import="DAO.OrderDAO" %>
-<%@ page import="java.util.List" %>
-<%@ page import="Models.Order" %>
-
 <div class="container mt-4">
     <h2>My Orders</h2>
     <p>${message}</p>

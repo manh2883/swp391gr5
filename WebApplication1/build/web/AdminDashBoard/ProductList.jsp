@@ -90,7 +90,7 @@
                 </div>
                 <div class="row" >
                     <div class="col-sm-3">
-                        <%@ include file="/Template/left_side_bar_admin.jspf" %>
+                        <%@ include file="/Template/auto_left_side_bar.jspf" %>
                     </div>
 
                     <div class="col-sm-9">

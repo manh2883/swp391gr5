@@ -89,7 +89,32 @@
 
                                             <li class="nav-item dropdown">
                                                 <a href="#">
-                                                    <i class="fa fa-user-circle"></i> Account <i class="fa fa-angle-down"></i>
+                                                    <c:set var="account" value="${sessionScope.account}" />
+                                                    <c:choose>
+                                                        <c:when test="${not empty account and account.roleId == 1 }">
+                                                            <i class="fa fa-user-circle"></i> Admin <i class="fa fa-angle-down"></i>
+                                                        </c:when>
+                                                        <c:when test="${not empty account and account.roleId == 2 }">
+                                                            <i class="fa fa-user-circle"></i> Account <i class="fa fa-angle-down"></i>
+                                                        </c:when>
+                                                        <c:when test="${not empty account and account.roleId == 3 }">
+                                                            <i class="fa fa-user-circle"></i> Marketing <i class="fa fa-angle-down"></i>
+                                                        </c:when>
+                                                        <c:when test="${not empty account and account.roleId == 4 }">
+                                                            <i class="fa fa-user-circle"></i> Sale <i class="fa fa-angle-down"></i>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <i class="fa fa-user-circle"></i> Account <i class="fa fa-angle-down"></i>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+
+
+
+
+
+
+
                                                 </a>
                                                 <ul class="sub-menu" role="menu"  >
                                                     <li style="width: 100%">

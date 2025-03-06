@@ -196,6 +196,41 @@ public class OrderDAO {
         return view;
 
     }
+    
+    
+    // Huy don, ship, tra hang, da giao hang
+    public boolean updateOrderStatus(int role, int oldStatus, int newStatus, long orderId) throws SQLException {
+        boolean success = false;
+        if (!isValidStatusUpdate(role, oldStatus, newStatus)) {
+            success = false;
+        } else {
+            String sql = "UPDATE orders SET status_id = ? WHERE order_id = ? AND status_id = ?";
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection conn = db.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, newStatus);
+                pstmt.setLong(2, orderId);
+                pstmt.setInt(3, oldStatus);
+                success = pstmt.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return success;
+    }
+    // kiem tra quyen
+    private boolean isValidStatusUpdate(int role, int oldStatus, int newStatus) {
+        if (role == 2) { // Customer
+            return (oldStatus == 1 && newStatus == 4) || (oldStatus == 6 && newStatus == 4) || (oldStatus == 2 && newStatus == 7);
+        } else if (role == 1 || role == 4) { // Admin, Sale
+            return (oldStatus == 2 && newStatus == 7) || (oldStatus == 7 && newStatus == 8)
+                    || (oldStatus == 1 && newStatus == 5) || (oldStatus == 2 && newStatus == 5)
+                    || (oldStatus == 1 && newStatus == 2) || (oldStatus == 2 && newStatus == 3);
+        }
+        return false;
+    }
 
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;

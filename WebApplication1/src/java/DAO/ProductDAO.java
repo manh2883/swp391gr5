@@ -1142,7 +1142,7 @@ public class ProductDAO extends DBContext {
         System.out.println("giam 100");
         decreaseStockAfterCreateOrder("P001", 1, 100);
         System.out.println(getStockByProductAndVariant("P001", 1));
-        System.out.println("tang 3");
+        System.out.println("tang 30");
         increaseStockAfterCancelOrder("P001", 1, 30);
         System.out.println(getStockByProductAndVariant("P001", 1));
 

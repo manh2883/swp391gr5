@@ -1,3 +1,21 @@
-<%-- any content can be specified here e.g.: --%>
+
 <%@ page pageEncoding="UTF-8" %>
-<h2>Hello World!</h2>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="account" value="${sessionScope.account}" />
+<c:choose>
+    <c:when test="${not empty account and account.roleId == 1 }">
+        <%@ include file="/Template/left_side_bar_admin.jspf" %>
+    </c:when>
+    <c:when test="${not empty account and account.roleId == 2 }">
+        <%@ include file="/Template/left_side_bar_customer.jspf" %>
+    </c:when>
+    <c:when test="${not empty account and account.roleId == 3 }">
+        <%@ include file="/Template/left_side_bar_mkt.jspf" %>
+    </c:when>
+    <c:when test="${not empty account and account.roleId == 4 }">
+        <%@ include file="/Template/left_side_bar_sale.jspf" %>
+    </c:when>
+    <c:otherwise>
+        <%@ include file="/Template/left_side_bar_public.jspf" %>
+    </c:otherwise>
+</c:choose>

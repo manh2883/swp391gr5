@@ -19,7 +19,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -66,35 +69,58 @@ public class MyOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
+        
         Account account = (Account) session.getAttribute("account");
-
+        
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
-                if (!pDAO.checkPermissionForRole("MyOrderList", role) || !pDAO.checkPermissionForRole("OrderManager", role)) {
+                if (!pDAO.checkPermissionForRole("MyOrderList", role) && !pDAO.checkPermissionForRole("OrderManager", role)) {
                     request.setAttribute("message", "no permission");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
                     //Main Process
-                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-                    if(userId != -1){
-                        List<Order> orders = OrderDAO.getOrderListByUserId(userId);
-                        request.setAttribute("orders", orders);
-                         request.setAttribute("message", orders.size());
-                        request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
+                    String activeTabString = request.getParameter("status"); // Nhận giá trị status từ request
+                    Long statusId = null;
+                    if (activeTabString != null && !activeTabString.isEmpty()) {
+                        try {
+                            statusId = Long.parseLong(activeTabString);
+                            
+                        } catch (NumberFormatException e) {
+                            statusId = new Long("5");
+                        }
                     }
+                    
+                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+                    Long abc = Long.valueOf(userId);
+                    if (userId != -1) {
+//                        List<Order> orders = OrderDAO.getOrderListByUserId(userId);
+                        List<Order> orders = null;
+                        try {
+                            orders = OrderDAO.filterOrder(abc, null, null, null,
+                                    statusId, null, null, null, null, null, null);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(MyOrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        request.setAttribute("orders", orders);
+                        request.setAttribute("message", orders.size());
 
-//                    //side bar open
-//                    request.setAttribute("defaultDropdown", "productManager");
-//                    // set title
-//                    request.setAttribute("title", "Admin Dashboard");
-//                    // set breadcrumbs
-//                    request.setAttribute("breadcrumbs", "Product List");
-//                    request.setAttribute("ProductList", ProductList);
-//                    request.getRequestDispatcher("AdminDashBoard/ProductList.jsp").forward(request, response);
+                        //side bar open
+                        request.setAttribute("defaultDropdown", "saleDashboard");
+                        // set title
+                        request.setAttribute("title", "My Orders");
+                        // set breadcrumbs
+                        request.setAttribute("breadcrumbs", "My Orders");
+                        // active status tab
+                        request.setAttribute("activeTab", statusId);
+                        
+                        request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
+                        
+                    }
+                    
                 }
             } else {
                 request.setAttribute("message", "role not found");
@@ -117,7 +143,7 @@ public class MyOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            
+        
     }
 
     /**

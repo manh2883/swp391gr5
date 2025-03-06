@@ -44,7 +44,7 @@
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
-        <form action="Checkout" method="post">
+        <form action="Checkout" method="post" onsubmit="return validateForm(event)">
             <section id="cart_items">
                 <div class="container">
                     <div class="breadcrumbs">
@@ -71,6 +71,8 @@
                                             </c:forEach>
                                             <option value="Other">Other</option>
                                         </select>
+                                        <span id="addressError" class="error-message"></span>
+                                        <span id="newAddressError" class="error-message"></span>
                                         <input type="text" name="newAddress" id="newAddress" class="form-control mt-2"
                                                placeholder="Enter new address" style="display:none;" />
                                         <input type="text" name="contact" placeholder="Contact*" value="${user.phoneNumber}" required>
@@ -82,6 +84,7 @@
                                     <p>Shipping Order</p>
                                     <textarea name="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
                                     <label><input type="checkbox"> Shipping to bill address</label>
+                                    <span id="orderNoteError" class="error-message"></span>
                                 </div>
                             </div>                  
                         </div>
@@ -181,6 +184,65 @@
 
             // Tính lại tổng khi trang tải
             document.addEventListener("DOMContentLoaded", updateCheckoutTotal);
+
+            function validateForm(event) {
+                let name = document.querySelector("input[name='name']");
+                let address = document.getElementById("address");
+                let newAddress = document.getElementById("newAddress");
+                let contact = document.querySelector("input[name='contact']");
+                let orderNote = document.querySelector("textarea[name='orderNote']");
+
+                let nameError = document.getElementById("nameError");
+                let addressError = document.getElementById("addressError");
+                let newAddressError = document.getElementById("newAddressError");
+                let contactError = document.getElementById("contactError");
+                let orderNoteError = document.getElementById("orderNoteError");
+
+                let isValid = true;
+
+                nameError.innerText = "";
+                addressError.innerText = "";
+                newAddressError.innerText = "";
+                contactError.innerText = "";
+                orderNoteError.innerText = "";
+
+                if (!name.value.trim()) {
+                    nameError.innerText = "Please enter your name.";
+                    isValid = false;
+                } else if (name.value.length > 255) {
+                    nameError.innerText = "Name cannot exceed 255 characters.";
+                    isValid = false;
+                }
+
+                let finalAddress = (address.value === "Other") ? newAddress.value : address.value;
+                if (!finalAddress.trim()) {
+                    addressError.innerText = "Please select or enter an address.";
+                    isValid = false;
+                } else if (finalAddress.length > 255) {
+                    newAddressError.innerText = "Address cannot exceed 255 characters.";
+                    isValid = false;
+                }
+
+                let phoneRegex = /^(0[2-9]\d{8}|\+84\s?\d{3}\s?\d{3}\s?\d{3})$/;
+                if (!contact.value.trim()) {
+                    contactError.innerText = "Please enter your phone number.";
+                    isValid = false;
+                } else if (!phoneRegex.test(contact.value)) {
+                    contactError.innerText = "Invalid phone number format (e.g., 0123456789 or +84 123 456 789).";
+                    isValid = false;
+                }
+
+                if (orderNote.value.length > 255) {
+                    orderNoteError.innerText = "Order note cannot exceed 255 characters.";
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            }
+
+            document.querySelector("form").addEventListener("submit", validateForm);
         </script>
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>

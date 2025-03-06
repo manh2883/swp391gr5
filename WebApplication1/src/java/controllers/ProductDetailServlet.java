@@ -89,26 +89,29 @@ public class ProductDetailServlet extends HttpServlet {
                 List<String> color = productDAO.getAllColorbyProductId(productId);
                 if (color != null && !color.isEmpty()) {
                     request.setAttribute("colorList", color);
-
+                } else {
+                    request.setAttribute("message", "productId not found");
+                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                 }
+
                 List<String> size = productDAO.getAllSizebyProductId(productId);
                 if (size != null && !size.isEmpty()) {
                     request.setAttribute("sizeList", size);
-
+                } else {
+                    request.setAttribute("message", "productId not found");
+                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                 }
+
                 ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
                 if (imgList != null && !imgList.isEmpty()) {
                     request.setAttribute("imgList", imgList);
-
                 }
 
                 ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
                 if (varList != null && !varList.isEmpty()) {
-                    request.setAttribute("varList", varList);
-
+                    request.setAttribute("variantList", varList);
                 }
 
-                System.out.println(productDAO.getImgUrlForProductID(productId));
                 request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
             }
 

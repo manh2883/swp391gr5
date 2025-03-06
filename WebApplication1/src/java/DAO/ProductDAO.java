@@ -102,7 +102,6 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 int varId = rs.getInt("variant_id");
                 obj = new Object[5];
-
                 obj[0] = varId;
                 obj[1] = rs.getString("color");
                 obj[2] = rs.getString("size");
@@ -1203,8 +1202,12 @@ public class ProductDAO extends DBContext {
 
                 obj[0] = rs.getString("product_id");
                 obj[1] = rs.getString("color");
-                obj[2] = rs.getString("back_link");
-
+                String link = rs.getString("back_link");
+                if (link != null && !link.isEmpty()) {
+                    obj[2] = link;
+                }else{
+                    obj[2] = "Images/RUN.jpg";
+                }
                 list.add(obj);
             }
 

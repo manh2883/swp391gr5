@@ -70,57 +70,68 @@
                     <div class="col-sm-9 padding-right">
                         <div class="product-details"><!--product-details-->
                             <div class="col-sm-5">
-                                <div class="view-product">
-                                    <img id="main-product-img" src="${pageContext.request.contextPath}/${imgList[0][2]}" alt="${imgList[0][1]}" />
-                                </div>
+                                <c:choose>
+                                    <c:when test="${not empty imgList}">
+                                        <div class="view-product">
+                                            <img id="main-product-img" src="${pageContext.request.contextPath}/${imgList[0][2]}" alt="${imgList[0][1]}" />
+                                        </div>
+                                        <div id="similar-product" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner">
 
-                                <div id="similar-product" class="carousel slide" data-ride="carousel">
-                                    <div class="carousel-inner">
-                                        <c:set var="listSize" value="${fn:length(imgList)}" />
+                                                <c:set var="listSize" value="${fn:length(imgList)}" />
 
-                                        <c:forEach var="i" begin="0" end="${listSize - 1}" step="1">
-                                            <div class="item ${i == 0 ? 'active' : ''}">
-                                                <c:forEach var="j" begin="0" end="2">
-                                                    <c:set var="imgIndex" value="${(i + j) % listSize}" /> 
-                                                    <a href="#">
-                                                        <img class="product-img" src="${pageContext.request.contextPath}/${imgList[imgIndex][2]}" 
-                                                             alt="${imgList[imgIndex][1]}">
-                                                    </a>
+                                                <c:forEach var="i" begin="0" end="${listSize - 1}" step="1">
+                                                    <div class="item ${i == 0 ? 'active' : ''}">
+                                                        <c:forEach var="j" begin="0" end="2">
+                                                            <c:set var="imgIndex" value="${(i + j) % listSize}" /> 
+                                                            <a href="#">
+                                                                <img class="product-img" src="${pageContext.request.contextPath}/${imgList[imgIndex][2]}" 
+                                                                     alt="${imgList[imgIndex][1]}">
+                                                            </a>
+                                                        </c:forEach>
+                                                    </div>
                                                 </c:forEach>
-                                            </div>
-                                        </c:forEach>
-                                    </div>
 
-                                    <a class="left item-control" href="#similar-product" data-slide="prev">
-                                        <i class="fa fa-angle-left"></i>
-                                    </a>
-                                    <a class="right item-control" href="#similar-product" data-slide="next">
-                                        <i class="fa fa-angle-right"></i>
-                                    </a>
-                                </div>
+                                            </div>
+
+                                            <a class="left item-control" href="#similar-product" data-slide="prev">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <a class="right item-control" href="#similar-product" data-slide="next">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="view-product">
+                                            <img id="main-product-img" src="${pageContext.request.contextPath}/Images/RUN.jpg" alt="${product.name}" />
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
 
                             <div class="col-sm-7">
-                                <div class="product-information"><!--/product-information-->
+                                <div class="product-information">
                                     <img src=" " class="newarrival" alt="" />
                                     <h2>${product.name}</h2>
                                     <p>Web ID: ${product.productId}</p>
-    <!--                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/rating.png" alt="" />-->
+
                                     <span>
-                                        <span>${product.price}</span>
+                                        <span id="priceDisplay">${product.price.intValue()}</span>
                                     </span>
 
                                     <form action="AddToCart" method="post">
                                         <table>
                                             <tbody style="align-items: center;">
-                                                <!-- Lựa chọn màu sắc -->
-                                            <input readonly style ="visibility: hidden " value ="${product.productId}" name = "idInput"> 
+                                            <input readonly style="visibility: hidden" value="${product.productId}" name="idInput">
+
+                                            <!-- Lựa chọn màu sắc -->
                                             <c:choose>
                                                 <c:when test="${not empty colorList}">
                                                     <tr style="padding-top: 20px">
                                                         <td>Color:</td>
                                                         <td style="padding-left: 50px; height: 45px">
-                                                            <select name = "colorInput">
+                                                            <select id="colorInput" name="colorInput">
                                                                 <c:forEach var="colorItem" items="${colorList}">
                                                                     <option value="${colorItem}">${colorItem}</option>
                                                                 </c:forEach>
@@ -136,7 +147,7 @@
                                                     <tr style="padding-top: 20px">
                                                         <td>Size:</td>
                                                         <td style="padding-left: 50px; height: 45px">
-                                                            <select name = "sizeInput">
+                                                            <select id="sizeInput" name="sizeInput">
                                                                 <c:forEach var="sizeItem" items="${sizeList}">
                                                                     <option value="${sizeItem}">${sizeItem}</option>
                                                                 </c:forEach>
@@ -145,11 +156,18 @@
                                                     </tr>
                                                 </c:when>
                                             </c:choose>
+
+                                            <!-- Hiển thị stock -->
+                                            <tr style="padding-top: 20px">
+
+                                                <td style="padding-left: 50px; height: 45px">
+                                                    <span id="stockMessage" style="font-weight: bold; color: red;">Out of stock</span>
+                                                </td>
+                                            </tr>
                                             </tbody>
                                         </table>
 
                                         <span>
-                                            <!--<input type="text" value="1" />-->
                                             <button type="submit" class="btn btn-fefault cart">
                                                 <i class="fa fa-shopping-cart"></i> Add to cart
                                             </button>
@@ -160,6 +178,7 @@
                                     </form> 
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
@@ -240,5 +259,54 @@
 
 
         </script>
+
+        <script>
+            var variantData = {};
+            var priceData = {};
+
+            <c:forEach var="variant" items="${variantList}">
+            var key = "${variant[1]}-${variant[2]}";
+                variantData[key] = ${variant[3]}; // Stock
+                priceData[key] = ${variant[4]}; // Giá theo variant
+            </c:forEach>
+
+                function updateStockAndPrice() {
+                    var color = document.getElementById("colorInput").value;
+                    var size = document.getElementById("sizeInput").value;
+                    var key = color + "-" + size;
+                    var stock = variantData[key] || 0;
+                    var price = priceData[key] || "${product.price}";
+
+
+                    // Cập nhật giá
+                    document.getElementById("priceDisplay").innerText = Math.floor(price);
+
+                    // Cập nhật stock message
+                    var stockMessage = document.getElementById("stockMessage");
+                    var addToCartBtn = document.querySelector("button[type='submit']");
+                    var purchaseBtn = document.querySelector("button[type='button']");
+
+                    if (stock > 0) {
+                        stockMessage.innerText = "In stock: " + stock + " items";
+                        stockMessage.style.color = "green";
+                        addToCartBtn.disabled = false;
+                        purchaseBtn.disabled = false;
+                    } else {
+                        stockMessage.innerText = "Out of stock";
+                        stockMessage.style.color = "red";
+                        addToCartBtn.disabled = true;
+                        purchaseBtn.disabled = true;
+                    }
+                }
+
+                // Gán sự kiện thay đổi khi chọn size hoặc color
+                document.getElementById("colorInput").addEventListener("change", updateStockAndPrice);
+                document.getElementById("sizeInput").addEventListener("change", updateStockAndPrice);
+
+                // Cập nhật lần đầu khi trang load
+                updateStockAndPrice();
+        </script>
+
+
     </body>
 </html>

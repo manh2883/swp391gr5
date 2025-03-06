@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +94,17 @@ public class ProductDetailServlet extends HttpServlet {
                 List<String> size = productDAO.getAllSizebyProductId(productId);
                 if (size != null && !size.isEmpty()) {
                     request.setAttribute("sizeList", size);
+
+                }
+                ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
+                if (imgList != null && !imgList.isEmpty()) {
+                    request.setAttribute("imgList", imgList);
+
+                }
+
+                ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
+                if (varList != null && !varList.isEmpty()) {
+                    request.setAttribute("varList", varList);
 
                 }
 

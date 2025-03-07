@@ -91,5 +91,9 @@ public class SettingDAO {
         }
         return brandList;
     }
-
+    
+    public static int getMaxQuantityItemInCart(){
+        return 10;
+    }
+    
 }

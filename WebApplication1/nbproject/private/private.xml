@@ -12,14 +12,12 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Cart/Checkout.jsp</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ProductDetailServlet.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/SettingDAO.java</file>
             <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Product/ProductDetail.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Cart/Cart.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Home/Home.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/left_side_bar_public.jspf</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Order/MyOrder.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Images/Home/new.png</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/CartDAO.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/AddToCartServlet.java</file>
         </group>
     </open-files>
 </project-private>

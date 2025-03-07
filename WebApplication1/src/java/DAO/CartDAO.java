@@ -63,7 +63,7 @@ public class CartDAO extends DBContext {
         }
     }
 
-    public List<CartDetail> getAllCartDetailByUserID(int userID) {
+    public static List<CartDetail> getAllCartDetailByUserID(int userID) {
         List<CartDetail> cartDetails = new ArrayList<>();
         String query = "SELECT cd.cart_detail_id, cd.cart_id, cd.product_id, "
                 + "cd.product_variant_id, cd.quantity, cd.updated_date,p.price "
@@ -249,6 +249,18 @@ public class CartDAO extends DBContext {
             e.printStackTrace();
         }
         return cartDetail;
+    }
+
+    public static int getCartItemNumberForUserId(int userId) {
+        return getAllCartDetailByUserID(userId).size();
+    }
+
+    public static int getCartItemQuantityForUserId(int userId) {
+        int quantity = 0;
+        for (CartDetail c : getAllCartDetailByUserID(userId)) {
+            quantity += c.getQuantity();
+        }
+        return quantity;
     }
 
     public static void main(String[] args) {

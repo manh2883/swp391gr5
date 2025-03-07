@@ -4,7 +4,9 @@
  */
 package controllers;
 
+import DAO.CartDAO;
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.User;
@@ -77,60 +79,57 @@ public class AddToCartServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Lấy tham số từ request
-        String color = request.getParameter("colorInput").trim();
-        String size = request.getParameter("sizeInput").trim();
-        String idIn = request.getParameter("idInput").trim();
+        String color = request.getParameter("colorInput") != null ? request.getParameter("colorInput").trim() : "";
+        String size = request.getParameter("sizeInput") != null ? request.getParameter("sizeInput").trim() : "";
+        String idIn = request.getParameter("idInput") != null ? request.getParameter("idInput").trim() : "";
 
         // Kiểm tra tham số hợp lệ
-        if (idIn == null || idIn.isEmpty()) {
-            request.setAttribute("error", "Invalid product ID.");
-            request.getRequestDispatcher("error.jsp").forward(request, response);
-            return;
+        if (idIn.isEmpty()) {
+            request.setAttribute("message", "Product not found");
+            response.sendRedirect("Home.Error404.jsp");
         }
-
+        String currentLink = "ProductDetail?productId=" + idIn;
         // Kiểm tra đăng nhập
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
 
-        if (account == null) {
-            request.getRequestDispatcher("Login").forward(request, response);
-            return;
-        }
+        if (account != null) {
 
-        // Lấy userId từ accountId
-        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-        if (userId <= 0) {
-            request.setAttribute("error", "User not found.");
-//            request.getRequestDispatcher("error.jsp").forward(request, response);
-            return;
-        }
+            // Lấy userId từ accountId
+            int accountId = account.getAccountId();
+            int userId = UserDAO.getUserIDByAccountID(accountId);
+            if (userId > 0) {
+                // Kiểm tra color & size trước khi thêm vào giỏ hàng
+                String addStatus = null;
+                String addMessage = null;
+                if (!color.isEmpty() || !size.isEmpty()) {
+                    int quanBef = CartDAO.getCartItemQuantityForUserId(userId);
+                    int itemNumber = CartDAO.getCartItemNumberForUserId(userId);
+                    int maxItemNumber = SettingDAO.getMaxQuantityItemInCart();
 
-        // Kiểm tra color & size trước khi thêm vào giỏ hàng
-        if ((color != null && !color.isEmpty()) || (size != null && !size.isEmpty())) {
-            ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
-        }
+                    if (itemNumber < maxItemNumber) {
+                        ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
+                        int quanAf = CartDAO.getCartItemQuantityForUserId(userId);
+                        addStatus = (quanAf > quanBef) ? "true" : "false";
+                    } else {
+                        addStatus = "out";
+                    }
+                } else {
+                    addStatus = "false";
+                }
 
-        // Lấy thông tin user
-        User u = UserDAO.getUserById(userId);
-        if (u == null) {
-            request.setAttribute("error", "User not found.");
-//            request.getRequestDispatcher("error.jsp").forward(request, response);
-            return;
-        }
-
-        // Lấy variant_id
-        int vI = ProductDAO.getVariantByColorAndSize(idIn.toUpperCase(), color.toUpperCase(), size.toUpperCase());
-        if (vI == -1) {
-            request.setAttribute("message", "Variant not found.");
+                session.setAttribute("addStatus", addStatus);
+                session.setAttribute("addMessage", addMessage);
+                response.sendRedirect("ProductDetail?productId=" + idIn);
+            } else {
+                session.setAttribute("prevLink", currentLink);
+                response.sendRedirect("Login");
+            }
         } else {
-            request.setAttribute("message", vI);
-        }
+            session.setAttribute("prevLink", currentLink);
+            response.sendRedirect("Login");
 
-        // Gửi dữ liệu đến JSP
-        request.setAttribute("colorList", color + ", " + size + ", " + idIn);
-        request.setAttribute("sizeList", u);
-        response.sendRedirect("ProductDetail?productId=" + idIn);
-//        request.getRequestDispatcher("ProductDetail?productId="+idIn).forward(request, response);
+        }
     }
 
     /**

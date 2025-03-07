@@ -52,6 +52,30 @@
                 object-fit: cover; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
+
+            /* Ẩn modal mặc định */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                background-color: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+                opacity: 0;
+                transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            }
+
+            /* Khi modal hiển thị */
+            .modal.show {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
         </style>
     </head>
     <body>
@@ -112,18 +136,48 @@
 
                             <div class="col-sm-7">
                                 <div class="product-information">
-                                    <img src=" " class="newarrival" alt="" />
+                                    <c:choose>
+                                        <c:when test="${not empty tag}">
+                                            <c:choose>
+                                                <c:when test="${tag == 'isSale'}">
+                                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/sale.png" class="newarrival" alt="">
+                                                </c:when>
+                                                <c:when test="${tag == 'isNew'}">
+                                                    <img src="${pageContext.request.contextPath}/Images/ProductDetail/new.jpg" class="newarrival" alt="">
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                    </c:choose>
+
                                     <h2>${product.name}</h2>
                                     <p>Web ID: ${product.productId}</p>
+                                    <p>${addStatus} ${addMessage}</p>
+                                    <h2>
+                                        <c:set var="currentPrice" value="${product.price.intValue()}" />
+                                        <c:choose>
+                                            <c:when test="${not empty netPrice}">
 
-                                    <span>
-                                        <span id="priceDisplay">${product.price.intValue()}</span>
-                                    </span>
+                                                <span id="priceDisplay" style="padding-right: 10px;
+                                                      font-size: 30px;
+                                                      color: #fe980f;"
+                                                      >${product.price.intValue()}</span> 
+                                                <span id ="netPrice" style="text-decoration: line-through;
+                                                      padding-right: 10px;
+                                                      font-size: 25px;
+                                                      color: gray;
+                                                      align-content: baseline">${netPrice.intValue()}</span>
+
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span id="priceDisplay">${product.price.intValue()}</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </h2>
 
                                     <form action="AddToCart" method="post">
                                         <table>
                                             <tbody style="align-items: center;">
-                                            <input readonly style="visibility: hidden" value="${product.productId}" name="idInput">
+                                            <input readonly style="visibility: hidden" value="${product.productId}" name="idInput" id="idInput">
 
                                             <!-- Lựa chọn màu sắc -->
                                             <c:choose>
@@ -186,6 +240,22 @@
             </div>
 
         </section>
+        <!-- Modal -->
+        <div class="modal fade" id="cartModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thông báo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <c:import url="/Template/footer1.jsp" />
         <script src="js/jquery.js"></script>
         <script src="js/price-range.js"></script>
@@ -199,7 +269,6 @@
                 const carousel = document.getElementById("similar-product");
                 const items = carousel.querySelectorAll(".carousel-inner .item");
                 let currentIndex = 0;
-
                 function showSlide(index) {
                     items.forEach((item, i) => {
                         item.classList.remove("active");
@@ -214,21 +283,17 @@
                     currentIndex = (currentIndex - 1 + items.length) % items.length;
                     showSlide(currentIndex);
                 });
-
                 document.querySelector(".right.item-control").addEventListener("click", function (e) {
                     e.preventDefault();
                     currentIndex = (currentIndex + 1) % items.length;
                     showSlide(currentIndex);
                 });
             });
-
-
             document.addEventListener("DOMContentLoaded", function () {
                 const carousel = document.getElementById("similar-product");
                 const items = carousel.querySelectorAll(".carousel-inner .item");
                 const mainImg = document.getElementById("main-product-img");
                 let currentIndex = 0;
-
                 function showSlide(index) {
                     items.forEach((item, i) => {
                         item.classList.remove("active");
@@ -249,20 +314,17 @@
                     currentIndex = (currentIndex - 1 + items.length) % items.length;
                     showSlide(currentIndex);
                 });
-
                 document.querySelector(".right.item-control").addEventListener("click", function (e) {
                     e.preventDefault();
                     currentIndex = (currentIndex + 1) % items.length;
                     showSlide(currentIndex);
                 });
             });
-
-
         </script>
-
         <script>
             var variantData = {};
             var priceData = {};
+            var netPrice = ${netPrice}; // Giá trị tĩnh
 
             <c:forEach var="variant" items="${variantList}">
             var key = "${variant[1]}-${variant[2]}";
@@ -274,12 +336,24 @@
                     var color = document.getElementById("colorInput").value;
                     var size = document.getElementById("sizeInput").value;
                     var key = color + "-" + size;
+
                     var stock = variantData[key] || 0;
-                    var price = priceData[key] || "${product.price}";
+                    var price = priceData[key] || parseFloat("${product.price}"); // Giá thay đổi theo variant
 
+                    console.log("Price:", price, "NetPrice:", netPrice, "Stock:", stock);
 
-                    // Cập nhật giá
-                    document.getElementById("priceDisplay").innerText = Math.floor(price);
+                    // Cập nhật giá hiển thị
+                    var priceDisplay = document.getElementById("priceDisplay");
+                    var netPriceDisplay = document.getElementById("netPrice");
+
+                    priceDisplay.innerText = Math.floor(price);
+
+                    if (netPrice > price) {
+                        netPriceDisplay.innerText = Math.floor(netPrice);
+                        netPriceDisplay.style.display = "inline"; // Hiện netPrice bị gạch
+                    } else {
+                        netPriceDisplay.style.display = "none"; // Ẩn nếu không có giảm giá
+                    }
 
                     // Cập nhật stock message
                     var stockMessage = document.getElementById("stockMessage");
@@ -306,7 +380,61 @@
                 // Cập nhật lần đầu khi trang load
                 updateStockAndPrice();
         </script>
+        <script>
+            function addToCart() {
+                var productId = document.getElementById("productId").value;
+                var color = document.getElementById("colorInput").value;
+                var size = document.getElementById("sizeInput").value;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "AddToCartServlet", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        try {
+                            console.log("Raw response:", xhr.responseText); // Kiểm tra dữ liệu trả về
+
+                            var response = JSON.parse(xhr.responseText);
+                            console.log("Parsed response:", response);
+
+                            if (response.success) {
+                                var modal = document.getElementById("successModal");
+                                if (modal) {
+                                    modal.style.display = "block"; // Hiển thị modal
+
+                                    // Tự động đóng modal sau 1 giây và chuyển hướng
+                                    setTimeout(function () {
+                                        modal.style.display = "none";
+                                        window.location.href = response.redirectUrl; // Điều hướng về trang Product Detail
+                                    }, 1000);
+                                } else {
+                                    console.error("Không tìm thấy modal!");
+                                }
+                            } else {
+                                console.error("Response success=false:", response);
+                            }
+                        } catch (e) {
+                            console.error("Lỗi parse JSON:", e, xhr.responseText);
+                        }
+                    }
+                };
+
+                xhr.send("idInput=" + encodeURIComponent(productId) +
+                        "&colorInput=" + encodeURIComponent(color) +
+                        "&sizeInput=" + encodeURIComponent(size));
+
+                return false; // Ngăn form submit mặc định
+            }
+
+        </script>
 
 
+        <script>
+            function addToCart() {
+                var myModal = new bootstrap.Modal(document.getElementById('cartModal'));
+                myModal.show();
+            }
+        </script>
     </body>
 </html>

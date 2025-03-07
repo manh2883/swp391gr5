@@ -71,14 +71,19 @@ public class LoginServlet extends HttpServlet {
         AccountDAO aDAO = new AccountDAO();
         Account acc = aDAO.login(userName, passWord);
 
+        HttpSession session = request.getSession();
+        String link = (String) session.getAttribute("prevLink");
+        System.out.println(link);
+
         if (acc != null) {
 
-//            session.setAttribute("userName", acc.getUsername());
-            HttpSession session = request.getSession();
-            
-
-            session.setAttribute("account", new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
-            request.getRequestDispatcher("Home").forward(request, response);
+            session.setAttribute("account",
+                    new Account(acc.getAccountId(), acc.getUsername(), acc.getRoleId()));
+            if (link != null && !link.isEmpty()) {
+                response.sendRedirect(link);
+            } else {
+                response.sendRedirect("Home");
+            }
         } else {
             request.setAttribute("passError", "Username or password is incorrect!");
             request.setAttribute("userName", userName);
@@ -86,7 +91,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // Hàm kiểm tra mật khẩu bằng cách so sánh mật khẩu băm
+// Hàm kiểm tra mật khẩu bằng cách so sánh mật khẩu băm
     /**
      * Returns a short description of the servlet.
      *

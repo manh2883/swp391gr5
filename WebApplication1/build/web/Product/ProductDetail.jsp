@@ -151,7 +151,7 @@
 
                                     <h2>${product.name}</h2>
                                     <p>Web ID: ${product.productId}</p>
-                                    <p>${addStatus} ${addMessage}</p>
+
                                     <h2>
                                         <c:set var="currentPrice" value="${product.price.intValue()}" />
                                         <c:choose>
@@ -212,14 +212,23 @@
                                             </c:choose>
 
                                             <!-- Hiển thị stock -->
-                                            <tr style="padding-top: 20px">
 
-                                                <td style="padding-left: 50px; height: 45px">
-                                                    <span id="stockMessage" style="font-weight: bold; color: red;">Out of stock</span>
-                                                </td>
-                                            </tr>
                                             </tbody>
                                         </table>
+                                        <h4 style="padding-top: 20px">
+
+                                            <p style="; height: 45px">
+                                                <span id="stockMessage" style="font-weight: bold; color: red;">Out of stock</span>
+                                            </p>
+                                        </h4>
+                                        
+                                        <c:choose>
+                                            <c:when test="${not empty addMessage}">
+                                                <h5 style="padding-left: 50px">
+                                                    <p>${addMessage}</p>
+                                                </h5>
+                                            </c:when>
+                                        </c:choose>
 
                                         <span>
                                             <button type="submit" class="btn btn-fefault cart">
@@ -240,22 +249,6 @@
             </div>
 
         </section>
-        <!-- Modal -->
-        <div class="modal fade" id="cartModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Thông báo</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <c:import url="/Template/footer1.jsp" />
         <script src="js/jquery.js"></script>
         <script src="js/price-range.js"></script>
@@ -336,18 +329,14 @@
                     var color = document.getElementById("colorInput").value;
                     var size = document.getElementById("sizeInput").value;
                     var key = color + "-" + size;
-
                     var stock = variantData[key] || 0;
                     var price = priceData[key] || parseFloat("${product.price}"); // Giá thay đổi theo variant
 
                     console.log("Price:", price, "NetPrice:", netPrice, "Stock:", stock);
-
                     // Cập nhật giá hiển thị
                     var priceDisplay = document.getElementById("priceDisplay");
                     var netPriceDisplay = document.getElementById("netPrice");
-
                     priceDisplay.innerText = Math.floor(price);
-
                     if (netPrice > price) {
                         netPriceDisplay.innerText = Math.floor(netPrice);
                         netPriceDisplay.style.display = "inline"; // Hiện netPrice bị gạch
@@ -359,7 +348,6 @@
                     var stockMessage = document.getElementById("stockMessage");
                     var addToCartBtn = document.querySelector("button[type='submit']");
                     var purchaseBtn = document.querySelector("button[type='button']");
-
                     if (stock > 0) {
                         stockMessage.innerText = "In stock: " + stock + " items";
                         stockMessage.style.color = "green";
@@ -376,7 +364,6 @@
                 // Gán sự kiện thay đổi khi chọn size hoặc color
                 document.getElementById("colorInput").addEventListener("change", updateStockAndPrice);
                 document.getElementById("sizeInput").addEventListener("change", updateStockAndPrice);
-
                 // Cập nhật lần đầu khi trang load
                 updateStockAndPrice();
         </script>
@@ -385,11 +372,9 @@
                 var productId = document.getElementById("productId").value;
                 var color = document.getElementById("colorInput").value;
                 var size = document.getElementById("sizeInput").value;
-
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "AddToCartServlet", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         try {
@@ -397,7 +382,6 @@
 
                             var response = JSON.parse(xhr.responseText);
                             console.log("Parsed response:", response);
-
                             if (response.success) {
                                 var modal = document.getElementById("successModal");
                                 if (modal) {
@@ -419,22 +403,13 @@
                         }
                     }
                 };
-
                 xhr.send("idInput=" + encodeURIComponent(productId) +
                         "&colorInput=" + encodeURIComponent(color) +
                         "&sizeInput=" + encodeURIComponent(size));
-
                 return false; // Ngăn form submit mặc định
             }
 
         </script>
 
-
-        <script>
-            function addToCart() {
-                var myModal = new bootstrap.Modal(document.getElementById('cartModal'));
-                myModal.show();
-            }
-        </script>
     </body>
 </html>

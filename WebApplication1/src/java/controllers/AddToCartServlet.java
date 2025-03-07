@@ -117,6 +117,20 @@ public class AddToCartServlet extends HttpServlet {
                 } else {
                     addStatus = "false";
                 }
+                switch (addStatus) {
+                    case "true":
+                        addMessage = "Add to cart successfully!!";
+                        break;
+                    case "false":
+                        addMessage = "Add to cart fail!!";
+                        break;
+
+                    case "out":
+                        addMessage = "Your Cart is full. Please remove some items!!";
+                        break;
+                    default:
+                        addMessage = null;
+                }
 
                 session.setAttribute("addStatus", addStatus);
                 session.setAttribute("addMessage", addMessage);

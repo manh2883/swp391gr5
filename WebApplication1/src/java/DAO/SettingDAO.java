@@ -93,7 +93,7 @@ public class SettingDAO {
     }
     
     public static int getMaxQuantityItemInCart(){
-        return 10;
+        return 5;
     }
     
 }

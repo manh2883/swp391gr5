@@ -65,6 +65,7 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String productId = request.getParameter("productId");
+
         // Left side brand
         List<Object[]> bList = SettingDAO.getPublicBrandList();
         if (bList != null && !bList.isEmpty()) {
@@ -107,7 +108,7 @@ public class ProductDetailServlet extends HttpServlet {
                 }
                 request.setAttribute("tag", tag);
                 request.setAttribute("netPrice", product.getPrice());
-                
+
                 List<String> size = productDAO.getAllSizebyProductId(productId);
                 if (size != null && !size.isEmpty()) {
                     request.setAttribute("sizeList", size);
@@ -127,6 +128,9 @@ public class ProductDetailServlet extends HttpServlet {
                 }
 
                 request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+                HttpSession session = request.getSession();
+                session.removeAttribute("addMessage");
+                session.removeAttribute("addStatus");
             }
 
         } else {
@@ -146,13 +150,11 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        }
     }
+}
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-
-
+/**
+ * Returns a short description of the servlet.
+ *
+ * @return a String containing servlet description
+ */

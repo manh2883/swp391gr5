@@ -75,7 +75,7 @@ public class ProductDAO extends DBContext {
                 String st = joiner.toString(); // Nếu cả 2 đều null, str sẽ là chuỗi rỗng ""
                 str = st;
 
-                System.out.println("Result String: " + st);
+//                System.out.println("Result String: " + st);
             }
 
         } catch (SQLException e) {
@@ -1205,7 +1205,7 @@ public class ProductDAO extends DBContext {
                 String link = rs.getString("back_link");
                 if (link != null && !link.isEmpty()) {
                     obj[2] = link;
-                }else{
+                } else {
                     obj[2] = "Images/RUN.jpg";
                 }
                 list.add(obj);
@@ -1262,21 +1262,57 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    public static void main(String[] args) throws SQLException {
-        
-        for (Product p : getAllProducts()) {
-            System.out.println(p.getName());
-            ArrayList<Object[]> imgList = getImageListByProduct(p.getProductId());
-            for (Object[] obj : getVariantListForProductId(p.getProductId())) {
-                System.out.println("-------------");
-                for (int i = 0; i <= 4; i++) {
-                    System.out.println(obj[i] + ", ");
-                }
+    public static boolean getIsVisibleForProductId(String productId) {
+        boolean status = false;
+
+        String query = """
+                       select * from product join product_category on product.category_id = product_category.category_id
+                       where product.is_visible = 1 and product_category.is_visible = 1 and product_id = ?
+                       """;
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                status = true;
             }
-            System.out.println("=========================================\n");
-            
+
+            con.close();
+            stm.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        
+
+        return status;
+
+    }
+
+    public static void main(String[] args) throws SQLException {
+
+//        for (Product p : getAllProducts()) {
+//            System.out.println(p.getName());
+//            ArrayList<Object[]> imgList = getImageListByProduct(p.getProductId());
+//            for (Object[] obj : getVariantListForProductId(p.getProductId())) {
+//                System.out.println("-------------");
+//                for (int i = 0; i <= 4; i++) {
+//                    System.out.println(obj[i] + ", ");
+//                }
+//            }
+//            System.out.println("=========================================\n");
+//
+//        }
+
+        for(Product p : getAllProducts()){
+            if(getIsVisibleForProductId(p.getProductId())){
+                System.out.println(p);
+            }
+        }
 
     }
 }

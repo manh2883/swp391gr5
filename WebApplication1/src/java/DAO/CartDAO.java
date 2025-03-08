@@ -63,14 +63,19 @@ public class CartDAO extends DBContext {
         }
     }
 
-    public static List<CartDetail> getAllCartDetailByUserID(int userID) {
+    public static List<CartDetail> getAllCartDetailByUserID(int userID, int isVisible) {
+//        isVisible = 0 ==  > product is not visible 
+//        isVisible = 1 ==  > product is visible
+//        other:both
+
         List<CartDetail> cartDetails = new ArrayList<>();
         String query = "SELECT cd.cart_detail_id, cd.cart_id, cd.product_id, "
                 + "cd.product_variant_id, cd.quantity, cd.updated_date,p.price "
                 + "FROM cart_detail cd "
                 + "JOIN cart c ON cd.cart_id = c.cart_id "
                 + "JOIN product p ON cd.product_id = p.product_id "
-                + "WHERE c.user_id = ?";
+                + "WHERE c.user_id = ? "
+                + "order by cd.updated_date desc ";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
@@ -93,7 +98,25 @@ public class CartDAO extends DBContext {
                 product.setPrice(rs.getDouble("price"));
 
                 cartDetail.setProduct(product);
-                cartDetails.add(cartDetail);
+                switch (isVisible) {
+                    case 1:
+                        
+                        if (ProductDAO.getIsVisibleForProductId(cartDetail.getProductID())) {
+                            cartDetails.add(cartDetail);
+                        }
+                        break;
+                    case 0:
+                        
+                        if (!ProductDAO.getIsVisibleForProductId(cartDetail.getProductID())) {
+                            cartDetails.add(cartDetail);
+                        }
+                        break;
+                    default:
+                        cartDetails.add(cartDetail);
+                        break;
+                }
+                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,19 +126,24 @@ public class CartDAO extends DBContext {
         return cartDetails;
     }
 
-    public void editCartDetailByID(int userID, int cartDetailID, String action) {
+    public static void editCartDetailByID(int userID, int cartDetailID, String action) {
         if (userID <= 0 || cartDetailID <= 0 || action == null) {
             throw new IllegalArgumentException("Tham số không hợp lệ.");
         }
 
         String updateQuery = "";
         String deleteQuery = "";
-        if ("increment".equals(action)) {
+
+        CartDetail cd = getCartDetailByID(cartDetailID);
+        int currentInstock = ProductDAO.getStockByProductAndVariant(cd.getProductID(), cd.getProductVariantID());
+
+        if (action.equals("increment")) {
             updateQuery = "UPDATE cart_detail cd "
                     + "JOIN cart c ON cd.cart_id = c.cart_id "
                     + "SET cd.quantity = cd.quantity + 1, cd.updated_date = NOW() "
                     + "WHERE cd.cart_detail_id = ? AND c.user_id = ?";
-        } else if ("decrement".equals(action)) {
+
+        } else if (action.equals("decrement")) {
             updateQuery = "UPDATE cart_detail cd "
                     + "JOIN cart c ON cd.cart_id = c.cart_id "
                     + "SET cd.quantity = cd.quantity - 1, cd.updated_date = NOW() "
@@ -135,9 +163,16 @@ public class CartDAO extends DBContext {
             con.setAutoCommit(false); // 🔹 Tắt autoCommit để có thể rollback khi cần
 
             try (PreparedStatement updateStm = con.prepareStatement(updateQuery)) {
-                updateStm.setInt(1, cartDetailID);
-                updateStm.setInt(2, userID);
-                int updateCount = updateStm.executeUpdate();
+                int updateCount = 0;
+
+                if ((action.equals("increment")
+                        && currentInstock > cd.getQuantity())
+                        || action.equals("decrement")
+                        && currentInstock > 0) {
+                    updateStm.setInt(1, cartDetailID);
+                    updateStm.setInt(2, userID);
+                    updateCount = updateStm.executeUpdate();
+                }
 
                 if (updateCount == 0) {
                     con.rollback();  // 🔴 Chỉ rollback nếu đã setAutoCommit(false)
@@ -198,6 +233,26 @@ public class CartDAO extends DBContext {
         }
     }
 
+    public static void validateCartDetail(CartDetail cartDetail, int userId) {
+        int variantId = cartDetail.getProductVariantID();
+        String productId = cartDetail.getProductID();
+        if (variantId <= 0 || productId.isEmpty() || productId == null) {
+            deleteCartDetailByID(userId, cartDetail.getCartDetailID());
+
+        } else {
+            int getInstock = ProductDAO.getStockByProductAndVariant(productId, variantId);
+            if (getInstock < cartDetail.getQuantity()) {
+                for (int i = getInstock; i > cartDetail.getQuantity(); i--) {
+                    editCartDetailByID(userId, variantId, "decrement");
+                }
+            } else if (cartDetail.getQuantity() <= 0) {
+                deleteCartDetailByID(userId, cartDetail.getCartDetailID());
+            }
+
+        }
+
+    }
+
     public boolean isCartDetailOwnedByUser(int cartDetailID, int userID) {
         String query = "SELECT 1 FROM cart_detail cd "
                 + "JOIN cart c ON cd.cart_id = c.cart_id "
@@ -220,7 +275,7 @@ public class CartDAO extends DBContext {
         return false;
     }
 
-    public CartDetail getCartDetailByID(int cartDetailID) {
+    public static CartDetail getCartDetailByID(int cartDetailID) {
         CartDetail cartDetail = new CartDetail();
         String query = "SELECT * FROM cart_detail WHERE cart_detail_id = ?";
         try {
@@ -252,35 +307,48 @@ public class CartDAO extends DBContext {
     }
 
     public static int getCartItemNumberForUserId(int userId) {
-        return getAllCartDetailByUserID(userId).size();
+        return getAllCartDetailByUserID(userId,1).size();
     }
 
     public static int getCartItemQuantityForUserId(int userId) {
         int quantity = 0;
-        for (CartDetail c : getAllCartDetailByUserID(userId)) {
+        for (CartDetail c : getAllCartDetailByUserID(userId,1)) {
             quantity += c.getQuantity();
         }
         return quantity;
     }
 
+    public static List<Object[]> getAllCartDetailViewForUser(int userId, int isVisible) {
+        List<Object[]> list = new ArrayList<>();
+        List<CartDetail> detailList = getAllCartDetailByUserID(userId,isVisible);
+
+        for (CartDetail cd : detailList) {
+            Object[] obj = new Object[6];
+
+            String productId = cd.getProductID();
+            int variantId = cd.getProductVariantID();
+            String variantString = ProductDAO.getVariantInformation(productId, variantId);
+
+            obj[0] = cd;
+            obj[1] = ProductDAO.getImgUrlForProductID(cd.getProductID());
+            obj[2] = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+            obj[3] = variantString;
+            obj[4] = ProductDAO.getStockByProductAndVariant(productId, variantId);
+            obj[5] = ProductDAO.getProductById(productId).getName();
+            list.add(obj);
+
+        }
+
+        return list;
+    }
+
     public static void main(String[] args) {
-        CartDAO cDAO = new CartDAO();
-        UserDAO uDAO = new UserDAO();
-        int userID = 2; // Đảm bảo user này tồn tại trong bảng user
-        String newAddress = "456 Đường XYZ, Quận 2, TP.HCM";
-        //        System.out.println(cDAO.getCartIDByUserID(1));
-        //        cDAO.createCartForUserID(1);
-        //        System.out.println(cDAO.getCartIDByUserID(1));
-//        for (UserAddress u : uDAO.getUserAddresses(2)) {
-//            System.out.println(u);
-//        }
-//        cDAO.getUserByID(1);
-//        System.out.println(cDAO.getUserByID(1));
-//        boolean isInserted = cDAO.insertAddress(userID, newAddress);
-//        if (isInserted) {
-//            System.out.println("Thêm địa chỉ thành công!");
-//        } else {
-//            System.out.println("Thêm địa chỉ thất bại!");
-//        }
+        for (Object[] obj : getAllCartDetailViewForUser(1,1)) {
+            for (int i = 0; i < 6; i++) {
+                System.out.println(obj[i]);
+            }
+            System.out.println("=======================");
+        }
+        System.out.println("--------------------------------------------------------");
     }
 }

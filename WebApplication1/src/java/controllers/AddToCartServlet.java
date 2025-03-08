@@ -86,7 +86,7 @@ public class AddToCartServlet extends HttpServlet {
         // Kiểm tra tham số hợp lệ
         if (idIn.isEmpty()) {
             request.setAttribute("message", "Product not found");
-            response.sendRedirect("Home.Error404.jsp");
+            response.sendRedirect("Home/Error404.jsp");
         }
         String currentLink = "ProductDetail?productId=" + idIn;
         // Kiểm tra đăng nhập
@@ -105,6 +105,7 @@ public class AddToCartServlet extends HttpServlet {
                 if (!color.isEmpty() || !size.isEmpty()) {
                     int quanBef = CartDAO.getCartItemQuantityForUserId(userId);
                     int itemNumber = CartDAO.getCartItemNumberForUserId(userId);
+                    
                     int maxItemNumber = SettingDAO.getMaxQuantityItemInCart();
 
                     if (itemNumber < maxItemNumber) {

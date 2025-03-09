@@ -328,28 +328,28 @@ public class UserDAO extends DBContext {
 
     public static List<User> getFilteredUsers(String search, String status, String sortBy, int start, int recordsPerPage) {
         List<User> userList = new ArrayList<>();
-        List<Account> aco = new ArrayList<>();
         StringBuilder query = new StringBuilder(
-                """
-            SELECT u.user_id, u.first_name, u.last_name, u.gender, u.email, u.phone_number, 
-                           a.username, r.role_id, r.role_name, a.status
-                    FROM user u
-                    LEFT JOIN account a ON u.user_id = a.user_id
-                    LEFT JOIN roles r ON a.role_id = r.role_id
-                    WHERE 1=1""");
+                "SELECT u.user_id, u.first_name, u.last_name, u.gender, u.email, u.phone_number, "
+                + "a.username, r.role_id, r.role_name, a.status "
+                + "FROM user u "
+                + "LEFT JOIN account a ON u.user_id = a.user_id "
+                + "LEFT JOIN roles r ON a.role_id = r.role_id "
+                + "WHERE 1=1 ");
 
         List<Object> paramsList = new ArrayList<>();
 
         // Tìm kiếm theo tên, email, số điện thoại
         if (search != null && !search.trim().isEmpty()) {
-            query.append(" AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR u.email LIKE ? OR u.phone_number LIKE ?)");
-            paramsList.add("%" + search + "%");
-            paramsList.add("%" + search + "%");
-            paramsList.add("%" + search + "%");
+            query.append(" AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.phone_number LIKE ?)");
+            String searchPattern = "%" + search + "%";
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
         }
 
         // Lọc theo trạng thái
-        if (status != null) {
+        if (status != null && !status.isEmpty()) {
             query.append(" AND a.status = ?");
             paramsList.add(status);
         }
@@ -365,83 +365,100 @@ public class UserDAO extends DBContext {
                     query.append(" ORDER BY u.phone_number");
                 case "status" ->
                     query.append(" ORDER BY a.status");
-
                 case "Role" ->
-                    query.append(" ORDER BY a.role_id");
+                    query.append(" ORDER BY r.role_id");
                 default ->
                     query.append(" ORDER BY u.user_id");
             }
         } else {
-            query.append(" ORDER BY u.user_id");
+            query.append(" ORDER BY u.created_at DESC");
         }
 
-        // Chuyển List<Object> thành Object[]
-        Object[] params = paramsList.toArray();
+        query.append(" LIMIT ?, ?");
+        paramsList.add(start);
+        paramsList.add(recordsPerPage);
 
         try {
             DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query.toString());
 
             // Gán tham số vào PreparedStatement
-            for (int i = 0; i < params.length; i++) {
-                stm.setObject(i + 1, params[i]);
+            for (int i = 0; i < paramsList.size(); i++) {
+                stm.setObject(i + 1, paramsList.get(i));
             }
 
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 User user = new User();
-                Account ac = new Account();
                 user.setUserId(rs.getInt("user_id"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
                 user.setGender(rs.getInt("gender"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
-                ac.setUsername(rs.getString("username"));
-                ac.setRoleId(rs.getInt("role_id"));
 
+                Account account = new Account();
+                account.setUsername(rs.getString("username"));
+                account.setRoleId(rs.getInt("role_id"));
+                account.setStatus(rs.getInt("status"));
+
+                user.setAccount(account);
                 userList.add(user);
-                aco.add(ac);
-
             }
 
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return userList;
-
     }
 
-    public static ArrayList<Object[]> getFilterViewUser(String search, String status, String sortBy, int start, int recordsPerPage) {
-//            HashMap<User, Account> ur = new HashMap<>();
-//            ur.put("User", Account);
-//            System.out.println(ur);
-                    
+//    public static ArrayList<Object[]> getFilterViewUser(String search, String status, String sortBy, int start, int recordsPerPage) {
+////            HashMap<User, Account> ur = new HashMap<>();
+////            ur.put("User", Account);
+////            System.out.println(ur);
+//
+//        List<User> users = getFilteredUsers(search, status, sortBy, start, recordsPerPage);
+//        ArrayList<Object[]> viewList = new ArrayList<>();
+//
+//        for (User user : users) {
+//            Object[] row = new Object[3];
+//            row[0] = user.getEmail();  // Username (ở đây thay bằng email nếu username null)
+//            row[1] = user.getPhoneNumber(); // Role ID
+//            row[2] = user.getFirstName() + " " + user.getLastName(); // Full name
+//
+//            viewList.add(row);
+//        }
+//
+//        return viewList;
+//    }
+    public static int getTotalUserCount(String search, String status) {
+        int total = 0;
+        StringBuilder query = new StringBuilder(
+                "SELECT COUNT(*) FROM user u "
+                + "LEFT JOIN account a ON u.user_id = a.user_id "
+                + "WHERE 1=1 ");
 
-        List<User> users = getFilteredUsers(search, status, sortBy, start, recordsPerPage);
-        ArrayList<Object[]> viewList = new ArrayList<>();
+        List<Object> paramsList = new ArrayList<>();
 
-        for (User user : users) {
-            Object[] row = new Object[3];
-            row[0] = user.getEmail();  // Username (ở đây thay bằng email nếu username null)
-            row[1] = user.getPhoneNumber(); // Role ID
-            row[2] = user.getFirstName() + " " + user.getLastName(); // Full name
-
-            viewList.add(row);
+        // Apply search filter
+        if (search != null && !search.trim().isEmpty()) {
+            query.append(" AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.phone_number LIKE ?)");
+            String searchPattern = "%" + search + "%";
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
+            paramsList.add(searchPattern);
         }
 
-         return viewList;
-    }
-
-    public int getTotalUserCount(String search, String status) {
-        StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM user WHERE 1=1");
-
-        if (search != null && !search.isEmpty()) {
-            query.append(" AND (CONCAT(first_name, ' ', last_name) LIKE ? OR email LIKE ? OR phone_number LIKE ?)");
-        }
+        // Apply status filter
         if (status != null && !status.isEmpty()) {
-            query.append(" AND status = ?");
+            query.append(" AND a.status = ?");
+            paramsList.add(status);
         }
 
         try {
@@ -450,38 +467,36 @@ public class UserDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query.toString());
 
-            int index = 1;
-            if (search != null && !search.isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                stm.setString(index++, searchPattern);
-                stm.setString(index++, searchPattern);
-                stm.setString(index++, searchPattern);
-            }
-            if (status != null && !status.isEmpty()) {
-                stm.setString(index++, status);
+            for (int i = 0; i < paramsList.size(); i++) {
+                stm.setObject(i + 1, paramsList.get(i));
             }
 
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1);
+                total = rs.getInt(1);
             }
+            rs.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0;
+
+        return total;
     }
 
-    public static void main(String[] args) {
-//        UserDAO userDAO = new UserDAO();
-//        List<User> userList = userDAO.getFilteredUsers(null, null, null, 12, 1);
-////        System.out.println("\n");
-//        for (User user : userList) {
-//            System.out.println(user);
-//        }
-        for(User oj : getFilteredUsers(null, null, null, 12, 1)){
-            System.out.println("\n");
-            System.out.println(oj);
-        
+    public static void main(String[] args) throws SQLException {
+        List<User> userList = getFilteredUsers(null, null, null, 0, 10);
+
+        if (userList.isEmpty()) {
+            System.out.println("Không có dữ liệu nào được tìm thấy!");
+        } else {
+            for (User user : userList) {
+                System.out.println(user);
+            }
+        }
+//        for (User oj : getFilteredUsers(null, null, null, 12, 1)) {
+//            System.out.println("\n");
+//            System.out.println(oj);
+
 //        System.out.println(getFilteredUsers(null, null, null, 12, 1));
 //        for (Object[] oj : get(null, null, null, 12, 1)) {
 ////            System.out.println("\n");
@@ -489,6 +504,5 @@ public class UserDAO extends DBContext {
 ////            System.out.println(oj[1]);
 //////            System.out.println(oj[2]);
 ////            System.out.println("===========================\n");
-        }
     }
 }

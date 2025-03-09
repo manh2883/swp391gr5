@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.CartDAO;
+import DAO.ProductDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
@@ -66,10 +67,11 @@ public class ViewCartServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         CartDAO cartDAO = new CartDAO();
-
+        String currentLink = "ViewCart";
         // Lấy account từ session
         Account account = (Account) session.getAttribute("account");
         if (account == null) {
+            session.setAttribute("prevLink", currentLink);
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
@@ -81,7 +83,8 @@ public class ViewCartServlet extends HttpServlet {
         int userId = uDAO.getUserIDByAccountID(accountId);
 
         if (userId == -1) {
-            response.sendRedirect(request.getContextPath() + "Login/Login.jsp");
+            session.setAttribute("prevLink", currentLink);
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
@@ -110,7 +113,7 @@ public class ViewCartServlet extends HttpServlet {
                     cartDAO.deleteCartDetailByID(userId, cartDetailID);
                 }
                 // Cập nhật lại giỏ hàng trong session
-                List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
+                List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId, 1);
                 session.setAttribute("cartDetails", cartDetails);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -120,11 +123,13 @@ public class ViewCartServlet extends HttpServlet {
         }
 
         // Lấy danh sách giỏ hàng
-        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId);
+        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId, 1);
+        List<Object[]> cartDetailList = cartDAO.getAllCartDetailViewForUser(userId, 1);
 
         // Gửi danh sách cartDetails lên trang JSP
         if (cartDetails != null && !cartDetails.isEmpty()) {
             request.setAttribute("cartDetails", cartDetails);
+            request.setAttribute("cartDetailList", cartDetailList);
             request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
@@ -172,8 +177,14 @@ public class ViewCartServlet extends HttpServlet {
                 try {
                     int cartDetailID = Integer.parseInt(id.trim());
                     CartDetail cartDetail = cDAO.getCartDetailByID(cartDetailID); // Lấy 1 lần duy nhất
-                    if (cartDetail != null) {
+                    if (cartDetail != null && cartDetail.getProduct() != null) {
+                        int variantId = cartDetail.getProductVariantID();
+                        String productId = cartDetail.getProductID();
+                        //  System.out.println(cartDetail.getProduct().getPrice());
+                        cartDetail.getProduct().setPrice(ProductDAO.getCurrentPriceForProductVariant(productId, variantId));
+                        //  System.out.println(cartDetail.getProduct().getPrice());
                         checkoutItems.add(cartDetail);
+
                     }
                 } catch (NumberFormatException e) {
                     e.printStackTrace(); // Debug lỗi nếu có ID không hợp lệ
@@ -184,7 +195,7 @@ public class ViewCartServlet extends HttpServlet {
             session.setAttribute("checkoutItems", checkoutItems);
             session.setAttribute("user", user);
             session.setAttribute("userAddresses", userAddresses);
-
+            
             request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
         } else {
             // Nếu không có sản phẩm nào được chọn, quay lại giỏ hàng

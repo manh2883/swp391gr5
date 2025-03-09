@@ -373,7 +373,7 @@ public class AccountDAO extends DBContext {
 
     }
 
-    public Account getAccountByUserName(String userName) {
+    public static Account getAccountByUserName(String userName) {
         String query = "SELECT * from Account "
                 + "where Account.username = ?";
 
@@ -643,7 +643,8 @@ public class AccountDAO extends DBContext {
 //        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
 //        AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");
 //        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
-        AccountDAO.createAccount(new Account(42, 1, "abc123", "12345678", 1, 1));
-        System.out.println(AccountDAO.getAccountByUserId(42));
+//        AccountDAO.createAccount(new Account(42, 1, "abc123", "12345678", 1, 1));
+//        System.out.println(AccountDAO.getAccountByUserId(42));
+        System.out.println(getAccountByUserName("admin"));
     }
 }

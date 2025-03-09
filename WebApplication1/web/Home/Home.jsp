@@ -128,7 +128,7 @@
                     <div class="col-sm-9 padding-right" >
                         <div class="features_items">
                             <h2 class="title text-center">New Products</h2>
- 
+
                             <c:choose>
                                 <c:when test="${not empty productList}">
                                     <c:forEach var="entry" items="${productList}">

@@ -30,10 +30,10 @@
     </head>
 
     <body>
-        <header id="header"><!--header-->
-            <div class="header_top"><!--header_top-->
-                <div class="container">
-                    <div class="row">
+        <header id="header" ><!--header-->
+            <div class="header_top" ><!--header_top-->
+                <div class="container" >
+                    <div class="row" >
                         <div class="col-sm-6">
                             <div class="contactinfo">
                                 <ul class="nav nav-pills">

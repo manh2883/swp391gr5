@@ -48,6 +48,16 @@
                 display: inline-block; /* Đảm bảo các nút được xếp thành dòng ngang */
 
             }
+            .product-img {
+                width: 121px;
+                height: 112px;
+                object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
+                background-color: #f8f8f8; /* Màu nền cho khoảng trống */
+            }
+            .tr-button{
+                text-align: center; /* Căn giữa nội dung văn bản */
+                vertical-align: middle;
+            }
         </style>
     </head>
 
@@ -75,53 +85,62 @@
                     <table class="table table-condensed">
                         <thead>
                             <tr class="cart_menu">
-                                <td class="select"><input type="checkbox" id="selectAll" /></td>
-                                <td class="image">Item</td>
-                                <td class="description"></td>
+                                <td class="select " style="text-align: center; /* Căn giữa nội dung văn bản */
+                                    vertical-align: middle;"><input type="checkbox" id="selectAll" /></td>
+                                <td class="image"></td>
+                                <td class="description">Item</td>
                                 <td class="price">Price</td>
                                 <td class="quantity">Quantity</td>
                                 <td class="total">Total</td>
-                                <td></td>
+                                <td ></td>
                             </tr>
                         </thead>
                         <tbody>
                             <c:choose>
-                                <c:when test="${not empty cartDetails}">
+                                <c:when test="${not empty cartDetailList}">
                                     <c:set var="totalPrice" value="0" scope="page" />
-                                    <c:forEach var="cart" items="${cartDetails}">
+                                    <c:forEach var="cart" items="${cartDetailList}">
                                         <tr>
-                                            <td class="select">
-                                                <input type="checkbox" name="selectedItems" value="${cart.cartDetailID}" class="itemCheckbox" />
+                                            <td class="select " style="text-align: center; /* Căn giữa nội dung văn bản */
+                                                vertical-align: middle;">
+                                                <input type="checkbox" name="selectedItems" value="${cart[0].cartDetailID}" class="itemCheckbox" />
                                             </td>
                                             <td class="cart_product">
-                                                <a href=""><img src="${pageContext.request.contextPath}/${cart.product.imgUrl}" alt=""></a>
+                                                <a href=""><img class="product-img"
+                                                                src="${pageContext.request.contextPath}/${cart[1]}" alt="${cart[5]}"></a>
                                             </td>
                                             <td class="cart_description">
-                                                <h4><a href="">Product ${cart.productID}</a></h4>
-                                                <p>Web ID: ${cart.cartDetailID}</p>
-                                                <c:if test="${cart.productVariantID > 0}">
-                                                    <p>Variant: ${cart.productVariantID}</p>
-                                                </c:if>
+                                                <h4>
+                                                    <a href="${pageContext.request.contextPath}/ProductDetail?productId=${cart[0].productID}" 
+                                                       style="padding-bottom:10px">
+                                                        ${cart[5]}
+                                                    </a>
+                                                </h4>
+                                                <p>${cart[3]}</p>
+                                                <p>In stock: ${cart[4]}</p>
+
                                             </td>
                                             <td class="cart_price">
-                                                <p>${cart.product.price}</p>
+                                                <p>${cart[2].intValue()}</p>
                                             </td>
                                             <td class="cart_quantity">
                                                 <div class="cart_quantity_button d-flex flex-row search_box" style="width: 35px; height: 35px;">
                                                     <button type="button" class="btn" style="width: 35px; height: 35px; border-radius: 0px" 
-                                                            onclick="submitCartForm(${cart.cartDetailID}, 'decrement')"> - </button>
-                                                    <input class="" type="text" name="quantity" value="${cart.quantity}" autocomplete="off" size="2" readonly>
+                                                            onclick="submitCartForm(${cart[0].cartDetailID}, 'decrement')"> - </button>
+
+                                                    <input class="" type="text" name="quantity" value="${cart[0].quantity}" autocomplete="off" size="2" readonly>
+
                                                     <button type="button" class="btn" style="width: 35px; height: 35px; border-radius: 0px" 
-                                                            onclick="submitCartForm(${cart.cartDetailID}, 'increment')"> + </button>
+                                                            onclick="submitCartForm(${cart[0].cartDetailID}, 'increment')"> + </button>
                                                 </div>
                                             </td>
                                             <td class="cart_total">
-                                                <c:set var="itemTotal" value="${cart.quantity * cart.product.price}" />
+                                                <c:set var="itemTotal" value="${cart[0].quantity * cart[2].intValue()}" />
                                                 <p class="cart_total_price">${itemTotal}</p>
                                             </td>
-                                            <td class="cart_delete">
+                                            <td class="cart_delete tr-button">
                                                 <button type="button" class="cart_quantity_delete btn" 
-                                                        onclick="submitCartForm(${cart.cartDetailID}, 'delete')">
+                                                        onclick="submitCartForm(${cart[0].cartDetailID}, 'delete')">
                                                     <i class="fa fa-times"></i>
                                                 </button>
                                             </td>
@@ -129,9 +148,9 @@
                                         <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
                                     </c:forEach>
                                     <tr>
-                                        <td colspan="5" style="text-align: right;">Tổng cộng:</td>
+                                        <td colspan="5" style="text-align: right;">Cart Value:</td>
                                         <td class="cart_total">
-                                            <p class="cart_total_price">${totalPrice}</p>
+                                            <p class="cart_total_price">${totalPrice.intValue()}</p>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -141,11 +160,12 @@
                                         <td colspan="7" style="text-align: center;">No items in your cart.</td>
                                     </tr>
                                 </c:otherwise>
-                            </c:choose>
+                            </c:choose>        
+
                         </tbody>
                     </table>
 
-                    <div style="text-align: right; margin-top: 20px;">
+                    <div style="text-align: right; margin-top: 20px; margin-right: 5vh; margin-bottom: 10vh">
                         <button type="button" class="btn btn-primary" id="checkoutButton" onclick="submitCheckout()" disabled>Checkout</button>
 
                     </div>
@@ -205,6 +225,46 @@
 
                                 checkoutForm.submit();
                             }
+                            document.addEventListener("DOMContentLoaded", function () {
+                                document.querySelectorAll(".cart_quantity_button").forEach(container => {
+                                    const plusButton = container.querySelector("button:last-child");
+                                    const quantityInput = container.querySelector("input[name='quantity']");
+                                    const row = container.closest("tr");
+                                    const stockText = row.querySelector(".cart_description p:nth-child(3)");
+
+                                    // Lưu giá trị gốc của số lượng tồn kho
+                                    if (!stockText.dataset.originalText) {
+                                        stockText.dataset.originalText = stockText.textContent;
+                                    }
+
+                                    // Lấy số lượng tồn kho từ nội dung ban đầu
+                                    const stockMatch = stockText.dataset.originalText.match(/\d+/);
+                                    const stock = stockMatch ? parseInt(stockMatch[0], 10) : 0;
+
+                                    function updateButtonState() {
+                                        const quantity = parseInt(quantityInput.value, 10);
+
+                                        if (quantity >= stock) {
+                                            plusButton.disabled = true;
+                                            stockText.textContent = "Bạn đã đạt giới hạn số lượng";
+                                            stockText.style.color = "red";
+                                        } else {
+                                            plusButton.disabled = false;
+                                            stockText.textContent = stockText.dataset.originalText; // Khôi phục nội dung gốc
+                                            stockText.style.color = "black";
+                                        }
+                                    }
+
+                                    // Kiểm tra ngay khi tải trang
+                                    updateButtonState();
+
+                                    // Theo dõi sự thay đổi của input số lượng
+                                    const observer = new MutationObserver(updateButtonState);
+                                    observer.observe(quantityInput, {attributes: true, childList: true, characterData: true});
+                                });
+                            });
+
+
         </script>
 
         <c:import url="/Template/footer1.jsp" />

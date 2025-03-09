@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,7 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String productId = request.getParameter("productId");
+
         // Left side brand
         List<Object[]> bList = SettingDAO.getPublicBrandList();
         if (bList != null && !bList.isEmpty()) {
@@ -88,16 +90,47 @@ public class ProductDetailServlet extends HttpServlet {
                 List<String> color = productDAO.getAllColorbyProductId(productId);
                 if (color != null && !color.isEmpty()) {
                     request.setAttribute("colorList", color);
-
+                } else {
+                    request.setAttribute("message", "productId not found");
+                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                 }
+
+                boolean isNew = productDAO.isNewProduct(productId);
+                boolean isSale = productDAO.isSaleProduct(productId) != null;
+
+                String tag = null;
+                if (isSale) {
+                    tag = "isSale";
+                } else {
+                    if (isNew) {
+                        tag = "isNew";
+                    }
+                }
+                request.setAttribute("tag", tag);
+                request.setAttribute("netPrice", product.getPrice());
+
                 List<String> size = productDAO.getAllSizebyProductId(productId);
                 if (size != null && !size.isEmpty()) {
                     request.setAttribute("sizeList", size);
-
+                } else {
+                    request.setAttribute("message", "productId not found");
+                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                 }
 
-                System.out.println(productDAO.getImgUrlForProductID(productId));
+                ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
+                if (imgList != null && !imgList.isEmpty()) {
+                    request.setAttribute("imgList", imgList);
+                }
+
+                ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
+                if (varList != null && !varList.isEmpty()) {
+                    request.setAttribute("variantList", varList);
+                }
+
                 request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+                HttpSession session = request.getSession();
+                session.removeAttribute("addMessage");
+                session.removeAttribute("addStatus");
             }
 
         } else {
@@ -117,36 +150,11 @@ public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String color = request.getParameter("colorInput");
-        String size = request.getParameter("sizeInput");
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
-            request.getRequestDispatcher("Login").forward(request, response);
-        } else {
-            int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-            String idIn = request.getParameter("idInput");
-            ProductDAO.addToCart(idIn, color, size, userId);
-//            String nextUrl = "ProductDetail?productId=" + idIn;
-//            request.getRequestDispatcher("Home").forward(request, response);
-
-            request.setAttribute("colorList", color + ", " + size + ", " + idIn);
-            request.setAttribute("sizeList", userId);
-            request.setAttribute("message", ProductDAO.getVariantByColorAndSize(idIn, color, size));
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-
-        }
-
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
+
+/**
+ * Returns a short description of the servlet.
+ *
+ * @return a String containing servlet description
+ */

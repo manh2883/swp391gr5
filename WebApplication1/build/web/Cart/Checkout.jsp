@@ -56,89 +56,111 @@
                     <p style="color: red">${message}</p>
                     <div class="shopper-informations">
                         <div class="row">
-                            <div class="col-sm-5 clearfix">
+                            <div class="col-sm-4 clearfix" >
                                 <div class="bill-to">
                                     <p>Bill To</p>
-                                    <div class="form-one">
+                                    <!--<div class="" style="float: left; border:1px solid darkgreen">-->
 <!--                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>-->
-                                        <input type="text" name="name" placeholder="Name*" value="${user.firstName} ${user.lastName}" required>
+                                    <div class="form-floating mb-10">
+                                        <input id="nameInput" class="form-control" type="text" name="name" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Name*" value="${user.firstName} ${user.lastName}" required >
+                                        <label for="nameInput">Receiver:</label>
+                                        <div class="text-danger" id="nameError"></div>
                                     </div>
-                                    <div class="form-two">
-                                        <select name="address" id="address" class="form-control" onchange="toggleAddressInput(this)">
+
+                                    <div class="form-floating mb-10">
+                                        <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Contact*" value="${user.phoneNumber}" required>
+                                        <label for="contactInput">Contact:</label>
+                                        <div class="text-danger" id="contactError"></div>
+                                    </div>    
+
+                                    <div class="form-floating mb-10">
+                                        <select name="address" id="address" class="form-control" style="height: 45px;margin-bottom: 10px;" onchange="toggleAddressInput(this)">
                                             <option value="">-- Select Address --</option>
                                             <c:forEach var="addr" items="${userAddresses}">
                                                 <option value="${addr.addressLine}">${addr.addressLine}</option>
                                             </c:forEach>
                                             <option value="Other">Other</option>
                                         </select>
-                                        <span id="addressError" class="error-message"></span>
+
                                         <span id="newAddressError" class="error-message"></span>
-                                        <input type="text" name="newAddress" id="newAddress" class="form-control mt-2"
-                                               placeholder="Enter new address" style="display:none;" />
-                                        <input type="text" name="contact" placeholder="Contact*" value="${user.phoneNumber}" required>
+
+                                        <input   type="text" name="newAddress" id="newAddress" class="form-control mt-2"
+                                                 style="height: 45px;margin-bottom: 10px; display:none;"
+                                                 placeholder="Enter new address" />
+
+
+                                        <label for="adress">Address</label>
+                                        <div class="text-danger" id="addressError"></div>
+                                    </div>    
+                                    <div class="order-message">
+                                        <p>Shipping Order</p>
+                                        <textarea name="orderNote" id="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
+                                        <!--<label><input type="checkbox"> Shipping to bill address</label>-->
+                                        <span id="orderNoteError" class="error-message text-danger"></span>
                                     </div>
+                                    <!--</div>-->
                                 </div>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="order-message">
-                                    <p>Shipping Order</p>
-                                    <textarea name="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="8"></textarea>
-                                    <label><input type="checkbox"> Shipping to bill address</label>
-                                    <span id="orderNoteError" class="error-message"></span>
+                            <div class="col-sm-8" >
+
+                                <div class="review-payment">
+                                    <h2>Review & Payment</h2>
                                 </div>
-                            </div>                  
+
+                                <div class="table-responsive cart_info">
+                                    <table class="table">
+                                        <thead style="background-color: #FE980F;">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:set var="cartTotal" value="0" />
+                                            <c:forEach var="item" items="${checkoutItems}">
+                                                <tr>
+                                                    <td>${item.product.name}</td>
+                                                    <td>${item.quantity}</td>
+                                                    <td>${item.product.price}</td>
+                                                    <td class="subtotal">
+                                                        <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
+                                                        ${itemTotal}
+                                                        <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <tr>
+                                                <td colspan="3">Total</td>
+                                                <td><strong>${cartTotal}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row" style="height: 50px; vertical-align: middle;">
+                                    <div class="payment-options col-sm-9">
+                                        <span>
+                                            <label><input type="radio" name="paymentMethod" value="1" required> Bank Transfer</label>
+                                        </span>
+                                        <span>
+                                            <label><input type="radio" name="paymentMethod" value="2" required> COD</label>
+                                        </span>
+                                    </div>
+
+                                    <!-- Nút xác nhận đơn hàng -->
+                                    <div class="text-right col-sm-3 ">
+                                        <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
+                                    </div>
+                                </div>          
+                            </div>               
                         </div>
                     </div>
 
-                    <div class="review-payment">
-                        <h2>Review & Payment</h2>
-                    </div>
 
-                    <div class="table-responsive cart_info">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:set var="cartTotal" value="0" />
-                                <c:forEach var="item" items="${checkoutItems}">
-                                    <tr>
-                                        <td>${item.product.name}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>${item.product.price}</td>
-                                        <td class="subtotal">
-                                            <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
-                                            ${itemTotal}
-                                            <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                                <tr>
-                                    <td colspan="3">Total</td>
-                                    <td><strong>${cartTotal}</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
 
-                    <div class="payment-options">
-                        <span>
-                            <label><input type="radio" name="paymentMethod" value="1" required> Bank Transfer</label>
-                        </span>
-                        <span>
-                            <label><input type="radio" name="paymentMethod" value="1" required> QR Payment</label>
-                        </span>
-                    </div>
-
-                    <!-- Nút xác nhận đơn hàng -->
-                    <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
-                    </div>
                 </div>
             </section>
         </form>
@@ -185,64 +207,123 @@
             // Tính lại tổng khi trang tải
             document.addEventListener("DOMContentLoaded", updateCheckoutTotal);
 
-            function validateForm(event) {
-                let name = document.querySelector("input[name='name']");
-                let address = document.getElementById("address");
-                let newAddress = document.getElementById("newAddress");
-                let contact = document.querySelector("input[name='contact']");
-                let orderNote = document.querySelector("textarea[name='orderNote']");
-
-                let nameError = document.getElementById("nameError");
-                let addressError = document.getElementById("addressError");
-                let newAddressError = document.getElementById("newAddressError");
-                let contactError = document.getElementById("contactError");
-                let orderNoteError = document.getElementById("orderNoteError");
-
-                let isValid = true;
-
-                nameError.innerText = "";
-                addressError.innerText = "";
-                newAddressError.innerText = "";
-                contactError.innerText = "";
-                orderNoteError.innerText = "";
-
-                if (!name.value.trim()) {
-                    nameError.innerText = "Please enter your name.";
-                    isValid = false;
-                } else if (name.value.length > 255) {
-                    nameError.innerText = "Name cannot exceed 255 characters.";
-                    isValid = false;
+            document.addEventListener("DOMContentLoaded", function () {
+                const nameInput = document.getElementById("nameInput");
+                const contactInput = document.getElementById("contactInput");
+                const addressSelect = document.getElementById("address");
+                const newAddressInput = document.getElementById("newAddress");
+                const paymentMethods = document.querySelectorAll("input[name='paymentMethod']");
+                const confirmButton = document.querySelector("button[name='action'][value='confirmOrder']");
+                const noteInput = document.getElementById("orderNote");
+                function validateName() {
+                    const name = nameInput.value.trim();
+                    const errorElement = document.getElementById("nameError");
+                    if (name === "") {
+                        errorElement.textContent = "Name cannot be empty.";
+                        return false;
+                    } else if (name.length > 50) {
+                        errorElement.textContent = "Name cannot exceed 50 characters.";
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                let finalAddress = (address.value === "Other") ? newAddress.value : address.value;
-                if (!finalAddress.trim()) {
-                    addressError.innerText = "Please select or enter an address.";
-                    isValid = false;
-                } else if (finalAddress.length > 255) {
-                    newAddressError.innerText = "Address cannot exceed 255 characters.";
-                    isValid = false;
+                function validateContact() {
+                    const contact = contactInput.value.trim();
+                    const errorElement = document.getElementById("contactError");
+                    const phoneRegex = /^(0[2-9]{1}[0-9]{8,9})$/;
+                    if (contact === "") {
+                        errorElement.textContent = "Contact cannot be empty.";
+                        return false;
+                    } else if (contact.length > 50) {
+                        errorElement.textContent = "Contact cannot exceed 50 characters.";
+                        return false;
+                    } else if (!phoneRegex.test(contact)) {
+                        errorElement.textContent = "Invalid Vietnamese phone number format.";
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                let phoneRegex = /^(0[2-9]\d{8}|\+84\s?\d{3}\s?\d{3}\s?\d{3})$/;
-                if (!contact.value.trim()) {
-                    contactError.innerText = "Please enter your phone number.";
-                    isValid = false;
-                } else if (!phoneRegex.test(contact.value)) {
-                    contactError.innerText = "Invalid phone number format (e.g., 0123456789 or +84 123 456 789).";
-                    isValid = false;
+                function validateAddress() {
+                    const selectedValue = addressSelect.value;
+                    const errorElement = document.getElementById("addressError");
+                    let isValid = true;
+                    if (selectedValue === "") {
+                        errorElement.textContent = "Please select an address.";
+                        isValid = false;
+                    } else if (selectedValue === "Other") {
+                        const newAddress = newAddressInput.value.trim();
+                        if (newAddress === "") {
+                            errorElement.textContent = "New address cannot be empty.";
+                            isValid = false;
+                        } else if (newAddress.length > 255) {
+                            errorElement.textContent = "New address cannot exceed 255 characters.";
+                            isValid = false;
+                        } else {
+                            errorElement.textContent = "";
+                        }
+                    } else {
+                        errorElement.textContent = "";
+                    }
+                    return isValid;
                 }
 
-                if (orderNote.value.length > 255) {
-                    orderNoteError.innerText = "Order note cannot exceed 255 characters.";
-                    isValid = false;
+                function validatePaymentMethod() {
+                    const errorElement = document.getElementById("paymentMethodError") || document.createElement("div");
+                    errorElement.id = "paymentMethodError";
+                    errorElement.classList.add("text-danger");
+                    if (!document.querySelector("input[name='paymentMethod']:checked")) {
+                        errorElement.textContent = "Please select a payment method.";
+                        if (!document.getElementById("paymentMethodError")) {
+                            document.querySelector(".payment-options").appendChild(errorElement);
+                        }
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            }
+                function validateOrderNote() {
+                    const selectedValue = noteInput.value;
+                    const errorElement = document.getElementById("orderNoteError");
+                    let isValid = true;
+                    if (selectedValue.length > 255) {
+                        errorElement.textContent = "Note is too long.";
+                        isValid = false;
+                    } else {
+                        errorElement.textContent = "";
+                    }
 
-            document.querySelector("form").addEventListener("submit", validateForm);
+                    return isValid;
+                }
+
+                function validateForm() {
+                    const isNameValid = validateName();
+                    const isContactValid = validateContact();
+                    const isAddressValid = validateAddress();
+                    const isPaymentValid = validatePaymentMethod();
+                    const isNoteValid = validateOrderNote();
+                    confirmButton.disabled = !(isNameValid && isContactValid && isAddressValid && isPaymentValid && isNoteValid);
+                }
+
+                nameInput.addEventListener("input", validateForm);
+                contactInput.addEventListener("input", validateForm);
+                addressSelect.addEventListener("change", validateForm);
+                newAddressInput.addEventListener("input", validateForm);
+                noteInput.addEventListener("input", validateForm);
+                paymentMethods.forEach(method => method.addEventListener("change", validateForm));
+
+                validateForm();
+            });
+
+
+//            document.querySelector("form").addEventListener("submit", validateForm);
         </script>
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>

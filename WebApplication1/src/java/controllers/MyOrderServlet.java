@@ -69,9 +69,9 @@ public class MyOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
+
         Account account = (Account) session.getAttribute("account");
-        
+
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
@@ -83,16 +83,16 @@ public class MyOrderServlet extends HttpServlet {
                 } else {
                     //Main Process
                     String activeTabString = request.getParameter("status"); // Nhận giá trị status từ request
-                    Long statusId = null;
+                    Long statusId = new Long("1");
                     if (activeTabString != null && !activeTabString.isEmpty()) {
                         try {
                             statusId = Long.parseLong(activeTabString);
-                            
+
                         } catch (NumberFormatException e) {
                             statusId = new Long("5");
                         }
                     }
-                    
+
                     int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
                     Long abc = Long.valueOf(userId);
                     if (userId != -1) {
@@ -104,10 +104,11 @@ public class MyOrderServlet extends HttpServlet {
                         } catch (SQLException ex) {
                             Logger.getLogger(MyOrderServlet.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
-                        request.setAttribute("orders", orders);
-                        request.setAttribute("message", orders.size());
+                        String message = (String) session.getAttribute("orderMessage");
 
+                        request.setAttribute("orders", orders);
+                        request.setAttribute("message", message);
+                        
                         //side bar open
                         request.setAttribute("defaultDropdown", "saleDashboard");
                         // set title
@@ -116,11 +117,11 @@ public class MyOrderServlet extends HttpServlet {
                         request.setAttribute("breadcrumbs", "My Orders");
                         // active status tab
                         request.setAttribute("activeTab", statusId);
-                        
+
                         request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
-                        
+
                     }
-                    
+
                 }
             } else {
                 request.setAttribute("message", "role not found");
@@ -143,7 +144,7 @@ public class MyOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**

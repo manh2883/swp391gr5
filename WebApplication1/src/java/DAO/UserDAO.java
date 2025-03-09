@@ -4,7 +4,9 @@
  */
 package DAO;
 
+import static DAO.AccountDAO.getAccountByUserId;
 import DBContext.DBContext;
+import Models.Account;
 import Models.User;
 import Models.UserAddress;
 import com.sun.jdi.connect.spi.Connection;
@@ -15,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -256,18 +260,18 @@ public class UserDAO extends DBContext {
         }
         return userID;
     }
-    
+
     public List<UserAddress> getUserAddresses(int userId) {
         List<UserAddress> addressList = new ArrayList<>();
         String query = "SELECT address_id, user_id, address_content FROM user_address WHERE user_id = ?";
-        
-        try{
+
+        try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, userId);
             ResultSet resultSet = stm.executeQuery();
-            
+
             while (resultSet.next()) {
                 UserAddress address = new UserAddress();
                 address.setAddressID(resultSet.getInt("address_id"));
@@ -278,21 +282,21 @@ public class UserDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return addressList;
     }
-    
+
     public static UserAddress getUserAddressById(int addressId) {
         UserAddress address = null;
         String query = "SELECT address_id, user_id, address_content FROM user_address WHERE address_id = ?";
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, addressId);
             ResultSet resultSet = stm.executeQuery();
-            
+
             if (resultSet.next()) {
                 address = new UserAddress();
                 address.setAddressID(resultSet.getInt("address_id"));
@@ -302,10 +306,10 @@ public class UserDAO extends DBContext {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return address;
     }
-    
+
     public static boolean insertAddress(int userID, String addressContent) {
         String query = "INSERT INTO user_address (user_id, address_content) VALUES (?, ?)";
         try {
@@ -321,58 +325,113 @@ public class UserDAO extends DBContext {
 
         return false;
     }
-    
-    public List<User> getFilteredUsers(String search, String status, String sortBy, int start, int recordsPerPage) {
-        List<User> users = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT user_id, first_name, last_name, gender, email, phone_number FROM user WHERE 1=1");
 
-        if (search != null && !search.isEmpty()) {
-            query.append(" AND (CONCAT(first_name, ' ', last_name) LIKE ? OR email LIKE ? OR phone_number LIKE ?)");
+    public static List<User> getFilteredUsers(String search, String status, String sortBy, int start, int recordsPerPage) {
+        List<User> userList = new ArrayList<>();
+        List<Account> aco = new ArrayList<>();
+        StringBuilder query = new StringBuilder(
+                """
+            SELECT u.user_id, u.first_name, u.last_name, u.gender, u.email, u.phone_number, 
+                           a.username, r.role_id, r.role_name, a.status
+                    FROM user u
+                    LEFT JOIN account a ON u.user_id = a.user_id
+                    LEFT JOIN roles r ON a.role_id = r.role_id
+                    WHERE 1=1""");
+
+        List<Object> paramsList = new ArrayList<>();
+
+        // Tìm kiếm theo tên, email, số điện thoại
+        if (search != null && !search.trim().isEmpty()) {
+            query.append(" AND (CONCAT(u.first_name, ' ', u.last_name) LIKE ? OR u.email LIKE ? OR u.phone_number LIKE ?)");
+            paramsList.add("%" + search + "%");
+            paramsList.add("%" + search + "%");
+            paramsList.add("%" + search + "%");
         }
-        if (status != null && !status.isEmpty()) {
-            query.append(" AND status = ?");
+
+        // Lọc theo trạng thái
+        if (status != null) {
+            query.append(" AND a.status = ?");
+            paramsList.add(status);
         }
+
+        // Sắp xếp
         if (sortBy != null) {
-            query.append(" ORDER BY ").append(sortBy);
+            switch (sortBy) {
+                case "name" ->
+                    query.append(" ORDER BY u.first_name, u.last_name");
+                case "email" ->
+                    query.append(" ORDER BY u.email");
+                case "phone" ->
+                    query.append(" ORDER BY u.phone_number");
+                case "status" ->
+                    query.append(" ORDER BY a.status");
+
+                case "Role" ->
+                    query.append(" ORDER BY a.role_id");
+                default ->
+                    query.append(" ORDER BY u.user_id");
+            }
         } else {
-            query.append(" ORDER BY created_at DESC");
+            query.append(" ORDER BY u.user_id");
         }
-        query.append(" LIMIT ?, ?");
+
+        // Chuyển List<Object> thành Object[]
+        Object[] params = paramsList.toArray();
 
         try {
-
             DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query.toString());
 
-            int index = 1;
-            if (search != null && !search.isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                stm.setString(index++, searchPattern);
-                stm.setString(index++, searchPattern);
-                stm.setString(index++, searchPattern);
+            // Gán tham số vào PreparedStatement
+            for (int i = 0; i < params.length; i++) {
+                stm.setObject(i + 1, params[i]);
             }
-            if (status != null && !status.isEmpty()) {
-                stm.setString(index++, status);
-            }
-            stm.setInt(index++, start);
-            stm.setInt(index, recordsPerPage);
 
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 User user = new User();
+                Account ac = new Account();
                 user.setUserId(rs.getInt("user_id"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
                 user.setGender(rs.getInt("gender"));
                 user.setEmail(rs.getString("email"));
                 user.setPhoneNumber(rs.getString("phone_number"));
-                users.add(user);
+                ac.setUsername(rs.getString("username"));
+                ac.setRoleId(rs.getInt("role_id"));
+
+                userList.add(user);
+                aco.add(ac);
+
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return users;
+        return userList;
+
+    }
+
+    public static ArrayList<Object[]> getFilterViewUser(String search, String status, String sortBy, int start, int recordsPerPage) {
+//            HashMap<User, Account> ur = new HashMap<>();
+//            ur.put("User", Account);
+//            System.out.println(ur);
+                    
+
+        List<User> users = getFilteredUsers(search, status, sortBy, start, recordsPerPage);
+        ArrayList<Object[]> viewList = new ArrayList<>();
+
+        for (User user : users) {
+            Object[] row = new Object[3];
+            row[0] = user.getEmail();  // Username (ở đây thay bằng email nếu username null)
+            row[1] = user.getPhoneNumber(); // Role ID
+            row[2] = user.getFirstName() + " " + user.getLastName(); // Full name
+
+            viewList.add(row);
+        }
+
+         return viewList;
     }
 
     public int getTotalUserCount(String search, String status) {
@@ -411,10 +470,25 @@ public class UserDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public static void main(String[] args) {
-        UserDAO uDao = new UserDAO();
-        System.out.println(uDao.getUserIDByAccountID(4));
-        System.out.println(uDao.getUserById(4));
+//        UserDAO userDAO = new UserDAO();
+//        List<User> userList = userDAO.getFilteredUsers(null, null, null, 12, 1);
+////        System.out.println("\n");
+//        for (User user : userList) {
+//            System.out.println(user);
+//        }
+        for(User oj : getFilteredUsers(null, null, null, 12, 1)){
+            System.out.println("\n");
+            System.out.println(oj);
+        
+//        System.out.println(getFilteredUsers(null, null, null, 12, 1));
+//        for (Object[] oj : get(null, null, null, 12, 1)) {
+////            System.out.println("\n");
+////            System.out.println(oj[0]);
+////            System.out.println(oj[1]);
+//////            System.out.println(oj[2]);
+////            System.out.println("===========================\n");
+        }
     }
 }

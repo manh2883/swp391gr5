@@ -75,7 +75,7 @@ public class ProductDAO extends DBContext {
                 String st = joiner.toString(); // Nếu cả 2 đều null, str sẽ là chuỗi rỗng ""
                 str = st;
 
-                System.out.println("Result String: " + st);
+//                System.out.println("Result String: " + st);
             }
 
         } catch (SQLException e) {
@@ -83,6 +83,41 @@ public class ProductDAO extends DBContext {
         }
 
         return str;
+    }
+
+    public static ArrayList<Object[]> getVariantListForProductId(String productId) {
+        ArrayList<Object[]> list = new ArrayList<>();
+        Object[] obj = null; // Trả về null nếu không tìm thấy dữ liệu
+        String query = "SELECT * FROM product_variant WHERE product_id = ?";
+
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                int varId = rs.getInt("variant_id");
+                obj = new Object[5];
+                obj[0] = varId;
+                obj[1] = rs.getString("color");
+                obj[2] = rs.getString("size");
+                obj[3] = rs.getInt("stock");
+                obj[4] = getCurrentPriceForProductVariant(productId, varId);
+                list.add(obj);
+            }
+
+            con.close();
+            stm.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     public static String getImgUrlForProductID(String Id) {
@@ -657,21 +692,21 @@ public class ProductDAO extends DBContext {
                 cartdao.createCartForUserID(userId);
             }
             ca = cartdao.getCartIDByUserID(userId);
-            System.out.println("cart_id: " + ca);
+//            System.out.println("cart_id: " + ca);
 
             int variantId = getVariantByColorAndSize(productId, color, size);
-            System.out.println("product_id " + productId);
-            System.out.println("color " + color);
-            System.out.println("size " + size);
-            System.out.println("variant_id " + variantId);
+//            System.out.println("product_id " + productId);
+//            System.out.println("color " + color);
+//            System.out.println("size " + size);
+//            System.out.println("variant_id " + variantId);
 
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
-                System.out.println("cartDetailId " + cartDetailId);
+//                System.out.println("cartDetailId " + cartDetailId);
                 if (cartDetailId > 0) {
                     cartdao.editCartDetailByID(userId, cartDetailId, "increment");
                 } else {
-                    System.out.println("getStockForVariantProduct " + getStockForVariantProduct(productId, color, size));
+//                    System.out.println("getStockForVariantProduct " + getStockForVariantProduct(productId, color, size));
                     if (getStockForVariantProduct(productId, color, size) > 0) {
                         AddCartDetail(productId, variantId, ca);
                     }
@@ -845,6 +880,8 @@ public class ProductDAO extends DBContext {
         }
         if (priceList != null && !priceList.isEmpty()) {
             price = Collections.min(priceList);
+        } else {
+            price = getProductById(productId).getPrice();
         }
         return price;
     }
@@ -873,6 +910,9 @@ public class ProductDAO extends DBContext {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        if (price == 0) {
+            price = getProductById(productId).getPrice();
         }
 
         return price;
@@ -1133,18 +1173,146 @@ public class ProductDAO extends DBContext {
         }
         return -1; // Trả về -1 nếu không tìm thấy
     }
+//SELECT pi.product_id, color, back_link
+//FROM product_image pi
+//left JOIN product_variant pv ON pi.product_variant_id = pv.variant_id
+//WHERE pv.product_id = 'P001'
+//AND pv.color = 'red';
+
+    public static ArrayList<Object[]> getImageListByProduct(String productId) {
+        ArrayList<Object[]> list = new ArrayList<>();
+        Object[] obj = null; // Trả về null nếu không tìm thấy dữ liệu
+        String query = """
+                       SELECT pi.product_id, color, back_link
+                       FROM product_image pi
+                       left JOIN product_variant pv ON pi.product_variant_id = pv.variant_id
+                       WHERE pv.product_id = ?
+                       """;
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                obj = new Object[3];
+
+                obj[0] = rs.getString("product_id");
+                obj[1] = rs.getString("color");
+                String link = rs.getString("back_link");
+                if (link != null && !link.isEmpty()) {
+                    obj[2] = link;
+                } else {
+                    obj[2] = "Images/RUN.jpg";
+                }
+                list.add(obj);
+            }
+
+            con.close();
+            stm.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+
+    }
+
+    public static ArrayList<Object[]> getImageListByProduct(String productId, String color) {
+        ArrayList<Object[]> list = new ArrayList<>();
+        Object[] obj = null; // Trả về null nếu không tìm thấy dữ liệu
+        String query = """
+                       SELECT pi.product_id, color, back_link
+                       FROM product_image pi
+                       left JOIN product_variant pv ON pi.product_variant_id = pv.variant_id
+                       WHERE pv.product_id = ?
+                       And color = ? 
+                       """;
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+            stm.setString(2, color);
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                obj = new Object[3];
+
+                obj[0] = rs.getString("product_id");
+                obj[1] = rs.getString("color");
+                obj[2] = rs.getString("back_link");
+
+                list.add(obj);
+            }
+
+            con.close();
+            stm.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public static boolean getIsVisibleForProductId(String productId) {
+        boolean status = false;
+
+        String query = """
+                       select * from product join product_category on product.category_id = product_category.category_id
+                       where product.is_visible = 1 and product_category.is_visible = 1 and product_id = ?
+                       """;
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+
+            stm.setString(1, productId);
+
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                status = true;
+            }
+
+            con.close();
+            stm.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return status;
+
+    }
 
     public static void main(String[] args) throws SQLException {
-//        System.out.println(getStockByProductAndVariant("P003", 5));
-//        System.out.println(getVariantInformation("P002", 3));
 
-        System.out.println(getStockByProductAndVariant("P001", 1));
-        System.out.println("giam 100");
-        decreaseStockAfterCreateOrder("P001", 1, 100);
-        System.out.println(getStockByProductAndVariant("P001", 1));
-        System.out.println("tang 30");
-        increaseStockAfterCancelOrder("P001", 1, 30);
-        System.out.println(getStockByProductAndVariant("P001", 1));
+//        for (Product p : getAllProducts()) {
+//            System.out.println(p.getName());
+//            ArrayList<Object[]> imgList = getImageListByProduct(p.getProductId());
+//            for (Object[] obj : getVariantListForProductId(p.getProductId())) {
+//                System.out.println("-------------");
+//                for (int i = 0; i <= 4; i++) {
+//                    System.out.println(obj[i] + ", ");
+//                }
+//            }
+//            System.out.println("=========================================\n");
+//
+//        }
+
+        for(Product p : getAllProducts()){
+            if(getIsVisibleForProductId(p.getProductId())){
+                System.out.println(p);
+            }
+        }
 
     }
 }

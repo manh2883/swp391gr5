@@ -36,8 +36,9 @@
                 <th>Full Name</th>
                 <th>Gender</th>
                 <th>Email</th>
+                <th>Username</th>
                 <th>Phone</th>
-                <th>Actions</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
@@ -47,6 +48,7 @@
                     <td>${user.firstName} ${user.lastName}</td>
                     <td>${user.gender == 1 ? "Male" : "Female"}</td>
                     <td>${user.email}</td>
+                    <td>${user.roleId}</td>
                     <td>${user.phoneNumber}</td>
                     <td>
                         <a href="UserDetail.jsp?userId=${user.userId}" class="btn btn-info">View</a>

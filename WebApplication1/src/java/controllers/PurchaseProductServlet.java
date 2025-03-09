@@ -9,21 +9,25 @@ import DAO.ProductDAO;
 import DAO.SettingDAO;
 import DAO.UserDAO;
 import Models.Account;
+import Models.CartDetail;
+import Models.Product;
 import Models.User;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.http.HttpSession;
+import Models.UserAddress;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Acer
  */
-public class AddToCartServlet extends HttpServlet {
+public class PurchaseProductServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +46,10 @@ public class AddToCartServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddToCartServlet</title>");
+            out.println("<title>Servlet PurchaseProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddToCartServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet PurchaseProductServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -77,6 +81,8 @@ public class AddToCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         // Lấy tham số từ request
         String color = request.getParameter("colorInput") != null ? request.getParameter("colorInput").trim() : "";
@@ -90,8 +96,6 @@ public class AddToCartServlet extends HttpServlet {
         }
         String currentLink = "ProductDetail?productId=" + idIn;
         // Kiểm tra đăng nhập
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
 
         if (account != null) {
 
@@ -99,51 +103,41 @@ public class AddToCartServlet extends HttpServlet {
             int accountId = account.getAccountId();
             int userId = UserDAO.getUserIDByAccountID(accountId);
             if (userId > 0) {
+                List<CartDetail> checkoutItems = new ArrayList<>();
                 // Kiểm tra color & size trước khi thêm vào giỏ hàng
-                String addStatus = null;
-                String addMessage = null;
+                List<CartDetail> cartItems = new ArrayList<>();
                 if (!color.isEmpty() || !size.isEmpty()) {
-                    int quanBef = CartDAO.getCartItemQuantityForUserId(userId);
-                    int itemNumber = CartDAO.getCartItemNumberForUserId(userId);
-                    
-                    int maxItemNumber = SettingDAO.getMaxQuantityItemInCart();
+                    int variantId = ProductDAO.getVariantByColorAndSize(idIn, color, size);
+                    if (variantId > 0) {
+                        int stock = ProductDAO.getStockByProductAndVariant(idIn, variantId);
+                        if (stock > 0) {
+                            Product pro = ProductDAO.getProductById(idIn);
+                            pro.setPrice(ProductDAO.getCurrentPriceForProductVariant(idIn, variantId));
+                            CartDetail cd = new CartDetail(-1, -1, idIn, variantId, 1, null, pro);
+                            checkoutItems.add(cd);
 
-                    if (itemNumber < maxItemNumber) {
-                        ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
-                        int quanAf = CartDAO.getCartItemQuantityForUserId(userId);
-                        addStatus = (quanAf > quanBef) ? "true" : "false";
-                    } else {
-                        addStatus = "out";
+                        }
                     }
+
+                    // Lấy danh sách địa chỉ của user
+                    UserDAO userDAO = new UserDAO();
+                    List<UserAddress> userAddresses = userDAO.getUserAddresses(userId);
+                    User user = UserDAO.getUserById(userId);
+
+                    session.setAttribute("checkoutItems", checkoutItems);
+                    session.setAttribute("user", user);
+                    session.setAttribute("userAddresses", userAddresses);
+
+                    request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 } else {
-                    addStatus = "false";
+                    session.setAttribute("prevLink", currentLink);
+                    response.sendRedirect("Login");
                 }
-                switch (addStatus) {
-                    case "true":
-                        addMessage = "Add to cart successfully!!";
-                        break;
-                    case "false":
-                        addMessage = "Add to cart fail!!";
-                        break;
-
-                    case "out":
-                        addMessage = "Your Cart is full. Please remove some items!!";
-                        break;
-                    default:
-                        addMessage = null;
-                }
-
-                session.setAttribute("addStatus", addStatus);
-                session.setAttribute("addMessage", addMessage);
-                response.sendRedirect("ProductDetail?productId=" + idIn);
             } else {
                 session.setAttribute("prevLink", currentLink);
                 response.sendRedirect("Login");
-            }
-        } else {
-            session.setAttribute("prevLink", currentLink);
-            response.sendRedirect("Login");
 
+            }
         }
     }
 
@@ -156,9 +150,5 @@ public class AddToCartServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    public void contextDestroyed(ServletContextEvent sce) {
-        com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkedShutdown();
-    }
 
 }

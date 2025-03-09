@@ -74,6 +74,7 @@ public class CheckoutServlet extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         if (account == null) {
+            session.setAttribute("prevLink", "ViewCart");
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
@@ -133,24 +134,26 @@ public class CheckoutServlet extends HttpServlet {
         List<OrderDetail> orderDetails = new ArrayList<>();
         int totalAmount = 0;
 
-        for (CartDetail item : cartDetails) {
-            String productId = item.getProductID();
-            int variantId = (int) item.getProductVariantID();
-            int quantity = item.getQuantity();
-            ProductDAO productDAO = new ProductDAO();
-            int stock = productDAO.getStockByProductAndVariant(productId, variantId);
-            // Lấy giá từ bảng product_price
-            double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
-            if (quantity > stock) {
-                request.setAttribute("message", "Không còn sản phẩm!");
-                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
-                return;
+        if (cartDetails != null && !cartDetails.isEmpty()) {
+            for (CartDetail item : cartDetails) {
+                String productId = item.getProductID();
+                int variantId = (int) item.getProductVariantID();
+                int quantity = item.getQuantity();
+                ProductDAO productDAO = new ProductDAO();
+                int stock = productDAO.getStockByProductAndVariant(productId, variantId);
+                // Lấy giá từ bảng product_price
+                double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+                if (quantity > stock) {
+                    request.setAttribute("message", "Không còn sản phẩm!");
+                    request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+                    return;
+                }
+                //  Thêm vào danh sách OrderDetail
+                OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
+                orderDetails.add(orderDetail);
+                // Tính tổng tiền
+                totalAmount += (int) (price * quantity);
             }
-            //  Thêm vào danh sách OrderDetail
-            OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
-            orderDetails.add(orderDetail);
-            // Tính tổng tiền
-            totalAmount += (int) (price * quantity);
         }
         // 5. Tạo Order
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -167,11 +170,15 @@ public class CheckoutServlet extends HttpServlet {
         if (orderId > 0) {
             session.removeAttribute("checkoutItems"); // Xóa giỏ hàng sau khi đặt hàng thành công
 //            response.sendRedirect(request.getContextPath() + "/Home/test.jsp"); // Chuyển đến My Order
-            request.setAttribute("message", "Đặt hàng thành công: "+orderId);
-            for(OrderDetail ode : orderDetails){
-                CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+            session.setAttribute("orderMessage", "Đặt hàng thành công: " + orderId);
+            for (OrderDetail ode : orderDetails) {
+                if (ode.getOrderdetailId() != -1) {
+                    CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+                }
+
             }
-            request.getRequestDispatcher("/Home/test.jsp").forward(request, response);
+//            request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
+            response.sendRedirect("MyOrder");
         } else {
             request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
             request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);

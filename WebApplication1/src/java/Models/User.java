@@ -24,25 +24,28 @@ public class User {
     private String lastName;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String username;
+    private int roleId;
 
     public User() {
     }
 
-    public User(int userId, String email, String phoneNumber, String avtLink,
-            Date doB, int gender, String firstName, String lastName,
-            Timestamp createdAt, Timestamp updatedAt) {
+    public User(int userId, String email, String phoneNumber, String avtLink, Date doB, int gender, String firstName, String lastName, Timestamp createdAt, Timestamp updatedAt, String username, int roleId) {
         this.userId = userId;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.avtLink = avtLink;
         this.doB = doB;
-
         this.gender = gender;
         this.firstName = firstName;
         this.lastName = lastName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.username = username;
+        this.roleId = roleId;
     }
+
+    
 
     public User(String email, String phoneNumber, String avtLink, Date doB,
             int gender, String firstName, String lastName) {
@@ -139,9 +142,29 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+    
+    
+
     @Override
     public String toString() {
         return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB  + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
     }
+
+    
 
 }

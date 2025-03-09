@@ -104,6 +104,7 @@ public class OrderDAO {
                 order.setStatusId(rs.getInt("status_id"));
                 order.setPaymentmethod(rs.getInt("payment_method"));
                 order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setCompletedAt(rs.getTimestamp("completed_at"));
                 order.setAddress(rs.getString("address"));
                 orders.add(order);
             }
@@ -132,6 +133,7 @@ public class OrderDAO {
                 order.setStatusId(rs.getInt("status_id"));
                 order.setPaymentmethod(rs.getInt("payment_method"));
                 order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setCompletedAt(rs.getTimestamp("completed_at"));
                 order.setAddress(rs.getString("address"));
 
             }
@@ -196,8 +198,7 @@ public class OrderDAO {
         return view;
 
     }
-    
-    
+
     // Huy don, ship, tra hang, da giao hang
     public boolean updateOrderStatus(int role, int oldStatus, int newStatus, long orderId) throws SQLException {
         boolean success = false;
@@ -220,6 +221,7 @@ public class OrderDAO {
 
         return success;
     }
+
     // kiem tra quyen
     private boolean isValidStatusUpdate(int role, int oldStatus, int newStatus) {
         if (role == 2) { // Customer
@@ -287,7 +289,9 @@ public class OrderDAO {
     }
 
     public static List<Order> filterOrder(Long userId, Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
-            Long paymentMethod, String address, String userReceive, String contact, Timestamp startDate, Timestamp endDate) throws SQLException {
+            Long paymentMethod, String address, String userReceive, String contact,
+            Timestamp createdStartDate, Timestamp createdEndDate,
+            Timestamp completedStartDate, Timestamp completedEndDate) throws SQLException {
         List<Order> orderList = new ArrayList<>();
         String query = """
     SELECT o.user_id ,o.order_id, o.total_amount, o.status_id, o.created_at, o.payment_Method, o.address, o.user_receive, o.contact, o.note
@@ -325,13 +329,23 @@ public class OrderDAO {
         }
 
         // Search by creation date range
-        if (startDate != null) {
+        if (createdStartDate != null) {
             query += " AND o.created_at >= ?";
-            params.add(startDate);
+            params.add(createdStartDate);
         }
-        if (endDate != null) {
+        if (createdEndDate != null) {
             query += " AND o.created_at <= ?";
-            params.add(endDate);
+            params.add(createdEndDate);
+        }
+
+        // Search by creation date range
+        if (completedStartDate != null) {
+            query += " AND o.completed_at >= ?";
+            params.add(completedStartDate);
+        }
+        if (completedEndDate != null) {
+            query += " AND o.completed_at <= ?";
+            params.add(completedEndDate);
         }
 
         if (paymentMethod != null) {
@@ -353,10 +367,9 @@ public class OrderDAO {
             query += " AND o.contact = ?";
             params.add(contact);
         }
-        
+
         // Sap xep
-         query += " Order by created_at desc";
-        
+        query += " Order by created_at desc";
 
         DBContext db = new DBContext();
         java.sql.Connection con = db.getConnection();
@@ -532,14 +545,11 @@ public class OrderDAO {
 //            System.out.println(oj[1]);
 //            System.out.println(oj[2]);
 //        }
-        for (Object[] oj : getOrderDetailViewByOrderId(1)) {
-            System.out.println("\n");
-            System.out.println(oj[0]);
-            System.out.println(oj[1]);
-            System.out.println(oj[2]);
-            System.out.println("===========================\n");
-        }
 
+        List<Order> list = filterOrder(Long.valueOf("1"), null, null, null, null, null, null, null, null, null, null, null, null);
+        for (Order o : list) {
+            System.out.println(o);
+        }
     }
 
 }

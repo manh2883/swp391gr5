@@ -100,7 +100,7 @@ public class MyOrderServlet extends HttpServlet {
                         List<Order> orders = null;
                         try {
                             orders = OrderDAO.filterOrder(abc, null, null, null,
-                                    statusId, null, null, null, null, null, null);
+                                    statusId, null, null, null, null, null, null, null, null);
                         } catch (SQLException ex) {
                             Logger.getLogger(MyOrderServlet.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -108,7 +108,7 @@ public class MyOrderServlet extends HttpServlet {
 
                         request.setAttribute("orders", orders);
                         request.setAttribute("message", message);
-                        
+
                         //side bar open
                         request.setAttribute("defaultDropdown", "saleDashboard");
                         // set title

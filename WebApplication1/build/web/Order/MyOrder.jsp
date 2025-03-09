@@ -63,6 +63,7 @@
                     </div>
 
                     <div class="col-sm-9">
+                        <p>${message}</p>
                         <div class="category-tab shop-details-tab">
                             <div class="col-sm-12">
                                 <ul class="nav nav-tabs">

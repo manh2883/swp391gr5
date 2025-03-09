@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.CartDAO;
+import DAO.ProductDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
@@ -112,7 +113,7 @@ public class ViewCartServlet extends HttpServlet {
                     cartDAO.deleteCartDetailByID(userId, cartDetailID);
                 }
                 // Cập nhật lại giỏ hàng trong session
-                List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId,1);
+                List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId, 1);
                 session.setAttribute("cartDetails", cartDetails);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -122,8 +123,8 @@ public class ViewCartServlet extends HttpServlet {
         }
 
         // Lấy danh sách giỏ hàng
-        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId,1);
-        List<Object[]> cartDetailList = cartDAO.getAllCartDetailViewForUser(userId,1);
+        List<CartDetail> cartDetails = cartDAO.getAllCartDetailByUserID(userId, 1);
+        List<Object[]> cartDetailList = cartDAO.getAllCartDetailViewForUser(userId, 1);
 
         // Gửi danh sách cartDetails lên trang JSP
         if (cartDetails != null && !cartDetails.isEmpty()) {
@@ -176,8 +177,14 @@ public class ViewCartServlet extends HttpServlet {
                 try {
                     int cartDetailID = Integer.parseInt(id.trim());
                     CartDetail cartDetail = cDAO.getCartDetailByID(cartDetailID); // Lấy 1 lần duy nhất
-                    if (cartDetail != null) {
+                    if (cartDetail != null && cartDetail.getProduct() != null) {
+                        int variantId = cartDetail.getProductVariantID();
+                        String productId = cartDetail.getProductID();
+                        //  System.out.println(cartDetail.getProduct().getPrice());
+                        cartDetail.getProduct().setPrice(ProductDAO.getCurrentPriceForProductVariant(productId, variantId));
+                        //  System.out.println(cartDetail.getProduct().getPrice());
                         checkoutItems.add(cartDetail);
+
                     }
                 } catch (NumberFormatException e) {
                     e.printStackTrace(); // Debug lỗi nếu có ID không hợp lệ

@@ -96,9 +96,9 @@
                                     </div>    
                                     <div class="order-message">
                                         <p>Shipping Order</p>
-                                        <textarea name="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
+                                        <textarea name="orderNote" id="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
                                         <!--<label><input type="checkbox"> Shipping to bill address</label>-->
-                                        <span id="orderNoteError" class="error-message"></span>
+                                        <span id="orderNoteError" class="error-message text-danger"></span>
                                     </div>
                                     <!--</div>-->
                                 </div>
@@ -146,7 +146,7 @@
                                             <label><input type="radio" name="paymentMethod" value="1" required> Bank Transfer</label>
                                         </span>
                                         <span>
-                                            <label><input type="radio" name="paymentMethod" value="0" required> COD</label>
+                                            <label><input type="radio" name="paymentMethod" value="2" required> COD</label>
                                         </span>
                                     </div>
 
@@ -207,64 +207,123 @@
             // Tính lại tổng khi trang tải
             document.addEventListener("DOMContentLoaded", updateCheckoutTotal);
 
-            function validateForm(event) {
-                let name = document.querySelector("input[name='name']");
-                let address = document.getElementById("address");
-                let newAddress = document.getElementById("newAddress");
-                let contact = document.querySelector("input[name='contact']");
-                let orderNote = document.querySelector("textarea[name='orderNote']");
-
-                let nameError = document.getElementById("nameError");
-                let addressError = document.getElementById("addressError");
-                let newAddressError = document.getElementById("newAddressError");
-                let contactError = document.getElementById("contactError");
-                let orderNoteError = document.getElementById("orderNoteError");
-
-                let isValid = true;
-
-                nameError.innerText = "";
-                addressError.innerText = "";
-                newAddressError.innerText = "";
-                contactError.innerText = "";
-                orderNoteError.innerText = "";
-
-                if (!name.value.trim()) {
-                    nameError.innerText = "Please enter your name.";
-                    isValid = false;
-                } else if (name.value.length > 255) {
-                    nameError.innerText = "Name cannot exceed 255 characters.";
-                    isValid = false;
+            document.addEventListener("DOMContentLoaded", function () {
+                const nameInput = document.getElementById("nameInput");
+                const contactInput = document.getElementById("contactInput");
+                const addressSelect = document.getElementById("address");
+                const newAddressInput = document.getElementById("newAddress");
+                const paymentMethods = document.querySelectorAll("input[name='paymentMethod']");
+                const confirmButton = document.querySelector("button[name='action'][value='confirmOrder']");
+                const noteInput = document.getElementById("orderNote");
+                function validateName() {
+                    const name = nameInput.value.trim();
+                    const errorElement = document.getElementById("nameError");
+                    if (name === "") {
+                        errorElement.textContent = "Name cannot be empty.";
+                        return false;
+                    } else if (name.length > 50) {
+                        errorElement.textContent = "Name cannot exceed 50 characters.";
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                let finalAddress = (address.value === "Other") ? newAddress.value : address.value;
-                if (!finalAddress.trim()) {
-                    addressError.innerText = "Please select or enter an address.";
-                    isValid = false;
-                } else if (finalAddress.length > 255) {
-                    newAddressError.innerText = "Address cannot exceed 255 characters.";
-                    isValid = false;
+                function validateContact() {
+                    const contact = contactInput.value.trim();
+                    const errorElement = document.getElementById("contactError");
+                    const phoneRegex = /^(0[2-9]{1}[0-9]{8,9})$/;
+                    if (contact === "") {
+                        errorElement.textContent = "Contact cannot be empty.";
+                        return false;
+                    } else if (contact.length > 50) {
+                        errorElement.textContent = "Contact cannot exceed 50 characters.";
+                        return false;
+                    } else if (!phoneRegex.test(contact)) {
+                        errorElement.textContent = "Invalid Vietnamese phone number format.";
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                let phoneRegex = /^(0[2-9]\d{8}|\+84\s?\d{3}\s?\d{3}\s?\d{3})$/;
-                if (!contact.value.trim()) {
-                    contactError.innerText = "Please enter your phone number.";
-                    isValid = false;
-                } else if (!phoneRegex.test(contact.value)) {
-                    contactError.innerText = "Invalid phone number format (e.g., 0123456789 or +84 123 456 789).";
-                    isValid = false;
+                function validateAddress() {
+                    const selectedValue = addressSelect.value;
+                    const errorElement = document.getElementById("addressError");
+                    let isValid = true;
+                    if (selectedValue === "") {
+                        errorElement.textContent = "Please select an address.";
+                        isValid = false;
+                    } else if (selectedValue === "Other") {
+                        const newAddress = newAddressInput.value.trim();
+                        if (newAddress === "") {
+                            errorElement.textContent = "New address cannot be empty.";
+                            isValid = false;
+                        } else if (newAddress.length > 255) {
+                            errorElement.textContent = "New address cannot exceed 255 characters.";
+                            isValid = false;
+                        } else {
+                            errorElement.textContent = "";
+                        }
+                    } else {
+                        errorElement.textContent = "";
+                    }
+                    return isValid;
                 }
 
-                if (orderNote.value.length > 255) {
-                    orderNoteError.innerText = "Order note cannot exceed 255 characters.";
-                    isValid = false;
+                function validatePaymentMethod() {
+                    const errorElement = document.getElementById("paymentMethodError") || document.createElement("div");
+                    errorElement.id = "paymentMethodError";
+                    errorElement.classList.add("text-danger");
+                    if (!document.querySelector("input[name='paymentMethod']:checked")) {
+                        errorElement.textContent = "Please select a payment method.";
+                        if (!document.getElementById("paymentMethodError")) {
+                            document.querySelector(".payment-options").appendChild(errorElement);
+                        }
+                        return false;
+                    } else {
+                        errorElement.textContent = "";
+                        return true;
+                    }
                 }
 
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            }
+                function validateOrderNote() {
+                    const selectedValue = noteInput.value;
+                    const errorElement = document.getElementById("orderNoteError");
+                    let isValid = true;
+                    if (selectedValue.length > 255) {
+                        errorElement.textContent = "Note is too long.";
+                        isValid = false;
+                    } else {
+                        errorElement.textContent = "";
+                    }
 
-            document.querySelector("form").addEventListener("submit", validateForm);
+                    return isValid;
+                }
+
+                function validateForm() {
+                    const isNameValid = validateName();
+                    const isContactValid = validateContact();
+                    const isAddressValid = validateAddress();
+                    const isPaymentValid = validatePaymentMethod();
+                    const isNoteValid = validateOrderNote();
+                    confirmButton.disabled = !(isNameValid && isContactValid && isAddressValid && isPaymentValid && isNoteValid);
+                }
+
+                nameInput.addEventListener("input", validateForm);
+                contactInput.addEventListener("input", validateForm);
+                addressSelect.addEventListener("change", validateForm);
+                newAddressInput.addEventListener("input", validateForm);
+                noteInput.addEventListener("input", validateForm);
+                paymentMethods.forEach(method => method.addEventListener("change", validateForm));
+
+                validateForm();
+            });
+
+
+//            document.querySelector("form").addEventListener("submit", validateForm);
         </script>
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>

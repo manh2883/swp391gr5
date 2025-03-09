@@ -4,21 +4,17 @@
  */
 package DAO;
 
-import static DAO.AccountDAO.getAccountByUserId;
 import DBContext.DBContext;
 import Models.Account;
 import Models.User;
 import Models.UserAddress;
-import com.sun.jdi.connect.spi.Connection;
-import java.sql.Date;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -417,7 +413,6 @@ public class UserDAO extends DBContext {
 //            HashMap<User, Account> ur = new HashMap<>();
 //            ur.put("User", Account);
 //            System.out.println(ur);
-                    
 
         List<User> users = getFilteredUsers(search, status, sortBy, start, recordsPerPage);
         ArrayList<Object[]> viewList = new ArrayList<>();
@@ -431,7 +426,7 @@ public class UserDAO extends DBContext {
             viewList.add(row);
         }
 
-         return viewList;
+        return viewList;
     }
 
     public int getTotalUserCount(String search, String status) {
@@ -471,6 +466,39 @@ public class UserDAO extends DBContext {
         return 0;
     }
 
+    public static List<Object[]> getCustomerList() {
+        List<Object[]> customers = new ArrayList<>();
+        String query = "SELECT u.user_id, "
+                + "CONCAT(u.first_name, ' ', u.last_name) AS full_name, "
+                + "a.username, "
+                + "COALESCE(COUNT(o.order_id), 0) AS order_count, "
+                + "COALESCE(SUM(o.total_amount), 0) AS total_spent "
+                + "FROM user u "
+                + "JOIN account a ON u.user_id = a.user_id "
+                + "LEFT JOIN orders o ON u.user_id = o.user_id "
+                + "WHERE a.role_id = 2 "
+                + // Chỉ lấy customer (role_id = 2)
+                "GROUP BY u.user_id, full_name, a.username";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query.toString());
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                customers.add(new Object[]{
+                    rs.getInt("user_id"),
+                    rs.getString("full_name"),
+                    rs.getString("username"),
+                    rs.getInt("order_count"),
+                    rs.getDouble("total_spent")
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
     public static void main(String[] args) {
 //        UserDAO userDAO = new UserDAO();
 //        List<User> userList = userDAO.getFilteredUsers(null, null, null, 12, 1);
@@ -478,10 +506,10 @@ public class UserDAO extends DBContext {
 //        for (User user : userList) {
 //            System.out.println(user);
 //        }
-        for(User oj : getFilteredUsers(null, null, null, 12, 1)){
-            System.out.println("\n");
-            System.out.println(oj);
-        
+//        for (User oj : getFilteredUsers(null, null, null, 12, 1)) {
+//            System.out.println("\n");
+//            System.out.println(oj);
+
 //        System.out.println(getFilteredUsers(null, null, null, 12, 1));
 //        for (Object[] oj : get(null, null, null, 12, 1)) {
 ////            System.out.println("\n");
@@ -489,6 +517,20 @@ public class UserDAO extends DBContext {
 ////            System.out.println(oj[1]);
 //////            System.out.println(oj[2]);
 ////            System.out.println("===========================\n");
+//        }
+        UserDAO userDAO = new UserDAO();
+        List<Object[]> customers = userDAO.getCustomerList();
+
+        if (customers.isEmpty()) {
+            System.out.println("❌ Không có khách hàng nào!");
+        } else {
+            System.out.println("✅ Danh sách khách hàng:");
+            System.out.printf("%-5s %-20s %-15s %-10s %-15s %n",
+                    "ID", "Full Name", "Username", "Orders", "Total Spend");
+            for (Object[] customer : customers) {
+                System.out.printf("%-5d %-20s %-15s %-10d %-15.2f %n",
+                        customer[0], customer[1], customer[2], customer[3], customer[4]);
+            }
         }
     }
 }

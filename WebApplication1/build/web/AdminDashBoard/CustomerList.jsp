@@ -80,7 +80,7 @@
             <c:import url="/Template/header2.jsp" />
         </header>
 
-        <section id="cart_items">
+        <section id="customer_list">
             <div class="container">
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
@@ -95,71 +95,33 @@
 
                     <div class="col-sm-9">
                         <div class="table-responsive cart_info ">
-                            <!-- Form cho các hành động cập nhật giỏ hàng -->
-                            <form action="ViewCart" method="get" id="cartForm">
-                                <input type="hidden" name="cartDetailID" id="cartDetailID">
-                                <input type="hidden" name="action" id="action">
-                            </form>
-
-                            <!-- Form cho hành động Checkout -->
-                            <form action="Checkout" method="post" id="checkoutForm">
-                                <input type="hidden" name="selectedItems" id="selectedItems">
-                            </form>
-
                             <table class="table table-condensed">
                                 <thead>
                                     <tr class="cart_menu">
-
-                                        <td class="image">Customer</td>
-                                        <!--image + name + contact-->
-                                        <td class="description"></td>
-                                        <td class="price">User Name</td>
-                                        <td class="quantity">Status</td>
+                                        <td class="name">Customer</td>
+                                        <td class="userame">User Name</td>
                                         <td class="quantity">Orders</td>
                                         <td class="quantity">Total Spending</td>
                                         <td class="total">Ave.Amount/Order</td>
-
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:choose>
-                                        <c:when test="${not empty cartDetails}">
-                                            <c:set var="totalPrice" value="0" scope="page" />
-                                            <c:forEach var="cart" items="${cartDetails}">
-                                                <tr>
-                                                    <td class="cart_product">
-                                                        <!--Image-->
-                                                        <a href=""><img src="${pageContext.request.contextPath}/${cart.product.imgUrl}" alt=""></a>
-                                                    </td>
-                                                    <td class="cart_description">
-                                                        <h4><a href="">Product ${cart.productID}</a></h4>
-                                                        <p>Email: ${cart.cartDetailID}</p>
-                                                        <p>Phone: ${cart.productVariantID}</p>
-                                                    </td>
-                                                    <td class="cart_price">
-                                                        <p>${cart.product.price}</p>
-                                                    </td>
-                                                    <td class="cart_quantity">
-                                                        <p>${cart.product.price}</p>
-                                                    </td>
-
-
-                                                    <td class="cart_price">
-                                                        <button type="button" class="cart_quantity_delete btn" 
-                                                                onclick="submitCartForm(${cart.cartDetailID}, 'delete')">
-                                                            <i class="fa fa-times"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-
-                                            </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <tr>
-                                                <td colspan="7" style="text-align: center;">No items in your cart.</td>
-                                            </tr>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <c:forEach var="customer" items="${customers}">
+                                        <tr>
+                                            <td>${customer[1]}</td> <!-- full_name -->
+                                            <td>${customer[2]}</td> <!-- username -->
+                                            <td>${customer[3]}</td> <!-- order_count -->
+                                            <td>${customer[4]}</td> <!-- total_spent -->
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${customer[3] > 0}">
+                                                        ${customer[4] / customer[3]}
+                                                    </c:when>
+                                                    <c:otherwise>0</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
@@ -180,7 +142,4 @@
         </section> <!--/#cart_items-->
         <c:import url="/Template/footer1.jsp" />
     </body>
-    <script>
-
-    </script>
 </html>

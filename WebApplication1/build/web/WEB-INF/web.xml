@@ -116,6 +116,10 @@
         <servlet-name>PurchaseProductServlet</servlet-name>
         <servlet-class>controllers.PurchaseProductServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CustomerList</servlet-name>
+        <servlet-class>controllers.CustomerList</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -231,6 +235,10 @@
     <servlet-mapping>
         <servlet-name>PurchaseProductServlet</servlet-name>
         <url-pattern>/PurchaseProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerList</servlet-name>
+        <url-pattern>/customerlist</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>

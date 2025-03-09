@@ -63,7 +63,7 @@
                 <div class="panel-body">
                     <ul>
                         <li><a href="#">User List</a></li>
-                        <li><a href="#">Customer List</a></li>
+                        <li><a href="${pageContext.request.contextPath}/customerlist">Customer List</a></li>
                         <li><a href="#">Create New User</a></li>
                     </ul>
                 </div>

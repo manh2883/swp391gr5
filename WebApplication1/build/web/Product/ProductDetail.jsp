@@ -174,7 +174,7 @@
                                         </c:choose>
                                     </h2>
 
-                                    <form action="AddToCart" method="post">
+                                    <form action="AddToCart" method="post" id="productForm">
                                         <table>
                                             <tbody style="align-items: center;">
                                             <input readonly style="visibility: hidden" value="${product.productId}" name="idInput" id="idInput">
@@ -221,7 +221,7 @@
                                                 <span id="stockMessage" style="font-weight: bold; color: red;">Out of stock</span>
                                             </p>
                                         </h4>
-                                        
+
                                         <c:choose>
                                             <c:when test="${not empty addMessage}">
                                                 <h5 style="padding-left: 50px">
@@ -234,7 +234,7 @@
                                             <button type="submit" class="btn btn-fefault cart">
                                                 <i class="fa fa-shopping-cart"></i> Add to cart
                                             </button>
-                                            <button type="button" class="btn btn-fefault cart">
+                                            <button type="button" class="btn btn-fefault cart " onclick="submitPurchase()">
                                                 <i class="fa fa-shopping-cart"></i> Purchase
                                             </button>
                                         </span>
@@ -256,6 +256,13 @@
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jquery.prettyPhoto.js"></script>
         <script src="js/main.js"></script>
+        <script>
+            function submitPurchase() {
+                var form = document.getElementById("productForm");
+                form.action = "PurchaseProduct"; // Đổi action
+                form.submit(); // Submit form
+            }
+        </script>
         <script>
 
             document.addEventListener("DOMContentLoaded", function () {

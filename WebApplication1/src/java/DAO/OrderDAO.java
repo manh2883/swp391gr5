@@ -353,6 +353,10 @@ public class OrderDAO {
             query += " AND o.contact = ?";
             params.add(contact);
         }
+        
+        // Sap xep
+         query += " Order by created_at desc";
+        
 
         DBContext db = new DBContext();
         java.sql.Connection con = db.getConnection();

@@ -172,10 +172,13 @@ public class CheckoutServlet extends HttpServlet {
 //            response.sendRedirect(request.getContextPath() + "/Home/test.jsp"); // Chuyển đến My Order
             session.setAttribute("orderMessage", "Đặt hàng thành công: " + orderId);
             for (OrderDetail ode : orderDetails) {
-                CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+                if (ode.getOrderdetailId() != -1) {
+                    CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
+                }
+
             }
 //            request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
-              response.sendRedirect("MyOrder");
+            response.sendRedirect("MyOrder");
         } else {
             request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
             request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);

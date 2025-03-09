@@ -67,12 +67,27 @@
                         <div class="category-tab shop-details-tab">
                             <div class="col-sm-12">
                                 <ul class="nav nav-tabs">
-                                    <li class="${activeTab == '1' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/MyOrder?status=1" data-toggle="tab">Pending</a></li>
-                                    <li class="${activeTab == '6' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/MyOrder?status=6" data-toggle="tab">Accepted</a></li>
-                                    <li class="${activeTab == '2' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/MyOrder?status=2" data-toggle="tab">Shipping</a></li>
-                                    <li class="${activeTab == '3' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/MyOrder?status=3" data-toggle="tab">Delivered</a></li>
-                                    <li class="${activeTab == '7' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/MyOrder?status=7" data-toggle="tab">Canceled</a></li>
+                                    <li class="${activeTab == '1' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=1">Pending</a>
+                                    </li>
+
+                                    <li class="${activeTab == '6' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=6">Accepted</a>
+                                    </li>
+
+                                    <li class="${activeTab == '2' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=2">Shipping</a>
+                                    </li>
+
+                                    <li class="${activeTab == '3' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Delivered</a>
+                                    </li>
+
+                                    <li class="${activeTab == '7' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=7">Canceled</a>
+                                    </li>
                                 </ul>
+
                             </div>
                             <div class="table-responsive cart_info">
                                 <table class="table table-condensed">
@@ -82,10 +97,19 @@
                                             <td class="price">Status</td>
                                             <td class="price">Amount</td>
                                             <td class="total">Created At</td>
+                                            <td class="total">Completed At</td>
                                             <td class="total"></td>   
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <c:set var="statusMap" value="${{
+                                                                        '1': 'Pending',
+                                                                        '6': 'Accepted',
+                                                                        '2': 'Shipping',
+                                                                        '3': 'Delivered',
+                                                                        '7': 'Canceled'
+                                                                        }}" />
+
                                         <c:choose>
                                             <c:when test="${not empty orders}">
                                                 <c:forEach var="order" items="${orders}">
@@ -94,7 +118,11 @@
                                                             <p>${order.orderId}</p> 
                                                         </td>
                                                         <td class="cart_price">
-                                                            <p>${order.statusId}</p> 
+                                                            <p>
+                                                                <span class="label label-${order.statusId}">
+                                                                    ${statusMap[order.statusId]}
+                                                                </span>
+                                                            </p> 
                                                         </td>
                                                         <td class="cart_price">
                                                             <p>${order.totalamount}</p> 
@@ -104,12 +132,24 @@
                                                                 <p>${order.createAt}</p>
                                                             </div>
                                                         </td>
+                                                        <td class="cart_quantity">
+                                                            <div> 
+                                                                <c:choose>
+                                                                    <c:when test="${not empty order.completedAt and order.completedAt != 'null'}">
+                                                                        <p>${order.completedAt}</p>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <p>N/A</p>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 </c:forEach>
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td colspan="6" style="text-align: center;">You have no orders yet.</td>
+                                                    <td colspan="5" style="text-align: center;">You have no orders yet.</td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>

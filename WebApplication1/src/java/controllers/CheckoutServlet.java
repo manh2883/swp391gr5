@@ -161,7 +161,7 @@ public class CheckoutServlet extends HttpServlet {
 
         // Nếu Order chấp nhận double totalAmount
         Order order = new Order(0, userId, totalAmount, 1,
-                createAt, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
+                createAt,null, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
 
         // 6. Ghi vào database
         OrderDAO orderDAO = new OrderDAO();

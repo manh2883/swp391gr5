@@ -40,7 +40,7 @@ public class OrderListServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet OrderListServlet</title>");            
+            out.println("<title>Servlet OrderListServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet OrderListServlet at " + request.getContextPath() + "</h1>");
@@ -77,17 +77,17 @@ public class OrderListServlet extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = null;
         try {
-            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null);
+            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null, null, null);
         } catch (SQLException ex) {
             Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         int totalRecords = orderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate, saleName);
         int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
-        
+
         request.setAttribute("orders", orders);
         request.setAttribute("currentPage", page);
 //        request.setAttribute("totalPages", totalPages);
-        
+
         request.getRequestDispatcher("OrderList.jsp").forward(request, response);
     }
 

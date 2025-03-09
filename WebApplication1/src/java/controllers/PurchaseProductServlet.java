@@ -138,6 +138,9 @@ public class PurchaseProductServlet extends HttpServlet {
                 response.sendRedirect("Login");
 
             }
+        } else {
+            session.setAttribute("prevLink", currentLink);
+            response.sendRedirect("Login");
         }
     }
 

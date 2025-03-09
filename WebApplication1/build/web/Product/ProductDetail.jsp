@@ -52,6 +52,12 @@
                 object-fit: cover; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
+            .product-thumb {
+                width: 242px;
+                height: 225px;
+                object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
+                background-color: #f8f8f8; /* Màu nền cho khoảng trống */
+            }
 
             /* Ẩn modal mặc định */
             .modal {
@@ -231,17 +237,97 @@
                                         </c:choose>
 
                                         <span>
-                                            <button type="submit" class="btn btn-fefault cart">
+                                            <button type="submit" class="btn btn-fefault cart" id="addToCartBtn">
                                                 <i class="fa fa-shopping-cart"></i> Add to cart
                                             </button>
-                                            <button type="button" class="btn btn-fefault cart " onclick="submitPurchase()">
+                                            <button type="submit" class="btn btn-fefault cart " id="purchaseBtn"
+                                                    onclick="submitPurchase()">
                                                 <i class="fa fa-shopping-cart"></i> Purchase
                                             </button>
                                         </span>
                                     </form> 
                                 </div>
                             </div>
+                            <!--                            <div class="col-sm-7 product-information" style="border: 1px solid red">
+                                                            abnc
+                                                        </div>-->
+                            <div class="category-tab shop-details-tab"><!--category-tab-->
+                                <div class="col-sm-12">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a href="#details" data-toggle="tab">Details</a></li>
+                                        <!--                                        <li class=""><a href="#companyprofile" data-toggle="tab">Company Profile</a></li>
+                                                                                <li class=""><a href="#tag" data-toggle="tab">Tag</a></li>
+                                                                                <li class=""><a href="#reviews" data-toggle="tab">Reviews (5)</a></li>-->
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade active in" >
+                                        <div class="product-information" style="padding-top: 30px;">
+                                            <p>Brand: ${product.brandName}</p>
+                                            <p>${product.description}</p>
+                                        </div>
 
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <c:choose>
+                                <c:when test="${not empty recommendedtList}">
+                                    <div class="recommended_items"><!--recommended_items-->
+                                        <h2 class="title text-center">recommended items</h2>
+                                        <c:forEach var="entry" items="${recommendedtList}">
+                                            <c:set var="product" value="${entry.key}" />
+                                            <c:set var="tagMap" value="${entry.value}" />
+                                            <div class="col-sm-4">
+                                                <div class="product-image-wrapper">
+                                                    <div class="single-products">
+                                                        <div class="productinfo text-center">
+                                                            <!-- Đặt width và height cho ảnh -->
+                                                            <c:forEach var="tagEntry" items="${tagMap}">
+                                                                <c:set var="isNew" value="${tagEntry.key}" />
+                                                                <c:set var="sale" value="${tagEntry.value}" />
+                                                            </c:forEach>
+                                                            <img src="${pageContext.request.contextPath}/${product.imgUrl}" 
+                                                                 alt="${product.name}" class="product-thumb" />
+
+                                                            <c:choose>
+                                                                <c:when test="${not empty sale}">
+                                                                    <h2><span>
+                                                                            ${sale}
+                                                                        </span>
+                                                                        <span style="text-decoration: line-through;
+                                                                              padding-right: 10px; font-size:20px;color: gray;">
+                                                                            ${product.price}</span></h2>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                    <h2>${product.price}</h2>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <p>${product.name}</p>
+                                                            <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}" 
+                                                               class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i> Add to cart</a>
+                                                        </div>
+
+                                                        <!-- Tag -->
+
+                                                        <c:choose>
+                                                            <c:when test="${not empty sale}">
+                                                                <img src="${pageContext.request.contextPath}/Images/Home/sale.png" class="new" alt="Sale" />
+                                                            </c:when>
+                                                            <c:when test="${isNew}">
+                                                                <img src="${pageContext.request.contextPath}/Images/Home/new.png" class="new" alt="New" />
+                                                            </c:when>
+                                                        </c:choose>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:when>
+                                   
+                                </c:choose>
+                            </div>
                         </div>
 
                     </div>
@@ -257,122 +343,120 @@
         <script src="js/jquery.prettyPhoto.js"></script>
         <script src="js/main.js"></script>
         <script>
-            function submitPurchase() {
-                var form = document.getElementById("productForm");
-                form.action = "PurchaseProduct"; // Đổi action
-                form.submit(); // Submit form
-            }
-        </script>
-        <script>
+                                                        function submitPurchase() {
+                                                            var form = document.getElementById("productForm");
+                                                            form.action = "PurchaseProduct"; // Đổi action
+                                                            form.submit(); // Submit form
+                                                        }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const carousel = document.getElementById("similar-product");
-                const items = carousel.querySelectorAll(".carousel-inner .item");
-                let currentIndex = 0;
-                function showSlide(index) {
-                    items.forEach((item, i) => {
-                        item.classList.remove("active");
-                        if (i === index) {
-                            item.classList.add("active");
-                        }
-                    });
-                }
 
-                document.querySelector(".left.item-control").addEventListener("click", function (e) {
-                    e.preventDefault();
-                    currentIndex = (currentIndex - 1 + items.length) % items.length;
-                    showSlide(currentIndex);
-                });
-                document.querySelector(".right.item-control").addEventListener("click", function (e) {
-                    e.preventDefault();
-                    currentIndex = (currentIndex + 1) % items.length;
-                    showSlide(currentIndex);
-                });
-            });
-            document.addEventListener("DOMContentLoaded", function () {
-                const carousel = document.getElementById("similar-product");
-                const items = carousel.querySelectorAll(".carousel-inner .item");
-                const mainImg = document.getElementById("main-product-img");
-                let currentIndex = 0;
-                function showSlide(index) {
-                    items.forEach((item, i) => {
-                        item.classList.remove("active");
-                        if (i === index) {
-                            item.classList.add("active");
-                            // Lấy ảnh đầu tiên của nhóm và cập nhật ảnh lớn
-                            const firstImg = item.querySelector("img");
-                            if (firstImg) {
-                                mainImg.src = firstImg.src;
-                                mainImg.alt = firstImg.alt;
-                            }
-                        }
-                    });
-                }
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const carousel = document.getElementById("similar-product");
+                                                            const items = carousel.querySelectorAll(".carousel-inner .item");
+                                                            let currentIndex = 0;
+                                                            function showSlide(index) {
+                                                                items.forEach((item, i) => {
+                                                                    item.classList.remove("active");
+                                                                    if (i === index) {
+                                                                        item.classList.add("active");
+                                                                    }
+                                                                });
+                                                            }
 
-                document.querySelector(".left.item-control").addEventListener("click", function (e) {
-                    e.preventDefault();
-                    currentIndex = (currentIndex - 1 + items.length) % items.length;
-                    showSlide(currentIndex);
-                });
-                document.querySelector(".right.item-control").addEventListener("click", function (e) {
-                    e.preventDefault();
-                    currentIndex = (currentIndex + 1) % items.length;
-                    showSlide(currentIndex);
-                });
-            });
-        </script>
-        <script>
-            var variantData = {};
-            var priceData = {};
-            var netPrice = ${netPrice}; // Giá trị tĩnh
+                                                            document.querySelector(".left.item-control").addEventListener("click", function (e) {
+                                                                e.preventDefault();
+                                                                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                                                                showSlide(currentIndex);
+                                                            });
+                                                            document.querySelector(".right.item-control").addEventListener("click", function (e) {
+                                                                e.preventDefault();
+                                                                currentIndex = (currentIndex + 1) % items.length;
+                                                                showSlide(currentIndex);
+                                                            });
+                                                        });
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const carousel = document.getElementById("similar-product");
+                                                            const items = carousel.querySelectorAll(".carousel-inner .item");
+                                                            const mainImg = document.getElementById("main-product-img");
+                                                            let currentIndex = 0;
+                                                            function showSlide(index) {
+                                                                items.forEach((item, i) => {
+                                                                    item.classList.remove("active");
+                                                                    if (i === index) {
+                                                                        item.classList.add("active");
+                                                                        // Lấy ảnh đầu tiên của nhóm và cập nhật ảnh lớn
+                                                                        const firstImg = item.querySelector("img");
+                                                                        if (firstImg) {
+                                                                            mainImg.src = firstImg.src;
+                                                                            mainImg.alt = firstImg.alt;
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            document.querySelector(".left.item-control").addEventListener("click", function (e) {
+                                                                e.preventDefault();
+                                                                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                                                                showSlide(currentIndex);
+                                                            });
+                                                            document.querySelector(".right.item-control").addEventListener("click", function (e) {
+                                                                e.preventDefault();
+                                                                currentIndex = (currentIndex + 1) % items.length;
+                                                                showSlide(currentIndex);
+                                                            });
+                                                        });
+
+                                                        var variantData = {};
+                                                        var priceData = {};
+                                                        var netPrice = ${netPrice}; // Giá trị tĩnh
 
             <c:forEach var="variant" items="${variantList}">
-            var key = "${variant[1]}-${variant[2]}";
-                variantData[key] = ${variant[3]}; // Stock
-                priceData[key] = ${variant[4]}; // Giá theo variant
+                                                        var key = "${variant[1]}-${variant[2]}";
+                                                            variantData[key] = ${variant[3]}; // Stock
+                                                            priceData[key] = ${variant[4]}; // Giá theo variant
             </c:forEach>
 
-                function updateStockAndPrice() {
-                    var color = document.getElementById("colorInput").value;
-                    var size = document.getElementById("sizeInput").value;
-                    var key = color + "-" + size;
-                    var stock = variantData[key] || 0;
-                    var price = priceData[key] || parseFloat("${product.price}"); // Giá thay đổi theo variant
+                                                            function updateStockAndPrice() {
+                                                                var color = document.getElementById("colorInput").value;
+                                                                var size = document.getElementById("sizeInput").value;
+                                                                var key = color + "-" + size;
+                                                                var stock = variantData[key] || 0;
+                                                                var price = priceData[key] || parseFloat("${product.price}"); // Giá thay đổi theo variant
 
-                    console.log("Price:", price, "NetPrice:", netPrice, "Stock:", stock);
-                    // Cập nhật giá hiển thị
-                    var priceDisplay = document.getElementById("priceDisplay");
-                    var netPriceDisplay = document.getElementById("netPrice");
-                    priceDisplay.innerText = Math.floor(price);
-                    if (netPrice > price) {
-                        netPriceDisplay.innerText = Math.floor(netPrice);
-                        netPriceDisplay.style.display = "inline"; // Hiện netPrice bị gạch
-                    } else {
-                        netPriceDisplay.style.display = "none"; // Ẩn nếu không có giảm giá
-                    }
+                                                                console.log("Price:", price, "NetPrice:", netPrice, "Stock:", stock);
+                                                                // Cập nhật giá hiển thị
+                                                                var priceDisplay = document.getElementById("priceDisplay");
+                                                                var netPriceDisplay = document.getElementById("netPrice");
+                                                                priceDisplay.innerText = Math.floor(price);
+                                                                if (netPrice > price) {
+                                                                    netPriceDisplay.innerText = Math.floor(netPrice);
+                                                                    netPriceDisplay.style.display = "inline"; // Hiện netPrice bị gạch
+                                                                } else {
+                                                                    netPriceDisplay.style.display = "none"; // Ẩn nếu không có giảm giá
+                                                                }
 
-                    // Cập nhật stock message
-                    var stockMessage = document.getElementById("stockMessage");
-                    var addToCartBtn = document.querySelector("button[type='submit']");
-                    var purchaseBtn = document.querySelector("button[type='button']");
-                    if (stock > 0) {
-                        stockMessage.innerText = "In stock: " + stock + " items";
-                        stockMessage.style.color = "green";
-                        addToCartBtn.disabled = false;
-                        purchaseBtn.disabled = false;
-                    } else {
-                        stockMessage.innerText = "Out of stock";
-                        stockMessage.style.color = "red";
-                        addToCartBtn.disabled = true;
-                        purchaseBtn.disabled = true;
-                    }
-                }
+                                                                // Cập nhật stock message
+                                                                var stockMessage = document.getElementById("stockMessage");
+                                                                var addToCartBtn = document.getElementById("addToCartBtn");
+                                                                var purchaseBtn = document.getElementById("purchaseBtn");
+                                                                if (stock > 0) {
+                                                                    stockMessage.innerText = "In stock: " + stock + " items";
+                                                                    stockMessage.style.color = "green";
+                                                                    addToCartBtn.disabled = false;
+                                                                    purchaseBtn.disabled = false;
+                                                                } else {
+                                                                    stockMessage.innerText = "Out of stock";
+                                                                    stockMessage.style.color = "red";
+                                                                    addToCartBtn.disabled = true;
+                                                                    purchaseBtn.disabled = true;
+                                                                }
+                                                            }
 
-                // Gán sự kiện thay đổi khi chọn size hoặc color
-                document.getElementById("colorInput").addEventListener("change", updateStockAndPrice);
-                document.getElementById("sizeInput").addEventListener("change", updateStockAndPrice);
-                // Cập nhật lần đầu khi trang load
-                updateStockAndPrice();
+                                                            // Gán sự kiện thay đổi khi chọn size hoặc color
+                                                            document.getElementById("colorInput").addEventListener("change", updateStockAndPrice);
+                                                            document.getElementById("sizeInput").addEventListener("change", updateStockAndPrice);
+                                                            // Cập nhật lần đầu khi trang load
+                                                            updateStockAndPrice();
         </script>
         <script>
             function addToCart() {

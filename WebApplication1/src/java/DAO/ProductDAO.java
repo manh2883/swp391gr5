@@ -993,6 +993,24 @@ public class ProductDAO extends DBContext {
         return new ArrayList<>(productMap.entrySet());
     }
 
+    public static List<Map.Entry<Product, Map<Boolean, String>>> getRecommendedProductList(int quantity) {
+        Map<Product, Map<Boolean, String>> productMap = new LinkedHashMap<>();
+        List<Product> allProducts = getAllProducts(); // Lấy toàn bộ sản phẩm
+        int count = 0;
+
+        // Nếu quantity <= 0, lấy tất cả sản phẩm
+        for (Product p : allProducts) {
+            if (quantity > 0 && count >= quantity) {
+                break;
+            }
+            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            count++;
+        }
+
+        // Chuyển Map thành List để dễ phân trang
+        return new ArrayList<>(productMap.entrySet());
+    }
+
     public static List<Map.Entry<Product, Map<Boolean, String>>> getProductListAfterFilter() {
         List<Map.Entry<Product, Map<Boolean, String>>> productList = getProductListPublic(0);
         return productList;
@@ -1307,9 +1325,8 @@ public class ProductDAO extends DBContext {
 //            System.out.println("=========================================\n");
 //
 //        }
-
-        for(Product p : getAllProducts()){
-            if(getIsVisibleForProductId(p.getProductId())){
+        for (Product p : getAllProducts()) {
+            if (getIsVisibleForProductId(p.getProductId())) {
                 System.out.println(p);
             }
         }

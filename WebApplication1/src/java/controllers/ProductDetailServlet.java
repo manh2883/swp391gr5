@@ -127,6 +127,11 @@ public class ProductDetailServlet extends HttpServlet {
                     request.setAttribute("variantList", varList);
                 }
 
+                List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = ProductDAO.getRecommendedProductList(3);
+                if (recommendedtList != null && !recommendedtList.isEmpty()) {
+//                    request.setAttribute("recommendedtList", recommendedtList);
+                }
+
                 request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
                 HttpSession session = request.getSession();
                 session.removeAttribute("addMessage");

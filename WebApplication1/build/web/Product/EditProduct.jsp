@@ -26,7 +26,7 @@
     </c:if>
 
     <!-- Form chỉnh sửa sản phẩm -->
-    <form action="EditProductServlet" method="post">
+    <form action="EditProduct" method="post">
         <input type="hidden" name="product_id" value="${product.productId}">
         
         <div class="mb-3">
@@ -58,7 +58,7 @@
 
     <!-- Form chỉnh sửa và xóa biến thể sản phẩm -->
     <c:forEach var="variant" items="${variants}">
-        <form action="EditProductServlet" method="post" class="border p-3 mb-2">
+        <form action="EditProduct" method="post" class="border p-3 mb-2">
             <input type="hidden" name="product_id" value="${variant.productId}">
 
             <div class="mb-2">

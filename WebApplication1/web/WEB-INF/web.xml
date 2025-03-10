@@ -89,6 +89,10 @@
         <servlet-class>controllers.OrderListServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>EditProductServlet</servlet-name>
+        <servlet-class>controllers.EditProductServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>MyOrderServlet</servlet-name>
         <servlet-class>controllers.MyOrderServlet</servlet-class>
     </servlet>
@@ -123,6 +127,10 @@
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditProductServlet</servlet-name>
+        <url-pattern>/EditProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>

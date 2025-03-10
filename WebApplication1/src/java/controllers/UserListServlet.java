@@ -92,7 +92,7 @@ public class UserListServlet extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("SearchAndFilter/UserList.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("AdminDashBoard/UserList.jsp");
         dispatcher.forward(request, response);
     }
 

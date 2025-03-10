@@ -16,6 +16,7 @@ package Models;
     private int productvariantId;
     private int quantity;
     private int price;
+//    private Product product;
 
     public OrderDetail() {
     }
@@ -27,6 +28,7 @@ package Models;
         this.productvariantId = productvariantId;
         this.quantity = quantity;
         this.price = price;
+//        this.product = product;
     }
 
     public int getOrderdetailId() {
@@ -76,7 +78,9 @@ package Models;
     public void setPrice(int price) {
         this.price = price;
     }
-
+    
+    
+    
     @Override
     public String toString() {
         return "OrderDetail{" + "orderdetailId=" + orderdetailId + ", orderId=" + orderId + ", productId=" + productId + ", productvariantId=" + productvariantId + ", quantity=" + quantity + ", price=" + price + '}';

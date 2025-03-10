@@ -6,6 +6,7 @@ package controllers;
 
 import DAO.UserDAO;
 import Models.User;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -23,6 +24,7 @@ import java.util.Map;
 @WebServlet(name = "UserListServlet", urlPatterns = {"/UserList"})
 public class UserListServlet extends HttpServlet {
 
+    private static final int RECORDS_PER_PAGE = 10; // Adjust page size if needed
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -61,26 +63,37 @@ public class UserListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String searchQuery = request.getParameter("search"); 
-        String status = request.getParameter("status"); 
-        String sortBy = request.getParameter("sortBy"); 
+        // Get parameters
+        String search = request.getParameter("search");
+        String status = request.getParameter("status");
+        String sortBy = request.getParameter("sortBy");
 
+        // Get current page, default is 1
         int page = 1;
-        int recordsPerPage = 10;
         if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException ignored) {
+                page = 1;
+            }
         }
 
-        UserDAO userDAO = new UserDAO();
-        List<User> users = userDAO.getFilteredUsers(searchQuery, status, sortBy, (page - 1) * recordsPerPage, recordsPerPage);
-        int totalRecords = userDAO.getTotalUserCount(searchQuery, status);
-        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+        int start = (page - 1) * RECORDS_PER_PAGE;
         
-        request.setAttribute("users", users);
+        // Get user list from DAO
+        List<User> userList = UserDAO.getFilteredUsers(search, status, sortBy, start, RECORDS_PER_PAGE);
+
+        // Get total users count for pagination
+        int totalUsers = UserDAO.getTotalUserCount(search, status);
+        int totalPages = (int) Math.ceil((double) totalUsers / RECORDS_PER_PAGE);
+
+        // Set attributes
+        request.setAttribute("userList", userList);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        
-        request.getRequestDispatcher("SearchAndFilter/UserList.jsp").forward(request, response);
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("SearchAndFilter/UserList.jsp");
+        dispatcher.forward(request, response);
     }
 
     /**

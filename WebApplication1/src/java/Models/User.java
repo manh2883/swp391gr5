@@ -26,11 +26,12 @@ public class User {
     private Timestamp updatedAt;
     private String username;
     private int roleId;
+    private Account account;
 
     public User() {
     }
 
-    public User(int userId, String email, String phoneNumber, String avtLink, Date doB, int gender, String firstName, String lastName, Timestamp createdAt, Timestamp updatedAt, String username, int roleId) {
+    public User(int userId, String email, String phoneNumber, String avtLink, Date doB, int gender, String firstName, String lastName, Timestamp createdAt, Timestamp updatedAt, String username, int roleId, Account account) {
         this.userId = userId;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -43,6 +44,7 @@ public class User {
         this.updatedAt = updatedAt;
         this.username = username;
         this.roleId = roleId;
+        this.account = account;
     }
 
     
@@ -157,12 +159,27 @@ public class User {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+    
+    public String getAccountInfo() {
+    if (account != null) {
+        return "username=" + account.getUsername() + ", roleId=" + account.getRoleId() + ", status=" + account.getStatus();
+    }
+    return "No account information";
+}
     
     
 
     @Override
     public String toString() {
-        return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB  + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+        return "User{" + "userId=" + userId + ", email=" + email + ", phoneNumber=" + phoneNumber + ", avtLink=" + avtLink + ", doB=" + doB  + ", gender=" + gender + ", firstName=" + firstName + ", lastName=" + lastName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", " + getAccountInfo() +  '}';
     }
 
     

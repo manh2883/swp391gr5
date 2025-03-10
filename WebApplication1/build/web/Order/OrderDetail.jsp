@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Checkout</title>
+        <title>${title}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
@@ -42,7 +42,62 @@
 
             .productinfo .btn {
                 display: inline-block; /* Đảm bảo các nút được xếp thành dòng ngang */
+            }
+            .status-1 { /* Pending */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #fff3cd;
+                color: #856404;
 
+            }
+
+            .status-6 { /* Accepted */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-2 { /* Shipping */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            .status-3 { /* Delivered */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d1ecf1;
+                color: #0c5460;
+            }
+
+            .status-5 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .status-4 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .default-status {
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #e2e3e5;
+                color: #383d41;
             }
         </style>
     </head>
@@ -55,55 +110,82 @@
                 <div class="container">
                     <div class="breadcrumbs">
                         <ol class="breadcrumb">
-                            <li><a href="#">Home</a></li>
-                            <li class="active">My Order</li>
+                            <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
+                            <li><a href="${pageContext.request.contextPath}/${breadcumbLink}">${breadcumb}</a></li>
+                            <li class="active">Order: ${orderInformation.orderId}</li>
                         </ol>
                     </div>
-                    <p style="color: red">${message}</p>
+
                     <div class="shopper-informations">
                         <div class="row">
                             <div class="col-sm-4 clearfix" >
                                 <div class="bill-to">
-                                    <p>${orderInformation}</p>
+
                                     <p>Bill To</p>
-                                    <!--<div class="" style="float: left; border:1px solid darkgreen">-->
-<!--                                        <input type="text" name="email" placeholder="Email*" value="${user.email}" required>-->
                                     <div class="form-floating mb-10">
                                         <input id="nameInput" class="form-control" type="text" name="name" style="height: 45px; margin-bottom: 10px"
-                                               placeholder="Name*" value="${user.firstName} ${user.lastName}" required >
+                                               placeholder="Name*" value="${orderInformation.userReceive}" readonly >
                                         <label for="nameInput">Receiver:</label>
                                         <div class="text-danger" id="nameError"></div>
                                     </div>
 
                                     <div class="form-floating mb-10">
                                         <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
-                                               placeholder="Contact*" value="${user.phoneNumber}" required>
+                                               placeholder="Contact*" value="${orderInformation.contact}" readonly>
                                         <label for="contactInput">Contact:</label>
                                         <div class="text-danger" id="contactError"></div>
                                     </div>    
 
                                     <div class="form-floating mb-10">
-                                        <select name="address" id="address" class="form-control" style="height: 45px;margin-bottom: 10px;" onchange="toggleAddressInput(this)">
-                                            <option value="">-- Select Address --</option>
-                                            <c:forEach var="addr" items="${userAddresses}">
-                                                <option value="${addr.addressLine}">${addr.addressLine}</option>
-                                            </c:forEach>
-                                            <option value="Other">Other</option>
-                                        </select>
-
-                                        <span id="newAddressError" class="error-message"></span>
-
-                                        <input   type="text" name="newAddress" id="newAddress" class="form-control mt-2"
-                                                 style="height: 45px;margin-bottom: 10px; display:none;"
-                                                 placeholder="Enter new address" />
-
-
+                                        <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Address*" value="${orderInformation.address}" readonly>
                                         <label for="adress">Address</label>
                                         <div class="text-danger" id="addressError"></div>
-                                    </div>    
+                                    </div>  
+
+
+                                    <div class="form-floating mb-10">
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Created At: </span>
+                                            <span style="font-size: 15px">${orderInformation.createAt}</span>
+                                        </p>
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Completed At: </span>
+                                            <c:choose>
+                                                <c:when test="${not empty orderInformation.completedAt and orderInformation.completedAt != 'null'}">
+                                                    <span style="font-size: 15px">${orderInformation.completedAt}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span>N/A</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Payment method: </span>
+                                            <c:choose>
+                                                <c:when test="${not empty orderInformation.paymentmethod and orderInformation.paymentmethod ne null}">
+                                                    <c:choose>
+                                                        <c:when test="${orderInformation.paymentmethod == 1}">
+                                                            <span style="font-size: 15px">Online Banking</span>
+                                                        </c:when>
+                                                        <c:when test="${orderInformation.paymentmethod == 2}">
+                                                            <span style="font-size: 15px">Credit Card</span>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span style="font-size: 15px">Unknown</span>
+                                                </c:otherwise>
+                                            </c:choose>
+
+
+                                        </p>
+
+                                    </div>  
+
                                     <div class="order-message">
                                         <p>Shipping Order</p>
-                                        <textarea name="orderNote" id="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
+                                        <textarea name="orderNote" id="orderNote" placeholder="${orderInformation.orderNote}" rows="3"></textarea>
                                         <!--<label><input type="checkbox"> Shipping to bill address</label>-->
                                         <span id="orderNoteError" class="error-message text-danger"></span>
                                     </div>
@@ -111,7 +193,20 @@
                                 </div>
                             </div>
                             <div class="col-sm-8" >
-
+                                <p>
+                                    <span style="font-weight: bold">Status: </span>
+                                    <span style="font-size: 9px;" class=" status-${orderInformation.statusId}">
+                                        <c:choose>
+                                            <c:when test="${orderInformation.statusId == '1'}">Pending</c:when>
+                                            <c:when test="${orderInformation.statusId == '6'}">Accepted</c:when>
+                                            <c:when test="${orderInformation.statusId == '2'}">Shipping</c:when>
+                                            <c:when test="${orderInformation.statusId == '3'}">Delivered</c:when>
+                                            <c:when test="${orderInformation.statusId == '4'}">Canceled By Customer</c:when>
+                                            <c:when test="${orderInformation.statusId == '5'}">Canceled By Seller</c:when>
+                                            <c:otherwise>Unknown</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </p>
                                 <div class="review-payment">
                                     <h2>Review & Payment</h2>
                                 </div>
@@ -121,6 +216,7 @@
                                         <thead style="background-color: #FE980F;">
                                             <tr>
                                                 <th>Item</th>
+                                                <th></th>
                                                 <th>Quantity</th>
                                                 <th>Price</th>
                                                 <th>Total</th>
@@ -128,29 +224,31 @@
                                         </thead>
                                         <tbody>
                                             <c:set var="cartTotal" value="0" />
-                                            <c:forEach var="item" items="${checkoutItems}">
+                                            <c:forEach var="item" items="${orderDetailList}">
                                                 <tr>
-                                                    <td>${item.product.name}</td>
-                                                    <td>${item.quantity}</td>
-                                                    <td>${item.product.price}</td>
+                                                    <td>${item[1].name}</td>
+                                                    <td>${item[2]}</td>
+                                                    <td>${item[0].quantity}</td>
+                                                    <td>${item[0].price}</td>
+
                                                     <td class="subtotal">
-                                                        <c:set var="itemTotal" value="${item.quantity * item.product.price}" />
+                                                        <c:set var="itemTotal" value="${item[0].quantity * item[0].price}" />
                                                         ${itemTotal}
                                                         <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
                                                     </td>
                                                 </tr>
                                             </c:forEach>
                                             <tr>
-                                                <td colspan="3">Total</td>
+                                                <td colspan="4">Total</td>
                                                 <td><strong>${cartTotal}</strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="row" style="height: 50px; vertical-align: middle;">
-                     
-                                    <div class="text-right col-sm-3 ">
-                                        <button type="submit" class="btn btn-primary" >Button</button>
+
+                                    <div class="text-right col-sm-12 ">
+                                        <button type="submit" class="btn btn-primary" disabled >Button</button>
                                     </div>
                                 </div>          
                             </div>               
@@ -163,7 +261,7 @@
             </section>
         </form>
 
-       
+
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jquery.scrollUp.min.js"></script>
@@ -178,7 +276,7 @@
 
 
 
-<div class="container mt-4">
+<!--<div class="container mt-4">
     <h2>My Orders</h2>
     <p>${message}</p>
     <p>${orderInformation}</p>
@@ -193,29 +291,29 @@
             </tr>
         </thead>
         <tbody>
-            <c:choose>
-                <c:when test="${not empty orderDetailList}">
-                    <c:forEach var="order" items="${orderDetailList}">
-                        <tr>
-                            <td><c:out value="${order[0].orderdetailId}" /></td>
-                            <td><c:out value="${order[1].name}" /></td>
-                            <td><c:out value="${order[2]}" /></td>
-                            <td><c:out value="${order[0].quantity}" /></td>
-                            <td><c:out value="${order[0].price}" /></td>
-                            
-                        </tr>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <tr>
-                        <td colspan="6" style="text-align: center; font-weight: bold;">No items found</td>
-                    </tr>
-                </c:otherwise>
-            </c:choose>
-        </tbody>
+<c:choose>
+    <c:when test="${not empty orderDetailList}">
+        <c:forEach var="order" items="${orderDetailList}">
+            <tr>
+                <td><c:out value="${order[0].orderdetailId}" /></td>
+                <td><c:out value="${order[1].name}" /></td>
+                <td><c:out value="${order[2]}" /></td>
+                <td><c:out value="${order[0].quantity}" /></td>
+                <td><c:out value="${order[0].price}" /></td>
 
-    </table>
+            </tr>
+        </c:forEach>
+    </c:when>
+    <c:otherwise>
+        <tr>
+            <td colspan="6" style="text-align: center; font-weight: bold;">No items found</td>
+        </tr>
+    </c:otherwise>
+</c:choose>
+</tbody>
+
+</table>
 </div>
 
 
-
+-->

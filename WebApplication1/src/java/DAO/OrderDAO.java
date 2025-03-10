@@ -129,12 +129,15 @@ public class OrderDAO {
 
                 order.setUserId(rs.getInt("user_id"));
                 order.setOrderId(rs.getInt("order_id"));
+                order.setContact(rs.getString("contact"));
+                order.setUserReceive(rs.getString("user_receive"));
                 order.setTotalamount(rs.getInt("total_amount"));
                 order.setStatusId(rs.getInt("status_id"));
                 order.setPaymentmethod(rs.getInt("payment_method"));
                 order.setCreateAt(rs.getTimestamp("created_at"));
                 order.setCompletedAt(rs.getTimestamp("completed_at"));
                 order.setAddress(rs.getString("address"));
+                order.setOrderNote(rs.getString("note"));
 
             }
         } catch (Exception e) {
@@ -324,8 +327,14 @@ public class OrderDAO {
 
         // Search by status ID
         if (statusId != null) {
-            query += " AND o.status_id = ?";
-            params.add(statusId);
+            Long status = Long.valueOf(statusId);
+
+            if (status.equals(7L)) {
+                query += " AND (o.status_id = 4 OR o.status_id = 5) ";
+            } else {
+                query += " AND o.status_id = ?";
+                params.add(status); // Chỉ thêm khi có dấu ? trong query
+            }
         }
 
         // Search by creation date range
@@ -409,7 +418,12 @@ public class OrderDAO {
             query += " AND (order_id LIKE ? OR customer_name LIKE ?)";
         }
         if (status != null && !status.isEmpty()) {
-            query += " AND status_id = ?";
+            if (status.equals(7)) {
+                query += " AND (status_id = 4 or status_id - 5) ";
+            } else {
+                query += " AND status_id = ?";
+            }
+
         }
         if (fromDate != null && !fromDate.isEmpty()) {
             query += " AND created_at >= ?";

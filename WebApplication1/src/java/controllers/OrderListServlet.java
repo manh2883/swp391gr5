@@ -77,7 +77,8 @@ public class OrderListServlet extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = null;
         try {
-            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null, null, null);
+            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null, null, null
+            );
         } catch (SQLException ex) {
             Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

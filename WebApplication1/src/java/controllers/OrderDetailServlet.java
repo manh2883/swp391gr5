@@ -68,7 +68,9 @@ public class OrderDetailServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         Account account = (Account) session.getAttribute("account");
-
+        String orderIdStr = request.getParameter("orderId");
+        String currentUrl = "OrderDetail?orderId=" + orderIdStr;
+        
         int role = -1;
         if (account != null) {
             role = account.getRoleId();
@@ -77,7 +79,6 @@ public class OrderDetailServlet extends HttpServlet {
                 PermissionDAO pDAO = new PermissionDAO();
 
                 // Kiểm tra orderId có hợp lệ không
-                String orderIdStr = request.getParameter("orderId");
                 int oId = -1;
                 System.out.println("Received orderIdStr: " + orderIdStr);
 
@@ -99,24 +100,29 @@ public class OrderDetailServlet extends HttpServlet {
                 Order order = null;
                 if (oId > 0) {
                     order = OrderDAO.getOrderInformationById(oId);
+
                 }
 
                 if (order != null) {
                     int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
 
-                    if (!pDAO.checkPermissionForRole("ViewOrderDetail", role) || userId != order.getUserId()) {
-                        request.setAttribute("message", "no permission");
-                        request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                    if (pDAO.checkPermissionForRole("ViewOrderDetail", role) || userId == order.getUserId()) {
 
-                    } else {
                         //Main Process
                         ArrayList<Object[]> obj = OrderDAO.getOrderDetailViewByOrderId(oId);
                         request.setAttribute("orderDetailList", obj);
                         request.setAttribute("orderInformation", order);
-                        request.setAttribute("message", order);
+
+                        request.setAttribute("prevLink", currentUrl);
+                        request.setAttribute("breadcumb", "My Order");
+                        request.setAttribute("title", "Order: " + orderIdStr);
+
+                        request.setAttribute("breadcumbLink", "MyOrder");
                         request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
 //                        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-
+                    } else {
+                        request.setAttribute("message", "no permission");
+                        request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("message", "order not found");
@@ -129,8 +135,10 @@ public class OrderDetailServlet extends HttpServlet {
 
             }
         } else {
-            request.setAttribute("message", "account not found");
-            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            //  request.setAttribute("message", "account not found");
+            session.setAttribute("prevLink", currentUrl);
+            response.sendRedirect("Login");
+            //  request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
 
         }
     }

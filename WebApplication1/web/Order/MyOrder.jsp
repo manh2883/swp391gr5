@@ -41,6 +41,64 @@
                 object-fit: contain;
                 background-color: #f8f8f8;
             }
+            .status-1 { /* Pending */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #fff3cd;
+                color: #856404;
+                
+            }
+
+            .status-6 { /* Accepted */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-2 { /* Shipping */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            .status-3 { /* Delivered */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d1ecf1;
+                color: #0c5460;
+            }
+
+            .status-5 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            
+              .status-4 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .default-status {
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #e2e3e5;
+                color: #383d41;
+            }
+
+
         </style>
     </head>
     <body>
@@ -94,7 +152,7 @@
                                     <thead>
                                         <tr class="cart_menu">
                                             <td class="price">ID</td>
-                                            <td class="price">Status</td>
+                                            <td class="price" style="width: 75px">Status</td>
                                             <td class="price">Amount</td>
                                             <td class="total">Created At</td>
                                             <td class="total">Completed At</td>
@@ -102,29 +160,29 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <c:set var="statusMap" value="${{
-                                                                        '1': 'Pending',
-                                                                        '6': 'Accepted',
-                                                                        '2': 'Shipping',
-                                                                        '3': 'Delivered',
-                                                                        '7': 'Canceled'
-                                                                        }}" />
-
                                         <c:choose>
                                             <c:when test="${not empty orders}">
                                                 <c:forEach var="order" items="${orders}">
-                                                    <tr onclick="window.location.href = '${pageContext.request.contextPath}/OrderDetail?orderId=${order.orderId}'">
+                                                    <tr style="vertical-align: middle;"
+                                                        onclick="window.location.href = 
+                                                                    '${pageContext.request.contextPath}/OrderDetail?orderId=${order.orderId}'">
                                                         <td class="cart_price">
                                                             <p>${order.orderId}</p> 
                                                         </td>
-                                                        <td class="cart_price">
-                                                            <p>
-                                                                <span class="label label-${order.statusId}">
-                                                                    ${statusMap[order.statusId]}
-                                                                </span>
+                                                        <td class="" style="font-size: 9px;">
+                                                            <p class=" status-${order.statusId}">
+                                                                <c:choose>
+                                                                    <c:when test="${order.statusId == '1'}">Pending</c:when>
+                                                                    <c:when test="${order.statusId == '6'}">Accepted</c:when>
+                                                                    <c:when test="${order.statusId == '2'}">Shipping</c:when>
+                                                                    <c:when test="${order.statusId == '3'}">Delivered</c:when>
+                                                                    <c:when test="${order.statusId == '4'}">Canceled By Customer</c:when>
+                                                                    <c:when test="${order.statusId == '5'}">Canceled By Seller</c:when>
+                                                                    <c:otherwise>Unknown</c:otherwise>
+                                                                </c:choose>
                                                             </p> 
                                                         </td>
-                                                        <td class="cart_price">
+                                                        <td class="cart_price" style="padding-left: 10px;">
                                                             <p>${order.totalamount}</p> 
                                                         </td>
                                                         <td class="cart_quantity">
@@ -153,21 +211,12 @@
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
+
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
-                            <ul class="pagination" style="justify-content: center;font-size: 14px">
-                                <c:if test="${totalPages > 0}">
-                                    <c:forEach var="i" begin="1" end="${totalPages}">
-                                        <li class=" ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
-                                        </li>
-                                    </c:forEach>
-                                </c:if>
-                            </ul>
-                        </nav>
                     </div>
                 </div>
         </section>

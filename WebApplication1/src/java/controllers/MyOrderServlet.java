@@ -71,7 +71,7 @@ public class MyOrderServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         Account account = (Account) session.getAttribute("account");
-
+        String currentUrl = "MyOrder";
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
@@ -89,7 +89,7 @@ public class MyOrderServlet extends HttpServlet {
                             statusId = Long.parseLong(activeTabString);
 
                         } catch (NumberFormatException e) {
-                            statusId = new Long("5");
+                            statusId = new Long("1");
                         }
                     }
 
@@ -99,6 +99,7 @@ public class MyOrderServlet extends HttpServlet {
 //                        List<Order> orders = OrderDAO.getOrderListByUserId(userId);
                         List<Order> orders = null;
                         try {
+                            
                             orders = OrderDAO.filterOrder(abc, null, null, null,
                                     statusId, null, null, null, null, null, null, null, null);
                         } catch (SQLException ex) {
@@ -128,8 +129,10 @@ public class MyOrderServlet extends HttpServlet {
                 request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
             }
         } else {
-            request.setAttribute("message", "account not found");
-            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+          //  request.setAttribute("message", "account not found");
+            session.setAttribute("prevLink", currentUrl);
+            response.sendRedirect("Login");
+           // request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
         }
     }
 

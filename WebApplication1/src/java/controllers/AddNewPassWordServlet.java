@@ -4,7 +4,6 @@
  */
 package controllers;
 
-import DAO.AccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Acer
  */
-public class ForgotPasswordServlet extends HttpServlet {
+public class AddNewPassWordServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +34,10 @@ public class ForgotPasswordServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ForgotPasswordServlet</title>");
+            out.println("<title>Servlet AddNewPassWordServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ForgotPasswordServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddNewPassWordServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,10 +55,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean availOTP = true;
-        request.setAttribute("step", "Send OTP");
-        request.setAttribute("availOTP", availOTP);
-        request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -73,32 +69,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String emailInput = request.getParameter("email");
-        String otpInput = request.getParameter("otpInput");
-
-        if (emailInput == null || emailInput.isEmpty()) {
-            request.setAttribute("otpError", "Email input is required.");
-            forwardToPage(request, response);
-            return;
-        }
-
-        String realOtp = AccountDAO.getOtpByEmail(emailInput);
-        if (otpInput == null || otpInput.isEmpty()) {
-            request.setAttribute("otpError", "OTP input is required.");
-        } else if (!realOtp.equals(otpInput.trim())) {
-            request.setAttribute("otpError", "OTP does not match.");
-        } else {
-            request.setAttribute("email", emailInput);
-            request.getRequestDispatcher("Login/AddNewPassWord.jsp").forward(request, response);
-            return;
-        }
-
-        forwardToPage(request, response);
-    }
-
-    private void forwardToPage(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**

@@ -4,6 +4,7 @@
  */
 package DAO;
 
+import static DAO.SettingDAO.sendEmail;
 import DBContext.DBContext;
 import Models.Account;
 import Models.User;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  *
@@ -113,7 +115,7 @@ public class AccountDAO extends DBContext {
             rs.close();
             stm.close();
             con.close();
-          
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -524,10 +526,54 @@ public class AccountDAO extends DBContext {
     }
 
     public static String getOtpByEmail(String email) {
-        return null;
+        String query = """
+                       select password_reset_token from account 
+                       left join user 
+                       on account.user_id = user.user_id
+                       where user.email = ? limit 1;""";
+
+        String lastSend = null;
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+            stm.setString(1, email);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                lastSend = rs.getString(1);
+                System.out.println(lastSend);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lastSend;
     }
 
-    public static void setOtpByEmail(String email, boolean method) {
+    public static void setOtpByAccountId(int accId, String otp) throws SQLException {
+
+        if (accId > -1) {
+            String sql = "UPDATE account SET password_reset_token = ?, last_opt_send = ? WHERE account_id = ?";
+            System.out.println(accId);
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection con = db.getConnection();
+
+                PreparedStatement pstmt = con.prepareStatement(sql);
+
+                pstmt.setString(1, otp);
+                pstmt.setTimestamp(2, Timestamp.from(Instant.now()));
+                pstmt.setLong(3, accId);
+                pstmt.executeUpdate();
+                System.out.println("setup: " + accId + ", " + otp);
+            } catch (Exception e) {
+
+            }
+        }
 
     }
 
@@ -633,12 +679,12 @@ public class AccountDAO extends DBContext {
             }
         }
     }
-    
-    public static boolean checkRoleExist(int roleId){
-        
+
+    public static boolean checkRoleExist(int roleId) {
+
         return true;
     }
-    
+
     public static void main(String[] args) {
 //        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
 //        AccountDAO.setOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn");
@@ -646,5 +692,6 @@ public class AccountDAO extends DBContext {
 //        AccountDAO.createAccount(new Account(42, 1, "abc123", "12345678", 1, 1));
 //        System.out.println(AccountDAO.getAccountByUserId(42));
         System.out.println(getAccountByUserName("admin"));
+        System.out.println(getOtpByEmail("manhzxnm057@gmail.com"));
     }
 }

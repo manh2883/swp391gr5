@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Forgot Password</title>
+        <title>Add New Password</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -83,54 +83,33 @@
     <body>
         <c:import url="/Template/header1.jsp" />
         <section>
-            <c:choose>
-                <c:when test="${availOTP}">
-                    <div class="main-container" style="margin-top: 8vh; margin-bottom: 8vh;">
-                        <div class="login-form">
-                            <h3 class="text-center">Forgot Your Password</h3>
-                            <form method="post" action="Mail">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="emailInput" name="email" placeholder="name@example.com" 
-                                           style="height: 45px"
-                                           value="${email}" required onkeyup="validateEmail()" onblur="validateEmail()">
-                                    <label for="emailInput">Enter your email address</label>
-                                    <div class="text-danger" id="emailError">${emailError}</div>
-                                </div>
+            <div class="main-container" style="margin-top: 8vh; margin-bottom: 8vh;">
+                <div class="login-form">
+                    <h3 class="text-center">Create New Password</h3>
+                    <form method="post" action="ForgotPassword">
 
-                                <div class="d-grid">
-                                    <button id="submitButton" class="btn btn-primary" type="submit">${step}</button>
-                                </div>
-                            </form>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" 
+                                   id="newPassword" name="newPassword"  
+                                   placeholder="newPassword" style="height: 45px">
+                            <label for="newPassword">New Password</label>
                         </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="main-container" style="margin-top: 8vh; margin-bottom: 8vh;">
-                        <div class="login-form">
-                            <h3 class="text-center">Forgot Your Password</h3>
-                            <form method="post" action="ForgotPassword">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="emailInput" name="email" value="${email}" readonly style="height: 45px">
-                                    <label for="emailInput">Email address</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="otpInput" name="otpInput" placeholder="xxxxxx" required style="height: 45px">
-                                    <label for="otpInput">OTP</label>
-                                    <div class="text-danger" id="otpError">${otpError}</div>
-                                    <p id="countdownText"></p>
-                                    <button id="sendOtpBtn" type="button" class="btn btn-link" onclick="resendOTP()" style="background: transparent; color: black">Resend OTP</button>
-                                </div>
-                                <div class="d-grid">
-                                    <button class="btn btn-primary" type="submit">${step}</button>
-                                </div>
-                            </form>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" 
+                                   id="rePassword" name="rePassword" 
+                                   style="height: 45px" placeholder="rePassword">
+                            <label for="rePassword">Re-Enter Password</label>
                         </div>
-                    </div>
-                    <form method="post" action="Mail" id="resendForm" style="visibility: hidden">
-                        <input type="hidden" name="email" value="${email}" >
+                       
+                        <input type="hidden" class="form-control" id="emailInput" name="email" value="${email}" >
+
+                        <div class="d-grid">
+                            <button class="btn btn-primary" type="submit">Continue</button>
+                        </div>
                     </form>
-                </c:otherwise>
-            </c:choose>
+                </div>
+            </div>
         </section>
         <c:import url="/Template/footer1.jsp" />
     </body>

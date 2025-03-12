@@ -124,6 +124,22 @@
         <servlet-name>CustomerList</servlet-name>
         <servlet-class>controllers.CustomerList</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>payTestServlet</servlet-name>
+        <servlet-class>controllers.admin.payTestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>returnTestServlet</servlet-name>
+        <servlet-class>controllers.admin.returnTestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddNewPassWordServlet</servlet-name>
+        <servlet-class>controllers.AddNewPassWordServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangePasswordServlet</servlet-name>
+        <servlet-class>controllers.ChangePasswordServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -175,10 +191,6 @@
     <servlet-mapping>
         <servlet-name>CreateNewPassWordServlet</servlet-name>
         <url-pattern>/CreateNewPassWord</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SendOtpServlet</servlet-name>
-        <url-pattern>/SendOtp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CheckoutServlet</servlet-name>
@@ -248,11 +260,35 @@
         <servlet-name>CustomerList</servlet-name>
         <url-pattern>/customerlist</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>payTestServlet</servlet-name>
+        <url-pattern>/payTest</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>returnTestServlet</servlet-name>
+        <url-pattern>/vnpay_return</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddNewPassWordServlet</servlet-name>
+        <url-pattern>/AddNewPassWord</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangePasswordServlet</servlet-name>
+        <url-pattern>/ChangePassword</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>
     </welcome-file-list>
-    <error-page>
+    <!--    <error-page>
         <error-code>404</error-code>
         <location>/Home/Error404.jsp</location>
-    </error-page>
+    </error-page>-->
+    <servlet>
+        <servlet-name>SendOtpServlet</servlet-name>
+        <servlet-class>controllers.mail.SendOtpServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SendOtpServlet</servlet-name>
+        <url-pattern>/Mail</url-pattern>
+    </servlet-mapping>
 </web-app>

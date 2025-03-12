@@ -63,7 +63,6 @@ public class UserDAO extends DBContext {
         }
         return userList;
     }
-
     public static List<Object[]> getCustomerList() {
         List<Object[]> customers = new ArrayList<>();
         String query = "SELECT u.user_id, "
@@ -96,6 +95,7 @@ public class UserDAO extends DBContext {
         }
         return customers;
     }
+
 
     public static User getUserById(int id) {
         String query = "SELECT * FROM User where user_id = ?";
@@ -136,39 +136,39 @@ public class UserDAO extends DBContext {
 
     public static User getUserByEmail(String email) {
         String query = "SELECT * FROM User where User.email = ? limit 1 ";
-        User user = null;
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, email);
             ResultSet rs = stm.executeQuery();
-            User user1 = new User();
+            User user = new User();
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
 
-                user1.setUserId(rs.getInt("user_id"));
-                user1.setEmail(rs.getString("email"));
-                user1.setPhoneNumber(rs.getString("phone_number"));
-                user1.setAvtLink(rs.getString("avt_link"));
-                user1.setDoB(rs.getDate("DoB"));
+                user.setUserId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setAvtLink(rs.getString("avt_link"));
+                user.setDoB(rs.getDate("DoB"));
 
-                user1.setGender(rs.getInt("gender"));
-                user1.setFirstName(rs.getString("first_name"));
-                user1.setLastName(rs.getString("last_name"));
-                user1.setCreatedAt(rs.getTimestamp("created_at"));
-                user1.setUpdatedAt(rs.getTimestamp("updated_at"));
+                user.setGender(rs.getInt("gender"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setUpdatedAt(rs.getTimestamp("updated_at"));
 
             }
             // Đóng kết nối và tài nguyên
             rs.close();
             stm.close();
             con.close();
-            user = user1;
+            return user;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user;
+        return null;
     }
 
     public static User getUserByPhone(String phone) {
@@ -358,39 +358,9 @@ public class UserDAO extends DBContext {
 
         return false;
     }
+    
+     
 
-//     public static List<Object[]> getCustomerList() {
-//        List<Object[]> customers = new ArrayList<>();
-//        String query = "SELECT u.user_id, "
-//                + "CONCAT(u.first_name, ' ', u.last_name) AS full_name, "
-//                + "a.username, "
-//                + "COALESCE(COUNT(o.order_id), 0) AS order_count, "
-//                + "COALESCE(SUM(o.total_amount), 0) AS total_spent "
-//                + "FROM user u "
-//                + "JOIN account a ON u.user_id = a.user_id "
-//                + "LEFT JOIN orders o ON u.user_id = o.user_id "
-//                + "WHERE a.role_id = 2 "
-//                + // Chỉ lấy customer (role_id = 2)
-//                "GROUP BY u.user_id, full_name, a.username";
-//        try {
-//            DBContext db = new DBContext();
-//            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
-//            PreparedStatement stm = con.prepareStatement(query.toString());
-//            ResultSet rs = stm.executeQuery();
-//            while (rs.next()) {
-//                customers.add(new Object[]{
-//                    rs.getInt("user_id"),
-//                    rs.getString("full_name"),
-//                    rs.getString("username"),
-//                    rs.getInt("order_count"),
-//                    rs.getDouble("total_spent")
-//                });
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return customers;
-//    }
     public static List<User> getFilteredUsers(String search, String status, String sortBy, int start, int recordsPerPage) {
         List<User> userList = new ArrayList<>();
         StringBuilder query = new StringBuilder(
@@ -550,6 +520,24 @@ public class UserDAO extends DBContext {
 
     public static void main(String[] args) throws SQLException {
         List<User> userList = getFilteredUsers(null, null, null, 0, 10);
-        System.out.println(getUserByEmail("manhzxnm057@gmail.com"));
+
+        if (userList.isEmpty()) {
+            System.out.println("no information can found!");
+        } else {
+            for (User user : userList) {
+                System.out.println(user);
+            }
+        }
+//        for (User oj : getFilteredUsers(null, null, null, 12, 1)) {
+//            System.out.println("\n");
+//            System.out.println(oj);
+
+//        System.out.println(getFilteredUsers(null, null, null, 12, 1));
+//        for (Object[] oj : get(null, null, null, 12, 1)) {
+////            System.out.println("\n");
+////            System.out.println(oj[0]);
+////            System.out.println(oj[1]);
+//////            System.out.println(oj[2]);
+////            System.out.println("===========================\n");
     }
 }

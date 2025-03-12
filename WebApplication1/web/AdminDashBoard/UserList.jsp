@@ -101,13 +101,13 @@
                                     <div class="col-md-4">
                                         <input type="text" name="search" class="form-control" placeholder="Search by name, email, phone" value="${param.search}">
                                     </div>
-                                    <div class="col-md-3">
+<!--                                    <div class="col-md-3">
                                         <select name="status" class="form-control">
                                             <option value="">All Status</option>
                                             <option value="active" ${param.status == 'active' ? 'selected' : ''}>Active</option>
                                             <option value="inactive" ${param.status == 'inactive' ? 'selected' : ''}>Inactive</option>
                                         </select>
-                                    </div>
+                                    </div>-->
                                     <div class="col-md-3">
                                         <select name="sortBy" class="form-control">
                                             <option value="">Sort By</option>
@@ -150,7 +150,7 @@
                                                     <td>${user.account.roleId}</td>
 <!--                                                    <td>${user.account.status}</td>-->
                                                     <td>
-                                                        <a href="UserDetail.jsp?userId=${user.userId}" class="btn btn-info">View</a>
+                                                        <a href="OrderDetail?orderId=${user.account.username}" class="btn btn-info">View</a>
         <!--                                                <a href="EditUser.jsp?userId=${user.userId}" class="btn btn-warning">Edit</a>-->
                                                     </td>
                                                 </tr>

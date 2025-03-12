@@ -95,14 +95,14 @@
 
                     <div class="col-sm-9">
                         <div class="table-responsive cart_info ">
-                            <table class="table table-condensed">
-                                <thead>
-                                    <tr class="cart_menu">
-                                        <td class="name">Customer</td>
-                                        <td class="userame">User Name</td>
-                                        <td class="quantity">Orders</td>
-                                        <td class="quantity">Total Spending</td>
-                                        <td class="total">Ave.Amount/Order</td>
+                            <table class="table table-bordered">
+                                <thead class="table-dark">
+                                    <tr >
+                                        <td >Customer</td>
+                                        <td >User Name</td>
+                                        <td >Orders</td>
+                                        <td >Total Spending</td>
+                                        <td >Ave.Amount/Order</td>
                                     </tr>
                                 </thead>
                                 <tbody>

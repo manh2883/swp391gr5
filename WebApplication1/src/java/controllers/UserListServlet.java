@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import java.util.Map;
 public class UserListServlet extends HttpServlet {
 
     private static final int RECORDS_PER_PAGE = 10; // Adjust page size if needed
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -42,7 +44,7 @@ public class UserListServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UserListServlet</title>");            
+            out.println("<title>Servlet UserListServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet UserListServlet at " + request.getContextPath() + "</h1>");
@@ -63,37 +65,31 @@ public class UserListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Get parameters
-        String search = request.getParameter("search");
-        String status = request.getParameter("status");
-        String sortBy = request.getParameter("sortBy");
+        String searchQuery = request.getParameter("search");
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String username = request.getParameter("username");
+        String roleName = request.getParameter("roleName");
+        String roleIdStr = request.getParameter("roleId");
 
-        // Get current page, default is 1
-        int page = 1;
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-            } catch (NumberFormatException ignored) {
-                page = 1;
-            }
+        Integer roleId = null;
+        if (roleIdStr != null && !roleIdStr.isEmpty()) {
+            roleId = Integer.parseInt(roleIdStr);
         }
 
-        int start = (page - 1) * RECORDS_PER_PAGE;
+// Gọi DAO để lấy dữ liệu
+        UserDAO dao = new UserDAO();
+        ArrayList<Object[]> list;
+        list = UserDAO.getFilterUserView(searchQuery, name, email, phone, username, roleName, roleId);
         
-        // Get user list from DAO
-        List<User> userList = UserDAO.getFilteredUsers(search, status, sortBy, start, RECORDS_PER_PAGE);
+        int totalUserCount = UserDAO.getTotalUserCount(searchQuery,name, email, phone, username, roleName, roleId);
 
-        // Get total users count for pagination
-        int totalUsers = UserDAO.getTotalUserCount(search, status);
-        int totalPages = (int) Math.ceil((double) totalUsers / RECORDS_PER_PAGE);
-
-        // Set attributes
-        request.setAttribute("userList", userList);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-
-        RequestDispatcher dispatcher = request.getRequestDispatcher("AdminDashBoard/UserList.jsp");
-        dispatcher.forward(request, response);
+// Truyền dữ liệu xuống JSP
+        request.setAttribute("users", list);
+        
+        request.getRequestDispatcher("AdminDashBoard/UserList.jsp").forward(request, response);
+        
     }
 
     /**

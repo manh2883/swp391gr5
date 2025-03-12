@@ -359,38 +359,7 @@ public class UserDAO extends DBContext {
         return false;
     }
     
-     public static List<Object[]> getCustomerList() {
-        List<Object[]> customers = new ArrayList<>();
-        String query = "SELECT u.user_id, "
-                + "CONCAT(u.first_name, ' ', u.last_name) AS full_name, "
-                + "a.username, "
-                + "COALESCE(COUNT(o.order_id), 0) AS order_count, "
-                + "COALESCE(SUM(o.total_amount), 0) AS total_spent "
-                + "FROM user u "
-                + "JOIN account a ON u.user_id = a.user_id "
-                + "LEFT JOIN orders o ON u.user_id = o.user_id "
-                + "WHERE a.role_id = 2 "
-                + // Chỉ lấy customer (role_id = 2)
-                "GROUP BY u.user_id, full_name, a.username";
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
-            PreparedStatement stm = con.prepareStatement(query.toString());
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                customers.add(new Object[]{
-                    rs.getInt("user_id"),
-                    rs.getString("full_name"),
-                    rs.getString("username"),
-                    rs.getInt("order_count"),
-                    rs.getDouble("total_spent")
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return customers;
-    }
+     
 
     public static List<User> getFilteredUsers(String search, String status, String sortBy, int start, int recordsPerPage) {
         List<User> userList = new ArrayList<>();

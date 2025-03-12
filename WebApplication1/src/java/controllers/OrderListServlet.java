@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,31 +66,23 @@ public class OrderListServlet extends HttpServlet {
         String status = request.getParameter("status"); // Lọc theo trạng thái đơn hàng
         String fromDate = request.getParameter("fromDate"); // Lọc từ ngày
         String toDate = request.getParameter("toDate"); // Lọc đến ngày
-        String saleName = request.getParameter("saleName"); // Lọc theo nhân viên sales
-        String sortBy = request.getParameter("sortBy"); // Sắp xếp theo ngày, tên khách hàng, tổng giá trị, trạng thái
-
-        int page = 1;
-        int recordsPerPage = 10; // Phân trang, mỗi trang 10 đơn hàng
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
-        }
 
         OrderDAO orderDAO = new OrderDAO();
-        List<Order> orders = null;
+        ArrayList<Object[]> list;
         try {
-            orders = OrderDAO.filterOrder(null, null, null, null, null, null, sortBy, saleName, sortBy, null, null, null, null
-            );
-        } catch (SQLException ex) {
+            list = orderDAO.getFilterOrderView(searchQuery, status, fromDate, toDate);
+        } catch (Exception ex) {
             Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("errorMessage", "Có lỗi khi tải danh sách đơn hàng.");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            return;
         }
-        int totalRecords = orderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate, saleName);
-        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+        int totalRecords = orderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate);
 
-        request.setAttribute("orders", orders);
-        request.setAttribute("currentPage", page);
-//        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("orders", list);
+        
 
-        request.getRequestDispatcher("OrderList.jsp").forward(request, response);
+        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
     }
 
     /**

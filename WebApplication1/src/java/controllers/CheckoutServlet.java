@@ -122,6 +122,24 @@ public class CheckoutServlet extends HttpServlet {
         String orderNote = request.getParameter("orderNote");
         String userReceive = request.getParameter("name");
         String contact = request.getParameter("contact");
+        // Kiểm tra và lưu địa chỉ mới nếu cần
+        if (selectedAddress.equals("Other")) {
+            UserDAO userDAO = new UserDAO();
+
+            // Kiểm tra xem địa chỉ mới đã tồn tại chưa
+            if (userDAO.checkAddressExist(userId, newAddress)) {
+                request.setAttribute("message", "Địa chỉ này đã tồn tại.");
+                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+                return;
+            }
+
+            // Lưu địa chỉ mới vào database
+            if (!userDAO.saveNewAddress(userId, newAddress)) {
+                request.setAttribute("message", "Lỗi khi lưu địa chỉ mới.");
+                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+                return;
+            }
+        }
         // 3. Lấy giỏ hàng từ session
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         if (cartDetails == null || cartDetails.isEmpty()) {
@@ -161,7 +179,7 @@ public class CheckoutServlet extends HttpServlet {
 
         // Nếu Order chấp nhận double totalAmount
         Order order = new Order(0, userId, totalAmount, 1,
-                createAt,null, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
+                createAt, null, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
 
         // 6. Ghi vào database
         OrderDAO orderDAO = new OrderDAO();

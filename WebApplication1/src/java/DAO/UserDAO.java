@@ -548,7 +548,42 @@ public class UserDAO extends DBContext {
         return total;
     }
 
-    public static void main(String[] args) throws SQLException {
+    // Phương thức kiểm tra địa chỉ đã tồn tại chưa
+    public boolean checkAddressExist(int userId, String address) {
+        String query = "SELECT COUNT(*) FROM user_address WHERE user_id = ? AND address_content = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query.toString());
+            stm.setInt(1, userId);
+            stm.setString(2, address);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Phương thức lưu địa chỉ mới
+    public boolean saveNewAddress(int userId, String newAddress) {
+        String query = "INSERT INTO user_address (user_id, address_content) VALUES (?, ?)";
+        try{
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
+            PreparedStatement stm = con.prepareStatement(query.toString());
+            stm.setInt(1, userId);
+            stm.setString(2, newAddress);
+            return stm.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+public static void main(String[] args) throws SQLException {
         List<User> userList = getFilteredUsers(null, null, null, 0, 10);
         System.out.println(getUserByEmail("manhzxnm057@gmail.com"));
     }

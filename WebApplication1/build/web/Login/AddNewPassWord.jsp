@@ -9,75 +9,42 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let countdownTime = parseInt("${waitTime}", 10) || 0; // Chuyển thành số nguyên
-                let countdownText = document.getElementById("countdownText");
-                let sendOtpBtn = document.getElementById("sendOtpBtn");
-                let resendForm = document.getElementById("resendForm");
+            function validateForm(event) {
+                let newPassword = document.getElementById("newPassword").value.trim();
+                let rePassword = document.getElementById("rePassword").value.trim();
+                let passError = document.getElementById("passError");
 
-                function startCountdown() {
-                    if (countdownTime > 0) {
-                        sendOtpBtn.disabled = true;
-                        sendOtpBtn.style.visibility = "hidden";
-                        countdownText.innerText = `Wait ${countdownTime} seconds to resend...`;
+                // Reset lỗi trước khi kiểm tra
+                passError.innerText = "";
 
-                        let countdownInterval = setInterval(() => {
-                            countdownTime--;
-                            countdownText.innerText = `Wait ${countdownTime} seconds to resend...`;
-
-                            if (countdownTime <= 0) {
-                                clearInterval(countdownInterval);
-                                countdownText.innerText = "";
-                                sendOtpBtn.disabled = false;
-                                sendOtpBtn.style.visibility = "visible";
-                            }
-                        }, 1000);
-                    }
+                if (newPassword === "" || rePassword === "") {
+                    passError.innerText = "Password fields cannot be empty.";
+                    event.preventDefault();
+                    return false;
                 }
-
-                function resendOTP() {
-                    if (resendForm) {
-                        resendForm.submit(); // Gửi form để lấy OTP mới
-                    }
-
-                    // Reset countdown về 60 giây sau khi bấm resend
-                    countdownTime = 60;
-                    startCountdown();
+                if (newPassword.length < 8) {
+                    passError.innerText = "Password must be at least 8 characters.";
+                    event.preventDefault();
+                    return false;
                 }
-
-                startCountdown(); // Chạy countdown ngay khi vào trang
-
-                // Gán sự kiện khi bấm nút "Resend OTP"
-                if (sendOtpBtn) {
-                    sendOtpBtn.addEventListener("click", resendOTP);
+                if (newPassword.includes(" ") || rePassword.includes(" ")) {
+                    passError.innerText = "Password cannot contain spaces.";
+                    event.preventDefault();
+                    return false;
                 }
-            });
-
-
-
-            function validateEmail() {
-                let emailInput = document.getElementById("emailInput").value.trim();
-                let emailError = document.getElementById("emailError");
-                let submitButton = document.getElementById("submitButton");
-
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                if (!emailInput) {
-                    emailError.innerText = "Email is required.";
-                    if (submitButton)
-                        submitButton.disabled = true;
-                } else if (!emailRegex.test(emailInput)) {
-                    emailError.innerText = "Invalid email format.";
-                    if (submitButton)
-                        submitButton.disabled = true;
-                } else {
-                    emailError.innerText = "";
-                    if (submitButton)
-                        submitButton.disabled = false;
+                if (newPassword !== rePassword) {
+                    passError.innerText = "Passwords do not match.";
+                    event.preventDefault();
+                    return false;
                 }
+                return true;
             }
 
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector("form").addEventListener("submit", validateForm);
+            });
         </script>
+
 
     </head>
     <body>
@@ -86,7 +53,7 @@
             <div class="main-container" style="margin-top: 8vh; margin-bottom: 8vh;">
                 <div class="login-form">
                     <h3 class="text-center">Create New Password</h3>
-                    <form method="post" action="ForgotPassword">
+                    <form method="post" action="CreateNewPassWord">
 
                         <div class="form-floating mb-3">
                             <input type="password" class="form-control" 
@@ -100,12 +67,18 @@
                                    id="rePassword" name="rePassword" 
                                    style="height: 45px" placeholder="rePassword">
                             <label for="rePassword">Re-Enter Password</label>
+                            <div class="text-danger" id="passError">${passError}</div>
                         </div>
-                       
+
                         <input type="hidden" class="form-control" id="emailInput" name="email" value="${email}" >
 
                         <div class="d-grid">
                             <button class="btn btn-primary" type="submit">Continue</button>
+                            <div class="text-center"><!-- comment -->
+                                <div>
+                                    Haven't have an account? Sign up <a href="${pageContext.request.contextPath}/Register">here</a>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

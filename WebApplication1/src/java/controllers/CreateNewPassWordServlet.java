@@ -4,12 +4,17 @@
  */
 package controllers;
 
+import DAO.AccountDAO;
+import DAO.UserDAO;
+import Models.Account;
+import Models.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -34,7 +39,7 @@ public class CreateNewPassWordServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CreateNewPassWordServlet</title>");            
+            out.println("<title>Servlet CreateNewPassWordServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet CreateNewPassWordServlet at " + request.getContextPath() + "</h1>");
@@ -55,7 +60,18 @@ public class CreateNewPassWordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            Account acc = (Account) session.getAttribute("account");
+
+            if (acc != null) {
+                response.sendRedirect("ChangePassword");
+                return;
+            }
+        }
+
+        request.getRequestDispatcher("Login/AddNewPassWord.jsp").forward(request, response);
     }
 
     /**
@@ -69,7 +85,53 @@ public class CreateNewPassWordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         request.getRequestDispatcher("Login/CreateNewPassWord.jsp").forward(request, response);
+
+        String email = request.getParameter("email");
+        String newPassWord = request.getParameter("newPassword");
+        System.out.println(email + ", " + newPassWord);
+        Boolean changeStatus = false;
+        if (email != null && !email.isEmpty()) {
+            User user = UserDAO.getUserByEmail(email);
+
+            if (user != null) {
+                if (newPassWord != null && !newPassWord.isEmpty()) {
+                    int accId = AccountDAO.getAccountByUserId(user.getUserId()).getAccountId();
+                    changeStatus = AccountDAO.changePassword(accId, newPassWord);
+                    String passWord = AccountDAO.getAccountByUserId(user.getUserId()).getPassword();
+
+                    request.setAttribute("userName", email);
+                    request.setAttribute("passWord", passWord);
+                    request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+
+                    if (changeStatus) {
+                        request.setAttribute("passError", "Change Password successfully");
+                    } else {
+                        request.setAttribute("passWord", null);
+                        request.setAttribute("changeMessage", "Change Password failed");
+                    }
+                    request.setAttribute("changeStatus", true);
+                    request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
+
+                } else {
+                    request.setAttribute("passError", "Enter new password");
+                    request.getRequestDispatcher("Login/AddNewPassWord.jsp").forward(request, response);
+                }
+
+            } else {
+                request.setAttribute("emailError", "Email not found");
+                request.setAttribute("availOTP", false);
+                request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+            }
+            request.setAttribute("emailError", "Email not found");
+            request.setAttribute("availOTP", false);
+            request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+        } else {
+            request.setAttribute("emailError", "Email not found");
+            request.setAttribute("availOTP", true);
+            request.setAttribute("step", "Send OTP");
+            request.getRequestDispatcher("Login/ForgotPassWord.jsp").forward(request, response);
+        }
+
     }
 
     /**

@@ -4,12 +4,14 @@
  */
 package controllers;
 
+import Models.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -34,7 +36,7 @@ public class ChangePasswordServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePasswordServlet</title>");            
+            out.println("<title>Servlet ChangePasswordServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet ChangePasswordServlet at " + request.getContextPath() + "</h1>");
@@ -55,7 +57,8 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+
     }
 
     /**

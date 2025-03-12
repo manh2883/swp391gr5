@@ -99,7 +99,10 @@
 
                                 <div class="d-grid">
                                     <button id="submitButton" class="btn btn-primary" type="submit">${step}</button>
-                                </div>
+                                    <div class="text-center">
+                                        <div>Haven't have an account? Sign up <a href="${pageContext.request.contextPath}/Register">here</a></div>
+                                    </div>
+
                             </form>
                         </div>
                     </div>
@@ -117,11 +120,21 @@
                                     <input type="text" class="form-control" id="otpInput" name="otpInput" placeholder="xxxxxx" required style="height: 45px">
                                     <label for="otpInput">OTP</label>
                                     <div class="text-danger" id="otpError">${otpError}</div>
-                                    <p id="countdownText"></p>
-                                    <button id="sendOtpBtn" type="button" class="btn btn-link" onclick="resendOTP()" style="background: transparent; color: black">Resend OTP</button>
+                                    <div>
+                                        <a id="sendOtpBtn" class="btn-link" 
+                                            onclick="resendOTP()" style="background: transparent;
+                                            color: black;">Resend OTP</a>
+                                    </div>
+                                    
+                                    
                                 </div>
-                                <div class="d-grid">
-                                    <button class="btn btn-primary" type="submit">${step}</button>
+
+                                <div class="d-grid mb-3">
+                                    <button class="btn btn-primary" type="submit">Continue</button>
+
+                                    <div class="text-center">
+                                        <div>Already have an account? <a href="${pageContext.request.contextPath}/Login">Sign in here</a></div>
+                                    </div>
                                 </div>
                             </form>
                         </div>

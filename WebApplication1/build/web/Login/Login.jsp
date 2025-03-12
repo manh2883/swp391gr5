@@ -67,6 +67,12 @@
                                    name="passWord" placeholder="Password" style="height:45px" value="${passWord}">
                             <label for="passWordInput">Password</label>
                             <div class="text-danger" id="passError">${passError}</div>
+                            
+                            <c:choose>
+                                <c:when test="${changeStatus == true}">
+                                      <div class="text-success" id="passError">${statusMessage}</div>
+                                </c:when>
+                            </c:choose>
                         </div>
                         <div class="d-grid">
                             <button class="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" type="submit">Sign in</button>

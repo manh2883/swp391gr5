@@ -86,6 +86,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         if (otpInput == null || otpInput.isEmpty()) {
             request.setAttribute("otpError", "OTP input is required.");
         } else if (!realOtp.equals(otpInput.trim())) {
+            request.setAttribute("email", emailInput);
             request.setAttribute("otpError", "OTP does not match.");
         } else {
             request.setAttribute("email", emailInput);

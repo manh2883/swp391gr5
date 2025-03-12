@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.sql.Timestamp;
 import java.time.Instant;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -334,6 +335,25 @@ public class AccountDAO extends DBContext {
 
     }
 
+    public static boolean changePassword(int accountId, String newPassword) {
+        String sql = "UPDATE account SET password = ?, password_last_change = ? WHERE account_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, newPassword); // Hàm hash mật khẩu (có thể dùng BCrypt)
+            pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            pstmt.setLong(3, accountId);
+
+            int updatedRows = pstmt.executeUpdate();
+            return updatedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static void createAccount(Account account) {
 
         String sql = "INSERT INTO `account` ( `user_id`, `role_id`, `username`, "
@@ -346,6 +366,7 @@ public class AccountDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(sql);
             // update query
+
             stm.setInt(1, account.getUserId());
             stm.setInt(2, account.getRoleId());
             stm.setString(3, account.getUsername());
@@ -373,6 +394,11 @@ public class AccountDAO extends DBContext {
 
     public void editAccount(Account oldAcc, Account newAcc) {
 
+    }
+    // Hàm hash mật khẩu
+
+    private static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public static Account getAccountByUserName(String userName) {
@@ -691,7 +717,6 @@ public class AccountDAO extends DBContext {
 //        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));
 //        AccountDAO.createAccount(new Account(42, 1, "abc123", "12345678", 1, 1));
 //        System.out.println(AccountDAO.getAccountByUserId(42));
-        System.out.println(getAccountByUserName("admin"));
-        System.out.println(getOtpByEmail("manhzxnm057@gmail.com"));
+        System.out.println(getAccountByUserId(1));
     }
 }

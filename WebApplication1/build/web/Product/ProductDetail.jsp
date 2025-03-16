@@ -251,7 +251,7 @@
                             <!--                            <div class="col-sm-7 product-information" style="border: 1px solid red">
                                                             abnc
                                                         </div>-->
-                            <div class="category-tab shop-details-tab"><!--category-tab-->
+                            <div class="category-tab shop-details-tab col-12"><!--category-tab-->
                                 <div class="col-sm-12">
                                     <ul class="nav nav-tabs">
                                         <li class="active"><a href="#details" data-toggle="tab">Details</a></li>
@@ -274,7 +274,7 @@
 
                             <c:choose>
                                 <c:when test="${not empty recommendedtList}">
-                                    <div class="recommended_items"><!--recommended_items-->
+                                    <div class="recommended_items col-12"><!--recommended_items-->
                                         <h2 class="title text-center">recommended items</h2>
                                         <c:forEach var="entry" items="${recommendedtList}">
                                             <c:set var="product" value="${entry.key}" />
@@ -325,7 +325,7 @@
                                             </div>
                                         </c:forEach>
                                     </c:when>
-                                   
+
                                 </c:choose>
                             </div>
                         </div>

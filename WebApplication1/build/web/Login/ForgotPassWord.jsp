@@ -125,8 +125,7 @@
                                             onclick="resendOTP()" style="background: transparent;
                                             color: black;">Resend OTP</a>
                                     </div>
-                                    
-                                    
+          
                                 </div>
 
                                 <div class="d-grid mb-3">

@@ -12,8 +12,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -59,7 +64,7 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.sendRedirect("Home");
     }
 
     /**
@@ -77,33 +82,41 @@ public class SearchServlet extends HttpServlet {
 //        request.setAttribute("message", key);
 //        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
         ProductDAO pDAO = new ProductDAO();
-        ArrayList<Product> products = pDAO.getAllProducts();
-        //Category, Brand, ProductName, ProductId.
-        if (products == null || products.isEmpty()) {
-            request.setAttribute("message", "khong co san pham");
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        } else {
-
-            Iterator<Product> iterator = products.iterator();
-            while (iterator.hasNext()) {
-                Product p = iterator.next();
-                if (!p.getCategoryName().contains(key)
-                        && !p.getBrandName().toLowerCase().contains(key)
-                        && !p.getProductId().toLowerCase().contains(key)
-                        && !p.getName().toLowerCase().contains(key)) {
-                    iterator.remove();
-                }
-            }
-
+        List<Product> products;
+        try {
+            products = ProductDAO.productFilterList(key, key, null,
+                    null, null, null, null,
+                    null, null, null);
+            List<Map.Entry<Product, Map<Boolean, String>>> productList = pDAO.productFilterView(products);
+            //Category, Brand, ProductName, ProductId.
             if (products == null || products.isEmpty()) {
                 request.setAttribute("message", "khong co san pham");
                 request.getRequestDispatcher("Home/test.jsp").forward(request, response);
             } else {
-                request.setAttribute("ProductList", products);
-                request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
-            }
 
+                Iterator<Product> iterator = products.iterator();
+                while (iterator.hasNext()) {
+                    Product p = iterator.next();
+                    if (!p.getCategoryName().contains(key)
+                            && !p.getBrandName().toLowerCase().contains(key)
+                            && !p.getProductId().toLowerCase().contains(key)
+                            && !p.getName().toLowerCase().contains(key)) {
+                        iterator.remove();
+                    }
+                }
+
+                if (products == null || products.isEmpty()) {
+                    request.setAttribute("message", "khong co san pham");
+                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("ProductList", products);
+                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**

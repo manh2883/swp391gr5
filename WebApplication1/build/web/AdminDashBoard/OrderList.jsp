@@ -165,12 +165,12 @@
                                 <option value="5" ${param.status == '5' ? 'selected' : ''}>Canceled By Seller</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+<!--                        <div class="col-md-2">
                             <input type="date" name="fromDate" class="form-control" value="${param.fromDate}">
                         </div>
                         <div class="col-md-2">
                             <input type="date" name="toDate" class="form-control" value="${param.toDate}">
-                        </div>
+                        </div>-->
                         
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary">Search</button>

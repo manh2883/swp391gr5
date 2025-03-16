@@ -129,7 +129,7 @@ public class ProductDetailServlet extends HttpServlet {
 
                 List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = ProductDAO.getRecommendedProductList(3);
                 if (recommendedtList != null && !recommendedtList.isEmpty()) {
-//                    request.setAttribute("recommendedtList", recommendedtList);
+                  request.setAttribute("recommendedtList", recommendedtList);
                 }
 
                 request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);

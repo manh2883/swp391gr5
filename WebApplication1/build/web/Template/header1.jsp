@@ -71,16 +71,16 @@
 
                                     <c:choose>
                                         <c:when test="${not empty sessionScope.account}">
-                                            <li class="nav-item">
-                                                <a href="#">
-                                                    <i class="fa fa-star"></i> Wishlist
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="checkout.html">
-                                                    <i class="fa fa-crosshairs"></i> Checkout
-                                                </a>
-                                            </li>
+                                            <!--                                            <li class="nav-item">
+                                                                                            <a href="#">
+                                                                                                <i class="fa fa-star"></i> Wishlist
+                                                                                            </a>
+                                                                                        </li>
+                                                                                        <li class="nav-item">
+                                                                                            <a href="checkout.html">
+                                                                                                <i class="fa fa-crosshairs"></i> Checkout
+                                                                                            </a>
+                                                                                        </li>-->
                                             <li class="nav-item">
                                                 <a href="${pageContext.request.contextPath}/ViewCart">
                                                     <i class="fa fa-shopping-cart"></i> Cart
@@ -111,7 +111,7 @@
                                                 </a>
                                                 <ul class="sub-menu" role="menu"  >
                                                     <li style="width: 100%">
-                                                        <a href="profile.html" style="background-color: transparent; ">My Profile</a>
+                                                        <a href="${pageContext.request.contextPath}/MyProfile" style="background-color: transparent; ">My Profile</a>
                                                     </li >
                                                     <li style="width: 100%">
                                                         <a href="${pageContext.request.contextPath}/MyOrder" style="background-color: transparent; ">My Orders</a>

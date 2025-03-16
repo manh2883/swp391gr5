@@ -24,7 +24,7 @@
                 <div class="panel-body">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/MyProfile">My Profile</a></li>
-                        <li><a href="#">Change Password</a></li>
+                        <li><a href="${pageContext.request.contextPath}/ChangePassword">Change Password</a></li>
                     </ul>
                 </div>
             </div>

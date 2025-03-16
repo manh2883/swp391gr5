@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -56,14 +57,15 @@ public class AdminDashBoardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+//        HttpSession session = session.get
         //side bar open
-        request.setAttribute("defaultDropdown", "userManager");
+        request.setAttribute("defaultDropdown", "saleDashboard");
         // set title
         request.setAttribute("title", "Admin Dashboard");
         // set breadcrumbs
-        request.setAttribute("breadcrumbs", "Customer List");
+        request.setAttribute("breadcrumbs", "Order List");
     
-        request.getRequestDispatcher("AdminDashBoard/CustomerList.jsp").forward(request, response);
+        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
     }
 
     /**

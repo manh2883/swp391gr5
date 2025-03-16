@@ -140,6 +140,14 @@
         <servlet-name>ChangePasswordServlet</servlet-name>
         <servlet-class>controllers.ChangePasswordServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MyProfileServlet</servlet-name>
+        <servlet-class>controllers.MyProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ProductCreatorServlet</servlet-name>
+        <servlet-class>controllers.admin.ProductCreatorServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
@@ -276,13 +284,21 @@
         <servlet-name>ChangePasswordServlet</servlet-name>
         <url-pattern>/ChangePassword</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MyProfileServlet</servlet-name>
+        <url-pattern>/MyProfile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductCreatorServlet</servlet-name>
+        <url-pattern>/ProductCreator</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>Home/Index.jsp</welcome-file>
     </welcome-file-list>
-    <!--    <error-page>
+    <error-page>
         <error-code>404</error-code>
         <location>/Home/Error404.jsp</location>
-    </error-page>-->
+    </error-page>
     <servlet>
         <servlet-name>SendOtpServlet</servlet-name>
         <servlet-class>controllers.mail.SendOtpServlet</servlet-class>

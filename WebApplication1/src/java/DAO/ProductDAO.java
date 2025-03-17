@@ -9,6 +9,7 @@ import Models.Cart;
 import Models.CartDetail;
 import Models.Product;
 import Models.User;
+import com.mysql.cj.xdevapi.Statement;
 import com.sun.jdi.connect.spi.Connection;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -772,11 +774,9 @@ public class ProductDAO extends DBContext {
      * @return
      */
     public static List<Object[]> getAllBrand() {
-        String query = "SELECT brand.brand_id, brand.name, count(product.product_id) as product_count "
-                + "FROM tpfshopwearv2.brand "
-                + "JOIN product ON product.brand_id = brand.brand_id "
-                + "GROUP BY product.brand_id "
-                + "ORDER BY product_count DESC";
+        String query = "SELECT brand.brand_id, brand.name  "
+                + "FROM brand ";
+                
 
         List<Object[]> brandList = new ArrayList<>();
 
@@ -787,10 +787,10 @@ public class ProductDAO extends DBContext {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                Object[] brandData = new Object[3];
+                Object[] brandData = new Object[2];
                 brandData[0] = rs.getInt("brand_id");     // ID
                 brandData[1] = rs.getString("name");      // Name
-                brandData[2] = rs.getInt("product_count"); // Product count
+                
 
                 brandList.add(brandData);
             }
@@ -1311,6 +1311,93 @@ public class ProductDAO extends DBContext {
 
     }
 
+    public static void productCreator(String name, String des,
+            int brandId, int price, int categoryId,
+            List<Object[]> variantList) {
+
+    }
+
+    private static int getLastInsertedId(String tableName, String idColumn) {
+        String query = "SELECT " + idColumn + " FROM " + tableName + " ORDER BY " + idColumn + " DESC LIMIT 1";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int createNewCategory(String category) {
+        String query = "INSERT INTO product_category (category_name, is_visible) VALUES (?, 1)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            
+            stmt.setString(1, category);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                return getLastInsertedId("product_category", "category_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int createNewBrand(String brand) {
+        String query = "INSERT INTO brand (name) VALUES (?)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query);
+            
+            stmt.setString(1, brand);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                return getLastInsertedId("brand", "brand_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static List<String> getAllColor() {
+        List<String> list = new ArrayList<>();
+
+        String query = "SELECT distinct color FROM product_variant ";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+
+            PreparedStatement stm = con.prepareStatement(query);
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                String color = rs.getString("color");
+                if (color != null && !color.isEmpty()) {
+                    list.add('"'
+                            + color + '"');
+                }
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public static void main(String[] args) throws SQLException {
 
 //        for (Product p : getAllProducts()) {
@@ -1325,11 +1412,8 @@ public class ProductDAO extends DBContext {
 //            System.out.println("=========================================\n");
 //
 //        }
-        for (Product p : getAllProducts()) {
-            if (getIsVisibleForProductId(p.getProductId())) {
-                System.out.println(p);
-            }
-        }
-
+        System.out.println(getAllColor());
+        System.out.println(createNewBrand("KKKKK"));
+        System.out.println(createNewCategory("kkkk"));
     }
 }

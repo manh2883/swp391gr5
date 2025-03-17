@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,8 +17,12 @@
         <div>Test Screen </div>
 
         <h1>${message}</h1>
-        <div>${orderDetailList}</div>
-        <div>${orderInformation}</div>
+        <div>${message1}</div>
 
-    </body>
+        <div>${message2}</div>
+        <c:forEach var="entry" items="${message2}">
+            <p>${entry}</p>
+        </c:forEach>
+
+</body>
 </html>

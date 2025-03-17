@@ -100,11 +100,11 @@
                                     <tr class="cart_menu">
                                         <td class="price">ID</td>
                                         <td class="image" style="width: 150px ">Item</td>
-                                       
+
                                         <td class="price">Net Price</td>
                                         <td class="price">Current Price</td>
                                         <td class="total">Name</td>
-                                        
+
                                         <td class="total">Visibility</td>
                                         <td class="total">Category</td>
                                         <td class="total">Brand</td>
@@ -134,8 +134,8 @@
                                                             <p>${product.name}</p>
                                                         </div>
                                                     </td>
-                                                    
-                                                     <td>
+
+                                                    <td>
                                                         <div> 
                                                             <p>Yes</p> 
                                                         </div>

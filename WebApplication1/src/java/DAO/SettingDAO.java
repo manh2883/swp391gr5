@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,46 @@ public class SettingDAO {
     public static int getPublicProductPerPage() {
 
         return 5;
+    }
+
+    public static String[] getSizeList(Object sizeStart, Object sizeEnd) {
+        if (sizeStart instanceof Integer && sizeEnd instanceof Integer) {
+            return getNumbericSizeList((Integer) sizeStart, (Integer) sizeEnd);
+        } else if (sizeStart instanceof String && sizeEnd instanceof String) {
+            return getLetterSizelist((String) sizeStart, (String) sizeEnd);
+        }
+        return new String[]{"Standard"};
+    }
+
+    public static String[] getNumbericSizeList(int startSize, int endSize) {
+        if (startSize > endSize) {
+            return new String[]{"Standard"};
+        }
+        String[] sizeList = new String[endSize - startSize + 1];
+        for (int i = 0; i <= endSize - startSize; i++) {
+            sizeList[i] = String.valueOf(startSize + i);
+        }
+        return sizeList;
+    }
+
+    public static String[] getLetterSizelist(String start, String end) {
+        String[] sizeCList = {"S", "M", "L", "XL", "XXL", "XXXL"};
+        List<String> sizeList = Arrays.asList(sizeCList);
+
+        if (!sizeList.contains(start) || !sizeList.contains(end)) {
+            return new String[]{"Standard"};
+        }
+
+        int startIndex = sizeList.indexOf(start);
+        int endIndex = sizeList.indexOf(end);
+
+        if (startIndex > endIndex) {
+            int temp = startIndex;
+            startIndex = endIndex;
+            endIndex = temp;
+        }
+
+        return sizeList.subList(startIndex, endIndex + 1).toArray(new String[0]);
     }
 
     public static List<Object[]> getPublicBrandList() {
@@ -205,7 +246,10 @@ public class SettingDAO {
     }
 
     public static void main(String[] args) throws MessagingException, SQLException {
-        System.out.println(sendOTP("manhzxnm057@gmail.com"));
+        System.out.println(Arrays.toString((String[]) getSizeList(1, 12))); // [2, 3, 4, 5]
+        System.out.println(Arrays.toString((String[]) getSizeList("M", "XXL"))); // [M, L, XL, XXL]
+        System.out.println(Arrays.toString((String[]) getSizeList("XS", "L"))); // [Standard]
+        System.out.println(Arrays.toString((String[]) getSizeList(2, "L"))); // [Standard]
     }
 
 }

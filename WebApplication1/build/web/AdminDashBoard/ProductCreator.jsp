@@ -46,6 +46,26 @@
                 padding: 5px;
                 margin-bottom:  10px;
             }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                height: 20%;
+                width: 30%;
+                background-color: rgba(0,0,0,0.4);
+            }
+            .modal-content {
+                background-color: white;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 20%;
+                text-align: center;
+            }
+
+
         </style>
     </head>
     <body>
@@ -223,10 +243,10 @@
                                 <table class="col-12" style="right:0px">
                                     <tr>
                                         <td class="w-50 text-start">
-                                            <button type="button" class="btn btn-default get-manh-success" onclick="addVariant()">Add Variant</button>
+                                            <button type="button" class="btn btn-default get-manh" style="background-color: " onclick="addVariant()">Add Variant</button>
                                         </td>
                                         <td class="w-50 text-end">
-                                            <button type="submit" class="btn btn-default get-manh ">Create Product</button>
+                                            <button type="submit" class="btn btn-default get-manh " >Create Product</button>
                                         </td>
                                     </tr>
                                 </table>
@@ -235,6 +255,23 @@
                     </div>
                 </div>
         </section> <!--/#cart_items-->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content" style="width: 30%;">
+                <h2 class="title text-center" style="color: black">Create this Product?</h2>
+                <br>
+                <table>
+                    <tr>
+                        <td class="w-50">
+                            <button id="confirmBtn" class="btn btn-default get-manh">Confirm</button>
+                        </td>
+                        <td class="w-50">
+                            <button onclick="closeModal()" class="btn btn-default get-manh" style="background-color: crimson;">Cancel</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
         <br>
         <br>
         <c:import url="/Template/footer1.jsp" />
@@ -244,12 +281,29 @@
         </div>
 
         <script>
+
+
+            function openModal() {
+                document.getElementById("confirmationModal").style.display = "block";
+            }
+
+            function closeModal() {
+                document.getElementById("confirmationModal").style.display = "none";
+            }
+
+// Xử lý khi nhấn nút xác nhận
+            document.getElementById("confirmBtn").addEventListener("click", function () {
+                document.getElementById("productForm").submit();
+            });
+
             document.getElementById("productForm").addEventListener("submit", function (event) {
+                event.preventDefault();
                 let isValid = true;
 
                 // Lấy danh sách các giá trị trong dropdown
                 function getDropListValues(selectId) {
-                    return Array.from(document.getElementById(selectId).options).map(opt => opt.value.toLowerCase().trim());
+                    return Array.from(document.getElementById(selectId).options)
+                            .map(opt => opt.textContent.toLowerCase().trim()); // Lấy nội dung hiển thị của option
                 }
 
                 // Kiểm tra input không được rỗng và dưới 255 ký tự
@@ -264,7 +318,7 @@
                     } else if (value.length > 255) {
                         errorElement.textContent = fieldName + " không được quá 255 ký tự.";
                         isValid = false;
-                    } else if (inputId === "price" && value >= 100000000) {
+                    } else if (inputId === "price" && value > 100000000) {
                         errorElement.textContent = fieldName + " không được quá 100M";
                         isValid = false;
                     } else {
@@ -278,8 +332,8 @@
                     let errorElement = document.getElementById(errorId);
                     let dropListValues = getDropListValues(selectId);
                     let value = inputElement.value.trim().toLowerCase();
-
-                    if (value && dropListValues.includes(value)) {
+                    console.log(dropListValues);
+                    if (dropListValues.includes(value)) {
                         errorElement.textContent = fieldName + " đã tồn tại trong danh sách.";
                         isValid = false;
                     }
@@ -307,7 +361,11 @@
                 // Nếu có lỗi, ngăn form submit
                 if (!isValid) {
                     event.preventDefault();
+                } else {
+                    openModal();
                 }
+
+
             });
 
             function toggleBrandInput(selectElement) {
@@ -337,11 +395,18 @@
                 if (selectElement.value === "Other") {
                     newAddressInput.style.display = "block";
                     newAddressInput.required = true;
+
                 } else {
                     newAddressInput.style.display = "none";
                     newAddressInput.required = false;
                 }
             }
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    location.reload();
+                }
+            });
+
             let variantIndex = 0;
             function addVariant() {
                 let colorList = JSON.parse('${colorList}');
@@ -393,32 +458,15 @@
 
                 console.log(variantHTML);
                 $('#variantContainer').append(variantHTML);
+
+
             }
+
 
             function removeVariant(index) {
                 $('#variant_' + index).remove();
             }
             // Kiểm tra input color mới
-            function checkDuplicateColor(variantIndex) {
-                let colorSelect = document.getElementById(`color${variantIndex}`);
-                let newColorInput = document.getElementById(`newColor_${variantIndex}`);
-                let errorElement = document.getElementById(`colorError${variantIndex}`);
-
-                if (colorSelect.value === "Other") {
-                    let existingColors = Array.from(colorSelect.options).map(opt => opt.value.toLowerCase().trim());
-                    let newColor = newColorInput.value.trim().toLowerCase();
-
-                    if (newColor === "") {
-                        errorElement.textContent = "Màu sắc mới không được để trống.";
-                    } else if (newColor.length > 255) {
-                        errorElement.textContent = "Màu sắc mới không được quá 255 ký tự.";
-                    } else if (existingColors.includes(newColor)) {
-                        errorElement.textContent = "Màu sắc đã tồn tại trong danh sách.";
-                    } else {
-                        errorElement.textContent = "";
-                    }
-                }
-            }
 
 // Kiểm tra định dạng file ảnh
             function validateImage(variantIndex) {

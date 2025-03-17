@@ -1372,7 +1372,10 @@ public class ProductDAO extends DBContext {
     public static List<String> getAllColor() {
         List<String> list = new ArrayList<>();
 
-        String query = "SELECT distinct color FROM product_variant ";
+      String query = "SELECT distinct color FROM product_variant " +
+               "WHERE LOWER(color) IN (SELECT LOWER(color) FROM product_variant GROUP BY LOWER(color)) " +
+               "ORDER BY color";
+
 
         try {
             DBContext db = new DBContext();
@@ -1413,7 +1416,6 @@ public class ProductDAO extends DBContext {
 //
 //        }
         System.out.println(getAllColor());
-        System.out.println(createNewBrand("KKKKK"));
-        System.out.println(createNewCategory("kkkk"));
+      
     }
 }

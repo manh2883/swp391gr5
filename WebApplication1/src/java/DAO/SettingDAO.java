@@ -40,32 +40,42 @@ public class SettingDAO {
         return 5;
     }
 
-    public static String[] getSizeList(Object sizeStart, Object sizeEnd) {
+    public static List<String> getSizeList(Object sizeStart, Object sizeEnd) {
+        List<String> defaultList = new ArrayList<>();
+
         if (sizeStart instanceof Integer && sizeEnd instanceof Integer) {
             return getNumbericSizeList((Integer) sizeStart, (Integer) sizeEnd);
         } else if (sizeStart instanceof String && sizeEnd instanceof String) {
             return getLetterSizelist((String) sizeStart, (String) sizeEnd);
+        } else {
+            defaultList.add("Standard");
+            return defaultList;
         }
-        return new String[]{"Standard"};
     }
 
-    public static String[] getNumbericSizeList(int startSize, int endSize) {
+    public static List<String> getNumbericSizeList(int startSize, int endSize) {
+        List<String> list = new ArrayList<>();
         if (startSize > endSize) {
-            return new String[]{"Standard"};
+            list.add("Standard");
+            return list;
         }
-        String[] sizeList = new String[endSize - startSize + 1];
+
         for (int i = 0; i <= endSize - startSize; i++) {
-            sizeList[i] = String.valueOf(startSize + i);
+            list.add(String.valueOf(startSize + i));
         }
-        return sizeList;
+        return list;
     }
 
-    public static String[] getLetterSizelist(String start, String end) {
+    public static List<String> getLetterSizelist(String start, String end) {
         String[] sizeCList = {"S", "M", "L", "XL", "XXL", "XXXL"};
+
         List<String> sizeList = Arrays.asList(sizeCList);
 
+        List<String> sizeListDefault = new ArrayList<>();
         if (!sizeList.contains(start) || !sizeList.contains(end)) {
-            return new String[]{"Standard"};
+
+            sizeListDefault.add("Standard");
+            return sizeListDefault;
         }
 
         int startIndex = sizeList.indexOf(start);
@@ -77,7 +87,7 @@ public class SettingDAO {
             endIndex = temp;
         }
 
-        return sizeList.subList(startIndex, endIndex + 1).toArray(new String[0]);
+        return sizeList.subList(startIndex, endIndex + 1);
     }
 
     public static List<Object[]> getPublicBrandList() {
@@ -246,10 +256,10 @@ public class SettingDAO {
     }
 
     public static void main(String[] args) throws MessagingException, SQLException {
-        System.out.println(Arrays.toString((String[]) getSizeList(1, 12))); // [2, 3, 4, 5]
-        System.out.println(Arrays.toString((String[]) getSizeList("M", "XXL"))); // [M, L, XL, XXL]
-        System.out.println(Arrays.toString((String[]) getSizeList("XS", "L"))); // [Standard]
-        System.out.println(Arrays.toString((String[]) getSizeList(2, "L"))); // [Standard]
+        System.out.println( getSizeList(1, 12)); // [2, 3, 4, 5]
+        System.out.println(getSizeList("M", "XXL")); // [M, L, XL, XXL]
+        System.out.println( getSizeList("XS", "L")); // [Standard]
+        System.out.println( getSizeList(2, "L")); // [Standard]
     }
 
 }

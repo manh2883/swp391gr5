@@ -85,7 +85,7 @@
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
                         <li><a href="${pageContext.request.contextPath}">Home</a></li>
-                        <li class="active">${breadcrumbs}</li>
+                        <li class="active">Product List</li>
                     </ol>
                 </div>
                 <div class="row" >
@@ -94,6 +94,15 @@
                     </div>
 
                     <div class="col-sm-9">
+                        <h2 class="title text-center" >Product List</h2>
+                        <table class="col-12">
+                            <tr class="col-12">
+                                <td class="text-end"> <a href="${pageContext.request.contextPath}/ProductCreator"> 
+                                        <button type="button" class="btn btn-default get-manh " style="background-color: green;margin-bottom: 20px">Create Product</button>
+                                    </a></td>
+                            </tr>
+                            <br>
+                        </table>
                         <div class="table-responsive cart_info">
                             <table class="table table-condensed">
                                 <thead>

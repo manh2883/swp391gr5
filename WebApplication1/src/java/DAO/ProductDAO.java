@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.sql.*;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -513,7 +514,10 @@ public class ProductDAO extends DBContext {
     public List<String> getAllColorbyProductId(String productId) {
 
         List<String> colors = new ArrayList<>();
-        String query = "SELECT DISTINCT color FROM product_variant WHERE product_id = ?";
+        String query = "SELECT distinct color FROM product_variant "
+                + "WHERE LOWER(color) IN (SELECT LOWER(color) FROM product_variant GROUP BY LOWER(color))"
+                + "And product_id = ? "
+                + "ORDER BY color";
 
         try {
             DBContext db = new DBContext();
@@ -776,7 +780,6 @@ public class ProductDAO extends DBContext {
     public static List<Object[]> getAllBrand() {
         String query = "SELECT brand.brand_id, brand.name  "
                 + "FROM brand ";
-                
 
         List<Object[]> brandList = new ArrayList<>();
 
@@ -790,7 +793,6 @@ public class ProductDAO extends DBContext {
                 Object[] brandData = new Object[2];
                 brandData[0] = rs.getInt("brand_id");     // ID
                 brandData[1] = rs.getString("name");      // Name
-                
 
                 brandList.add(brandData);
             }
@@ -1191,11 +1193,6 @@ public class ProductDAO extends DBContext {
         }
         return -1; // Trả về -1 nếu không tìm thấy
     }
-//SELECT pi.product_id, color, back_link
-//FROM product_image pi
-//left JOIN product_variant pv ON pi.product_variant_id = pv.variant_id
-//WHERE pv.product_id = 'P001'
-//AND pv.color = 'red';
 
     public static ArrayList<Object[]> getImageListByProduct(String productId) {
         ArrayList<Object[]> list = new ArrayList<>();
@@ -1311,10 +1308,150 @@ public class ProductDAO extends DBContext {
 
     }
 
-    public static void productCreator(String name, String des,
-            int brandId, int price, int categoryId,
-            List<Object[]> variantList) {
+    public static Product productCreator(String name, String des,
+            String brandIdString, String newBrand, int price, String categoryIdString, String newCategory,
+            List< Map<String, String>> variantList, List<String> sizeList
+    ) throws SQLException {
+        if (variantList == null || variantList.isEmpty()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("color", "Standard");
+            variantList.add(map);
+        }
 
+        if (brandIdString != null && !brandIdString.isEmpty()) {
+            if (brandIdString.equals("Other")) {
+                if (newBrand != null && !newBrand.isEmpty()) {
+                    brandIdString = String.valueOf(createNewBrand(newBrand));
+                } else {
+                    brandIdString = "-1";
+                }
+            }
+        } else {
+            brandIdString = "-1";
+        }
+
+        if (categoryIdString != null && !categoryIdString.isEmpty()) {
+            if (categoryIdString.equals("Other")) {
+                if (newCategory != null && !newCategory.isEmpty()) {
+                    categoryIdString = String.valueOf(createNewCategory(newCategory));
+                } else {
+                    categoryIdString = "-1";
+                }
+            }
+        } else {
+            categoryIdString = "-1";
+        }
+
+        Product pro = null;
+        String productId = getNextProductCode();
+
+        if (!brandIdString.equals("-1") && !categoryIdString.equals("-1")) {
+
+            String sql = "INSERT INTO product (product_id, name, description, brand_id, "
+                    + "price, category_id, created_at, is_visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection conn = db.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+
+                stmt.setString(1, productId);
+                stmt.setString(2, name);
+                stmt.setString(3, des);
+                stmt.setString(4, brandIdString);
+                stmt.setInt(5, price);
+                stmt.setString(6, categoryIdString);
+                stmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+                stmt.setBoolean(8, true);
+
+                stmt.execute();
+
+                System.out.println("sql: " + stmt);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            pro = getProductById(productId);
+
+            System.out.println("next: " + productId);
+            if (pro != null) {
+                addImagesToVariant(productId,
+                        createProductVariantsAndGetIds(productId, variantList, sizeList),
+                        variantList,
+                        sizeList.size());
+            }
+        }
+
+        return pro;
+    }
+
+    public static List<Integer> createProductVariantsAndGetIds(String productId, List<Map<String, String>> colorList,
+            List<String> sizeList) {
+        String sql = "INSERT INTO product_variant (product_id, color, size, stock) VALUES (?, ?, ?, ?)";
+        List<Integer> insertedIds = new ArrayList<>();
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            for (Map<String, String> map : colorList) {
+                String color = map.get("color");
+                boolean isFirstVariantOfColor = true;
+                for (String size : sizeList) {
+                    stmt.setString(1, productId);
+                    stmt.setString(2, color);
+                    stmt.setString(3, size);
+                    stmt.setInt(4, 10); // Stock có thể được cập nhật sau
+                    stmt.addBatch();
+
+                    if (isFirstVariantOfColor) {
+                        isFirstVariantOfColor = false;
+                    }
+                }
+            }
+
+            stmt.executeBatch();
+            ResultSet rs = stmt.getGeneratedKeys();
+
+            while (rs.next()) {
+                insertedIds.add(rs.getInt(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return insertedIds;
+    }
+
+    public static void addImagesToVariant(String productId,
+            List<Integer> variantIds, List<Map<String, String>> variantList, int sizeListSize) {
+        String sql = "INSERT INTO product_image (product_id, product_variant_id, description, back_link) VALUES (?, ?, ?, ?)";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            List<Integer> varIdReal = new ArrayList<>();
+            for (int i = 0; i < variantIds.size(); i += sizeListSize) {
+                varIdReal.add(variantIds.get(i));
+            }
+
+            for (int i = 0; i < varIdReal.size(); i++) {
+
+                int variantId = varIdReal.get(i);
+                Map<String, String> variantData = variantList.get(i);
+
+                stmt.setString(1, productId);
+                stmt.setLong(2, variantId);
+                stmt.setString(3, "Product Image");
+                stmt.setString(4, variantData.get("images"));
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static int getLastInsertedId(String tableName, String idColumn) {
@@ -1335,11 +1472,12 @@ public class ProductDAO extends DBContext {
 
     public static int createNewCategory(String category) {
         String query = "INSERT INTO product_category (category_name, is_visible) VALUES (?, 1)";
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection conn = db.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query);
-            
+
             stmt.setString(1, category);
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -1357,7 +1495,7 @@ public class ProductDAO extends DBContext {
             DBContext db = new DBContext();
             java.sql.Connection conn = db.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query);
-            
+
             stmt.setString(1, brand);
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -1372,10 +1510,9 @@ public class ProductDAO extends DBContext {
     public static List<String> getAllColor() {
         List<String> list = new ArrayList<>();
 
-      String query = "SELECT distinct color FROM product_variant " +
-               "WHERE LOWER(color) IN (SELECT LOWER(color) FROM product_variant GROUP BY LOWER(color)) " +
-               "ORDER BY color";
-
+        String query = "SELECT distinct color FROM product_variant "
+                + "WHERE LOWER(color) IN (SELECT LOWER(color) FROM product_variant GROUP BY LOWER(color)) "
+                + "ORDER BY color";
 
         try {
             DBContext db = new DBContext();
@@ -1402,20 +1539,38 @@ public class ProductDAO extends DBContext {
     }
 
     public static void main(String[] args) throws SQLException {
+        List<Map<String, String>> varListList = new ArrayList<>();
 
-//        for (Product p : getAllProducts()) {
-//            System.out.println(p.getName());
-//            ArrayList<Object[]> imgList = getImageListByProduct(p.getProductId());
-//            for (Object[] obj : getVariantListForProductId(p.getProductId())) {
-//                System.out.println("-------------");
-//                for (int i = 0; i <= 4; i++) {
-//                    System.out.println(obj[i] + ", ");
-//                }
-//            }
-//            System.out.println("=========================================\n");
-//
-//        }
-        System.out.println(getAllColor());
-      
+        Map<String, String> map1 = new HashMap<String, String>();
+        map1.put("color", "red");
+        map1.put("images", "red.png");
+        System.out.println(map1);
+        varListList.add(map1);
+
+        Map<String, String> map2 = new HashMap<String, String>();
+        map2.put("color", "blue");
+        map2.put("images", "blue.png");
+        System.out.println(map2);
+        varListList.add(map2);
+
+        Map<String, String> map3 = new HashMap<String, String>();
+        map3.put("color", "yellow");
+        map3.put("images", "yellow.png");
+        System.out.println(map3);
+        varListList.add(map3);
+
+        List<String> sizeList = new ArrayList<>();
+        sizeList.add("X");
+        sizeList.add("XXL");
+        sizeList.add("XXXL");
+
+        System.out.println(varListList);
+//          System.out.println(createProductVariantsAndGetIds("P012", varListList, sizeList));
+        addImagesToVariant("P012",
+                createProductVariantsAndGetIds("P012", varListList, sizeList),
+                varListList,
+                sizeList.size());
+
+        System.out.println(productCreator("Test Product", "des test", "1", "testBrand", 1000, "1", null, varListList, sizeList));
     }
 }

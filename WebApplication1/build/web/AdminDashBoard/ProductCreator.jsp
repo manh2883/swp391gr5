@@ -470,8 +470,8 @@
 
 // Kiểm tra định dạng file ảnh
             function validateImage(variantIndex) {
-                let fileInput = document.getElementById(`imageUpload${variantIndex}`);
-                let errorElement = document.getElementById(`imageError${variantIndex}`);
+                let fileInput = document.getElementById('imageUpload'+variantIndex);
+                let errorElement = document.getElementById('imageError'+variantIndex);
                 let allowedExtensions = ["jpg", "jpeg", "png", "gif"];
 
                 for (let file of fileInput.files) {

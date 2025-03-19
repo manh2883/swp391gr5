@@ -440,7 +440,8 @@
                                                                 var addToCartBtn = document.getElementById("addToCartBtn");
                                                                 var purchaseBtn = document.getElementById("purchaseBtn");
                                                                 if (stock > 0) {
-                                                                    stockMessage.innerText = "In stock: " + stock + " items";
+//                                                                    stockMessage.innerText = "In stock: " + stock + " items";
+                                                                    stockMessage.innerText = "Availble";
                                                                     stockMessage.style.color = "green";
                                                                     addToCartBtn.disabled = false;
                                                                     purchaseBtn.disabled = false;

@@ -57,21 +57,23 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-
-        if (session != null) {
-            Account acc = (Account) session.getAttribute("account");
-
-            if (acc != null) {
-                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
-                return;
-            } else {
-                response.sendRedirect("ForgotPassword");
-            }
-        } else {
-            response.sendRedirect("ForgotPassword");
-        }
-
+//        HttpSession session = request.getSession(false);
+//
+//        if (session != null) {
+//            Account acc = (Account) session.getAttribute("account");
+//
+//            if (acc != null) {
+//                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+//                return;
+//            } else {
+//
+//                response.sendRedirect("ForgotPassword");
+//            }
+//        } else {
+//            response.sendRedirect("ForgotPassword");
+//        }
+ request.setAttribute("defaultDropdown", "myProfile");
+        request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
     }
 
     /**

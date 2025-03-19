@@ -65,8 +65,10 @@ public class PermissionManagerServlet extends HttpServlet {
         PermissionDAO perDAO = new PermissionDAO();
 //          List<String> roles = perDAo.get
         List<Object[]> permissions = perDAO.getRolePermissionList(roleIds);
-        List<String> roles = perDAO.getRoleList(roleIds);
         
+        List<String> roles = perDAO.getRoleList(roleIds);
+         //side bar open
+                    request.setAttribute("defaultDropdown", "productManager");
         
         
         request.setAttribute("title", "Permission Manager");

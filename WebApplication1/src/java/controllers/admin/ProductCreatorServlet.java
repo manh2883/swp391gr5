@@ -100,7 +100,7 @@ public class ProductCreatorServlet extends HttpServlet {
         request.setAttribute("categoryDropList", categoryList);
         request.setAttribute("brandDropList", brandList);
         request.setAttribute("colorList", colorList);
-
+        request.setAttribute("defaultDropdown", "productManager");
         request.getRequestDispatcher("AdminDashBoard/ProductCreator.jsp").forward(request, response);
     }
 

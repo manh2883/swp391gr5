@@ -89,7 +89,7 @@ public class SaleStatisticServlet extends HttpServlet {
             request.setAttribute("order", order);
             request.setAttribute("top", top);
             //side bar open
-            request.setAttribute("defaultDropdown", "saleDashBoard");
+            request.setAttribute("defaultDropdown", "saleDashboard");
             // Forward sang JSP
             request.getRequestDispatcher("AdminDashBoard/SaleStatistic.jsp").forward(request, response);
         } catch (Exception e) {

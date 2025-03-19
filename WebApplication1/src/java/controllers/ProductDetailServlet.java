@@ -95,8 +95,8 @@ public class ProductDetailServlet extends HttpServlet {
                     request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                 }
 
-                boolean isNew = productDAO.isNewProduct(productId);
-                boolean isSale = productDAO.isSaleProduct(productId) != null;
+                boolean isNew = productDAO.isNewProduct(product);
+                boolean isSale = productDAO.isSaleProduct(product) != null;
 
                 String tag = null;
                 if (isSale) {

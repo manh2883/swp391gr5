@@ -72,47 +72,40 @@ public class PublicProductListServlet extends HttpServlet {
         }
 
         // Product List
-        List<Map.Entry<Product, Map<Boolean, String>>> productList = ProductDAO.getProductListPublic(0);
+        List<Map.Entry<Product, Map<Boolean, String>>> productList = new ArrayList<>();
 
         // Xây dựng URL hiện tại
         StringBuilder currentLink = new StringBuilder();
 
         // filter
-        if (productList != null && !productList.isEmpty()) {
-            // DungPT code here
+        // DungPT code here
+        // get Parameter
+        String categoryParam = request.getParameter("category");
+        String brandParam = request.getParameter("brand");
 
-            // get Parameter
-            String categoryParam = request.getParameter("category");
-            String brandParam = request.getParameter("brand");
+        // tao category
+        Long category = (categoryParam != null && !categoryParam.isEmpty()) ? Long.valueOf(categoryParam) : null;
+        Long brand = (brandParam != null && !brandParam.isEmpty()) ? Long.valueOf(brandParam) : null;
 
-            // tao category
-            Long category = (categoryParam != null && !categoryParam.isEmpty()) ? Long.valueOf(categoryParam) : null;
-            Long brand = (brandParam != null && !brandParam.isEmpty()) ? Long.valueOf(brandParam) : null;
-
-            List<Product> productFilter = new ArrayList<>();
-            try {
-                productFilter = ProductDAO.productFilterList(null,null,brand,category,null,null,null,null,null,null);
-                productList = ProductDAO.productFilterView(productFilter);
-            } catch (SQLException ex) {
-                Logger.getLogger(PublicProductListServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        List<Product> productFilter = new ArrayList<>();
+        try {
+            productFilter = ProductDAO.productFilterList(null, null, brand, category, null, null, null, null, null, null);
             
-            productList = ProductDAO.productFilterView(productFilter);
-            
-            
-            
-            
-            // Truyền currentLink về JSP
-            if (category != null) {
-                currentLink.append("category=").append(category).append("&");
-            }
-            if (brand != null) {
-                currentLink.append("brand=").append(brand).append("&");
-            }
-
-            request.setAttribute("currentLink", currentLink.toString());
-
+        } catch (SQLException ex) {
+            Logger.getLogger(PublicProductListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        productList = ProductDAO.productFilterView(productFilter);
+
+        // Truyền currentLink về JSP
+        if (category != null) {
+            currentLink.append("category=").append(category).append("&");
+        }
+        if (brand != null) {
+            currentLink.append("brand=").append(brand).append("&");
+        }
+
+        request.setAttribute("currentLink", currentLink.toString());
 
         // phan trang start
         // Tính toán số lượng trang
@@ -159,12 +152,7 @@ public class PublicProductListServlet extends HttpServlet {
         }
 
         // phan trang end
-//        // log: test subList
-//        String log = "";
-//                for (Map.Entry<Product, Map<Boolean, String>> entry : subProductList) {
-//            log += entry.getKey().getProductId();
-//        }
-//        request.setAttribute("log", log);
+
         // truyen du lieu
         request.getRequestDispatcher("Home/ViewPublicProductList.jsp").forward(request, response);
     }

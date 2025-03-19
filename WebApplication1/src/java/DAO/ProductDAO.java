@@ -22,6 +22,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.*;
+import java.time.Duration;
+import java.time.Instant;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -920,46 +926,28 @@ public class ProductDAO extends DBContext {
         return price;
     }
 
-    public static Map<Boolean, String> getProcductNotifyInformation(String productId) {
+    public static Map<Boolean, String> getProcductNotifyInformation(Product pro) {
         Map<Boolean, String> map = new HashMap<>();
-        boolean isNew = isNewProduct(productId);
-        String isSalse = isSaleProduct(productId);
+        boolean isNew = isNewProduct(pro);
+        String isSalse = isSaleProduct(pro);
         map.put(isNew, isSalse);
         return map;
 
     }
 
-    public static boolean isNewProduct(String productId) {
+    public static boolean isNewProduct(Product pro) {
         boolean isNew = false;
-        String query = """
-                       SELECT * 
-                       FROM product 
-                       WHERE created_at >= NOW() - INTERVAL 14 DAY
-                       and product_id = ?""";
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement stm = con.prepareStatement(query);
-            stm.setString(1, productId);
-            ResultSet rs = stm.executeQuery();
-
-            while (rs.next()) {
-                isNew = true;
-            }
-            rs.close();
-            stm.close();
-            con.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Lấy ngày hiện tại
+        if (pro.getCreateAt() != null) {
+            isNew = Duration.between(pro.getCreateAt().toInstant(), Instant.now()).getSeconds() <= 60 * 60 * 24 * 14;
         }
 
         return isNew;
     }
 
-    public static String isSaleProduct(String productId) {
-        Product pro = getProductById(productId);
-        double price = getCurrentPriceByProductId(productId);
+    public static String isSaleProduct(Product pro) {
+
+        double price = getCurrentPriceByProductId(pro.getProductId());
 
         if (price > -1) {
             if (pro.getPrice() > price) {
@@ -972,7 +960,7 @@ public class ProductDAO extends DBContext {
     public static Map<Product, Map<Boolean, String>> getProductView() {
         Map<Product, Map<Boolean, String>> productList = new HashMap<>();
         for (Product p : getAllProducts()) {
-            productList.put(p, getProcductNotifyInformation(p.getProductId()));
+            productList.put(p, getProcductNotifyInformation(p));
         }
         return productList;
     }
@@ -987,7 +975,7 @@ public class ProductDAO extends DBContext {
             if (quantity > 0 && count >= quantity) {
                 break;
             }
-            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            productMap.put(p, getProcductNotifyInformation(p));
             count++;
         }
 
@@ -1005,7 +993,7 @@ public class ProductDAO extends DBContext {
             if (quantity > 0 && count >= quantity) {
                 break;
             }
-            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            productMap.put(p, getProcductNotifyInformation(p));
             count++;
         }
 
@@ -1167,7 +1155,7 @@ public class ProductDAO extends DBContext {
 
         for (Product p : productList) {
 
-            productMap.put(p, getProcductNotifyInformation(p.getProductId()));
+            productMap.put(p, getProcductNotifyInformation(p));
 
         }
 

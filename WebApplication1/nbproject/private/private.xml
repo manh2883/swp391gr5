@@ -12,15 +12,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/PublicProductListServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ProductDetailServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/SettingDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Product/ProductDetail.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/AdminDashBoard/ProductCreator.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/models/Product.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/admin/ProductCreatorServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Home/test.jsp</file>
+            <file>file:/D:/SWP/swp391gr5/WebApplication1/web/Cart/Checkout.jsp</file>
+            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/DAO/SaleDAO.java</file>
+            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/DAO/PermissionDAO.java</file>
+            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/controllers/SaleStatisticServlet.java</file>
+            <file>file:/D:/SWP/swp391gr5/WebApplication1/web/AdminDashBoard/SaleStatistic.jsp</file>
         </group>
     </open-files>
 </project-private>

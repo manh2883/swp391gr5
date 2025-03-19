@@ -7,13 +7,10 @@ package DAO;
 import DBContext.DBContext;
 import Models.CartDetail;
 import Models.Product;
-import Models.User;
-import Models.UserAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.tomcat.dbcp.dbcp2.SQLExceptionList;
 
 /**
  *

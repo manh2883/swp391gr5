@@ -140,7 +140,8 @@ public class ProductCreatorServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         Account account = (Account) session.getAttribute("account");
-        String currentUrl = "MyOrder";
+        String currentUrl = "ProductCreator";
+        List<Map<String, String>> variantList = new ArrayList<>();
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
@@ -192,21 +193,19 @@ public class ProductCreatorServlet extends HttpServlet {
 
                     // Kiểm tra đường dẫn thư mục lưu ảnh
                     String uploadPath = new File(getServletContext().getRealPath("/")).getParentFile().getParent() + "/web/Images/ProductDetail/";
-                    List<String> messageList = new ArrayList<>();
+//                    List<String> messageList = new ArrayList<>();
                     System.out.println("Upload Path: " + uploadPath);
-                    messageList.add("Upload Path: " + uploadPath);
+//                    messageList.add("Upload Path: " + uploadPath);
                     // Đảm bảo thư mục tồn tại
                     File uploadDir = new File(uploadPath);
                     if (!uploadDir.exists()) {
                         boolean created = uploadDir.mkdirs();
                         System.out.println("Created directory: " + created);
-                        messageList.add("Created directory: " + created);
+//                        messageList.add("Created directory: " + created);
                     }
 
                     // Lấy danh sách biến thể
 //        List<Map<String, Object>> variantList = new ArrayList<>();
-                    List<Map<String, String>> variantList = new ArrayList<>();
-
                     List<String> imagePaths = new ArrayList<>();
                     List<String> colorList = new ArrayList<>();
                     String colorTest = "";
@@ -214,7 +213,7 @@ public class ProductCreatorServlet extends HttpServlet {
                     for (int i = 1; request.getParameter("variant[" + i + "][color]") != null; i++) {
                         String color = request.getParameter("variant[" + i + "][color]");
                         String imgUrl = "";
-                        messageList.add(color + "\n");
+//                        messageList.add(color + "\n");
                         String newColor = request.getParameter("newColor_" + i);
 
                         if (color.equals("Other")) {
@@ -227,10 +226,11 @@ public class ProductCreatorServlet extends HttpServlet {
                         colorTest += color + ", ";
 
                         if (color.length() > 1) {
-                            color = color.toUpperCase().charAt(0) + color.toLowerCase().substring(1);
+                            color = color.substring(0, 1).toUpperCase() + color.substring(1).toLowerCase();
                         } else {
                             color = color.toUpperCase();
                         }
+                        System.out.println("color: " + color);
                         // Danh sách ảnh của biến thể
                         for (Part part : request.getParts()) {
                             if (part.getName().equals("variant[" + i + "][images]") && part.getSize() > 0) {
@@ -261,13 +261,13 @@ public class ProductCreatorServlet extends HttpServlet {
                                 try {
                                     part.write(filePath);
                                     System.out.println("File saved at: " + filePath);
-                                    messageList.add("File saved at: " + filePath);
+//                                    messageList.add("File saved at: " + filePath);
                                     // Lưu đường dẫn tương đối vào DB
                                     imgUrl = "Images/ProductDetail/" + newFileName;
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                     System.out.println("Error saving file: " + e.getMessage());
-                                    messageList.add("Error saving file: " + e.getMessage());
+//                                    messageList.add("Error saving file: " + e.getMessage());
                                 }
                             }
                         }
@@ -275,30 +275,16 @@ public class ProductCreatorServlet extends HttpServlet {
                         if (imgUrl.isEmpty() || imgUrl == null) {
                             imgUrl = "Images/RUN.jpg";
                         }
-
                         // Thêm biến thể vào danh sách
-                        Set<String> colorSet = new HashSet<>(colorList); // Chuyển List thành Set để tìm kiếm nhanh hơn
 
-                        // Kiểm tra xem color đã tồn tại chưa
-                        Map<String, String> variantData = new HashMap<>();
-                        variantData.put("color", color);
-                        variantData.put("images", imgUrl);
-
-                        boolean test = false;
-                        for (String colorE : colorList) {
-                            if (colorE.equals(variantData.get("color"))) {
-                                test = true;
-                            }
-                            if (test = true) {
-                                break;
-                            }
-                        }
-                        if (!test) {
-                            variantList.add(variantData);
+                        if (!colorList.contains(color)) { // **Kiểm tra xem màu đã tồn tại chưa**
                             colorList.add(color);
+                            Map<String, String> variantData = new HashMap<>();
+                            variantData.put("color", color);
+                            variantData.put("images", imgUrl.isEmpty() ? "Images/RUN.jpg" : imgUrl);
+                            variantList.add(variantData);
                         }
                     }
-
                     Product returnProduct = null;
                     try {
                         returnProduct = ProductDAO.productCreator(name, description, brandIdString, newBrand,
@@ -309,8 +295,9 @@ public class ProductCreatorServlet extends HttpServlet {
 
 //        request.setAttribute("message1", name + description + brandIdString + newBrand
 //                + price + categoryIdString + newCategory);
-//        request.setAttribute("message2", variantList);
-//        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+//                    request.setAttribute("message1", colorList);
+//                    request.setAttribute("message2", variantList);
+//                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                     if (returnProduct != null) {
                         response.sendRedirect("ProductDetail?productId=" + returnProduct.getProductId());
                     } else {

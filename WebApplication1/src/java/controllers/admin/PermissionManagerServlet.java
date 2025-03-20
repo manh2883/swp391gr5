@@ -5,12 +5,14 @@
 package controllers.admin;
 
 import DAO.PermissionDAO;
+import Models.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -60,22 +62,46 @@ public class PermissionManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ config hoặc DB
 
-        PermissionDAO perDAO = new PermissionDAO();
+        HttpSession session = request.getSession();
+
+        Account account = (Account) session.getAttribute("account");
+        String currentUrl = "MyOrder";
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("MyOrderList", role) && !pDAO.checkPermissionForRole("OrderManager", role)) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                } else {
+                    int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ config hoặc DB
+
+                    PermissionDAO perDAO = new PermissionDAO();
 //          List<String> roles = perDAo.get
-        List<Object[]> permissions = perDAO.getRolePermissionList(roleIds);
-        
-        List<String> roles = perDAO.getRoleList(roleIds);
-         //side bar open
+                    List<Object[]> permissions = perDAO.getRolePermissionList(roleIds);
+
+                    List<String> roles = perDAO.getRoleList(roleIds);
+                    //side bar open
                     request.setAttribute("defaultDropdown", "productManager");
-        
-        
-        request.setAttribute("title", "Permission Manager");
-        request.setAttribute("breadcrumbs", "Permission Manager");
-        request.setAttribute("permissions", permissions);
-        request.setAttribute("roleIds", roles);
-        request.getRequestDispatcher("AdminDashBoard/Permission.jsp").forward(request, response);
+
+                    request.setAttribute("title", "Permission Manager");
+                    request.setAttribute("breadcrumbs", "Permission Manager");
+                    request.setAttribute("permissions", permissions);
+                    request.setAttribute("roleIds", roles);
+                    request.getRequestDispatcher("AdminDashBoard/Permission.jsp").forward(request, response);
+                }
+
+            } else {
+                session.setAttribute("prevLink", "PermissionManager");
+                response.sendRedirect("Login");
+            }
+        } else {
+            session.setAttribute("prevLink", "PermissionManager");
+            response.sendRedirect("Login");
+        }
+
     }
 
     /**
@@ -89,18 +115,43 @@ public class PermissionManagerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int permissionId = Integer.parseInt(request.getParameter("permissionId"));
-        int roleId = Integer.parseInt(request.getParameter("roleId"));
 
-        try {
-            // Gọi DAO để cập nhật quyền trong database
-            PermissionDAO.togglePermission(permissionId, roleId);
-        } catch (SQLException ex) {
-            Logger.getLogger(PermissionManagerServlet.class.getName()).log(Level.SEVERE, null, ex);
+        HttpSession session = request.getSession();
+
+        Account account = (Account) session.getAttribute("account");
+        String currentUrl = "MyOrder";
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("PermissionManager", role) ) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                } else {
+                    int permissionId = Integer.parseInt(request.getParameter("permissionId"));
+                    int roleId = Integer.parseInt(request.getParameter("roleId"));
+
+                    try {
+                        // Gọi DAO để cập nhật quyền trong database
+                        PermissionDAO.togglePermission(permissionId, roleId);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(PermissionManagerServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    // Redirect về trang cũ để cập nhật giao diện
+                    response.sendRedirect("PermissionManager");
+                }
+
+            } else {
+                session.setAttribute("prevLink", "PermissionManager");
+                response.sendRedirect("Login");
+            }
+        } else {
+            session.setAttribute("prevLink", "PermissionManager");
+            response.sendRedirect("Login");
         }
 
-        // Redirect về trang cũ để cập nhật giao diện
-        response.sendRedirect("PermissionManager");
     }
 
     /**

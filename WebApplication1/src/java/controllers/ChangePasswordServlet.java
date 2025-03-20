@@ -4,7 +4,12 @@
  */
 package controllers;
 
+import DAO.AccountDAO;
+import DAO.SettingDAO;
+import DAO.UserDAO;
 import Models.Account;
+import Models.User;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +17,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -57,23 +67,28 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        HttpSession session = request.getSession(false);
-//
-//        if (session != null) {
-//            Account acc = (Account) session.getAttribute("account");
-//
-//            if (acc != null) {
-//                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
-//                return;
-//            } else {
-//
-//                response.sendRedirect("ForgotPassword");
-//            }
-//        } else {
-//            response.sendRedirect("ForgotPassword");
-//        }
- request.setAttribute("defaultDropdown", "myProfile");
-        request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            Account acc = (Account) session.getAttribute("account");
+
+            if (acc != null) {
+                int userId = UserDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = UserDAO.getUserById(userId);
+                boolean otpSent = false;
+
+                request.setAttribute("email", user.getEmail());
+                request.setAttribute("defaultDropdown", "myProfile");
+                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                return;
+            } else {
+                session.setAttribute("prevLink", "ChangePassword");
+                response.sendRedirect("Login");
+            }
+        } else {
+            response.sendRedirect("ForgotPassword");
+        }
+
     }
 
     /**
@@ -87,7 +102,73 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            Account acc = (Account) session.getAttribute("account");
+
+            if (acc != null) {
+                int userId = UserDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = UserDAO.getUserById(userId);
+                String email = user.getEmail();
+                String otp = AccountDAO.getOtpByEmail(email);
+                java.sql.Timestamp time = AccountDAO.getOtpLastSendTimeByEmail(email);
+
+                Instant now = Instant.now();
+                Instant last = time.toInstant();
+                Duration dur = Duration.between(last, now);
+
+                String password = request.getParameter("password");
+                String rePassword = request.getParameter("rePassword");
+                String OTP = request.getParameter("OTP");
+
+                String oldPassword = request.getParameter("oldPassword");
+
+                if (password.equals(rePassword)) {
+                    if (oldPassword.equals(AccountDAO.getAccountByUserId(userId).getPassword())) {
+                        if (dur.getSeconds() <= 60) {
+                            if (otp.equals(OTP)) {
+                                AccountDAO.changePassword(acc.getAccountId(), password);
+                                request.setAttribute("defaultDropdown", "myProfile");
+                                request.setAttribute("message", "Change password successfully.");
+                                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                            } else {
+                                request.setAttribute("email", user.getEmail());
+                                request.setAttribute("defaultDropdown", "myProfile");
+                                request.setAttribute("nameError3", "OTP is incorrect.");
+                                request.setAttribute("message", "Change password failed");
+                                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                            }
+                        } else {
+                            request.setAttribute("email", user.getEmail());
+                            request.setAttribute("defaultDropdown", "myProfile");
+                            request.setAttribute("message", "Change password failed");
+                            request.setAttribute("nameError3", "OTP is expired.");
+
+                            request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                        }
+
+                    } else {
+                        request.setAttribute("email", user.getEmail());
+                        request.setAttribute("defaultDropdown", "myProfile");
+                        request.setAttribute("nameError0", "Password does not match.");
+                        request.setAttribute("message", "Change password failed");
+                        request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                    }
+                } else {
+                    request.setAttribute("email", user.getEmail());
+                    request.setAttribute("nameError2", "Passwords do not match.");
+                    request.setAttribute("message", "Change password failed");
+                    request.setAttribute("defaultDropdown", "myProfile");
+                    request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
+                }
+
+            } else {
+                response.sendRedirect("ForgotPassword");
+            }
+        } else {
+            response.sendRedirect("ForgotPassword");
+        }
     }
 
     /**

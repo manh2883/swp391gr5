@@ -4,8 +4,10 @@
  */
 package controllers.admin;
 
+import DAO.PermissionDAO;
 import DAO.ProductDAO;
 import DAO.SettingDAO;
+import Models.Account;
 import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +16,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Paths;
@@ -77,31 +80,50 @@ public class ProductCreatorServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
 
-        List<String> sizeNList = SettingDAO.getNumbericSizeList(20, 45);
-        List<String> sizeCList = SettingDAO.getLetterSizelist("S", "XXL");
+        Account account = (Account) session.getAttribute("account");
+        String currentUrl = "MyOrder";
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("AddProducts", role)) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                } else {
+                    List<String> sizeNList = SettingDAO.getNumbericSizeList(20, 45);
+                    List<String> sizeCList = SettingDAO.getLetterSizelist("S", "XXL");
 
-        String[] nList = new String[sizeNList.size()];
-        for (int i = 0; i < sizeNList.size(); i++) {
-            nList[i] = sizeNList.get(i);
+                    String[] nList = new String[sizeNList.size()];
+                    for (int i = 0; i < sizeNList.size(); i++) {
+                        nList[i] = sizeNList.get(i);
+                    }
+
+                    String[] cList = new String[sizeCList.size()];
+                    for (int i = 0; i < sizeCList.size(); i++) {
+                        cList[i] = sizeCList.get(i);
+                    }
+
+                    Map<Integer, String> categoryList = ProductDAO.getAllProductCategory();
+                    List<Object[]> brandList = ProductDAO.getAllBrand();
+                    List<String> colorList = ProductDAO.getAllColor();
+
+                    request.setAttribute("sizeNList", nList);
+                    request.setAttribute("sizeCList", cList);
+                    request.setAttribute("categoryDropList", categoryList);
+                    request.setAttribute("brandDropList", brandList);
+                    request.setAttribute("colorList", colorList);
+                    request.setAttribute("defaultDropdown", "productManager");
+                    request.getRequestDispatcher("AdminDashBoard/ProductCreator.jsp").forward(request, response);
+                }
+            }
+        } else {
+            session.setAttribute("prevLink", "ProductCreator");
+            response.sendRedirect("Login");
+
         }
-
-        String[] cList = new String[sizeCList.size()];
-        for (int i = 0; i < sizeCList.size(); i++) {
-            cList[i] = sizeCList.get(i);
-        }
-
-        Map<Integer, String> categoryList = ProductDAO.getAllProductCategory();
-        List<Object[]> brandList = ProductDAO.getAllBrand();
-        List<String> colorList = ProductDAO.getAllColor();
-
-        request.setAttribute("sizeNList", nList);
-        request.setAttribute("sizeCList", cList);
-        request.setAttribute("categoryDropList", categoryList);
-        request.setAttribute("brandDropList", brandList);
-        request.setAttribute("colorList", colorList);
-        request.setAttribute("defaultDropdown", "productManager");
-        request.getRequestDispatcher("AdminDashBoard/ProductCreator.jsp").forward(request, response);
     }
 
     /**
@@ -115,176 +137,195 @@ public class ProductCreatorServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession();
 
-        String testString = "";
-        // Lấy thông tin sản phẩm
-        String name = request.getParameter("name");
-        testString += name + ", ";
-
-        String description = request.getParameter("description");
-        testString += description + ", ";
-        String brandIdString = request.getParameter("brandInput");
-
-        String newBrand = request.getParameter("newBrand");
-
-        String categoryIdString = request.getParameter("categoryInput");
-
-        String newCategory = request.getParameter("newCategory");
-
-        int price = Integer.parseInt(request.getParameter("price"));
-        testString += price + ", ";
-        //Size
-        String sizeType = request.getParameter("sizeType");
-        List<String> sizeList = new ArrayList<>();
-        switch (sizeType) {
-            case "number": {
-                int sizeStart = Integer.parseInt(request.getParameter("sizeStart"));
-                int sizeEnd = Integer.parseInt(request.getParameter("sizeEnd"));
-                sizeList = SettingDAO.getSizeList(sizeStart, sizeEnd);
-                break;
-            }
-            case "letter": {
-                String sizeStart = request.getParameter("sizeStart");
-                String sizeEnd = request.getParameter("sizeEnd");
-                sizeList = SettingDAO.getSizeList(sizeStart, sizeEnd);
-                break;
-            }
-            default:
-                sizeList.add("Standard");
-                break;
-        }
-
-        // Kiểm tra đường dẫn thư mục lưu ảnh
-        String uploadPath = new File(getServletContext().getRealPath("/")).getParentFile().getParent() + "/web/Images/ProductDetail/";
-        List<String> messageList = new ArrayList<>();
-        System.out.println("Upload Path: " + uploadPath);
-        messageList.add("Upload Path: " + uploadPath);
-        // Đảm bảo thư mục tồn tại
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            boolean created = uploadDir.mkdirs();
-            System.out.println("Created directory: " + created);
-            messageList.add("Created directory: " + created);
-        }
-
-        // Lấy danh sách biến thể
-//        List<Map<String, Object>> variantList = new ArrayList<>();
-        List<Map<String, String>> variantList = new ArrayList<>();
-
-        List<String> imagePaths = new ArrayList<>();
-        List<String> colorList = new ArrayList<>();
-        String colorTest = "";
-        // Duyệt các biến thể
-        for (int i = 1; request.getParameter("variant[" + i + "][color]") != null; i++) {
-            String color = request.getParameter("variant[" + i + "][color]");
-            String imgUrl = "";
-            messageList.add(color + "\n");
-            String newColor = request.getParameter("newColor_" + i);
-
-            if (color.equals("Other")) {
-                if (newColor != null && !newColor.isEmpty()) {
-                    color = newColor;
+        Account account = (Account) session.getAttribute("account");
+        String currentUrl = "MyOrder";
+        int role = 0;
+        if (account != null) {
+            role = account.getRoleId();
+            if (role != 0) {
+                PermissionDAO pDAO = new PermissionDAO();
+                if (!pDAO.checkPermissionForRole("AddProducts", role)) {
+                    request.setAttribute("message", "no permission");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
-                    color = "Standard";
-                }
-            }
-            colorTest += color + ", ";
+                    request.setCharacterEncoding("UTF-8");
 
-            if (color.length() > 1) {
-                color = color.toUpperCase().charAt(0) + color.toLowerCase().substring(1);
-            } else {
-                color = color.toUpperCase();
-            }
-            // Danh sách ảnh của biến thể
-            for (Part part : request.getParts()) {
-                if (part.getName().equals("variant[" + i + "][images]") && part.getSize() > 0) {
+                    String testString = "";
+                    // Lấy thông tin sản phẩm
+                    String name = request.getParameter("name");
+                    testString += name + ", ";
 
-                    String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-                    String fileExtension = ""; // Phần mở rộng (ví dụ: .png, .jpg)
-                    String fileBaseName = fileName; // Tên file không có phần mở rộng
+                    String description = request.getParameter("description");
+                    testString += description + ", ";
+                    String brandIdString = request.getParameter("brandInput");
 
-                    int dotIndex = fileName.lastIndexOf(".");
-                    if (dotIndex != -1) {
-                        fileBaseName = fileName.substring(0, dotIndex);
-                        fileExtension = fileName.substring(dotIndex);
+                    String newBrand = request.getParameter("newBrand");
+
+                    String categoryIdString = request.getParameter("categoryInput");
+
+                    String newCategory = request.getParameter("newCategory");
+
+                    int price = Integer.parseInt(request.getParameter("price"));
+                    testString += price + ", ";
+                    //Size
+                    String sizeType = request.getParameter("sizeType");
+                    List<String> sizeList = new ArrayList<>();
+                    switch (sizeType) {
+                        case "number": {
+                            int sizeStart = Integer.parseInt(request.getParameter("sizeStart"));
+                            int sizeEnd = Integer.parseInt(request.getParameter("sizeEnd"));
+                            sizeList = SettingDAO.getSizeList(sizeStart, sizeEnd);
+                            break;
+                        }
+                        case "letter": {
+                            String sizeStart = request.getParameter("sizeStart");
+                            String sizeEnd = request.getParameter("sizeEnd");
+                            sizeList = SettingDAO.getSizeList(sizeStart, sizeEnd);
+                            break;
+                        }
+                        default:
+                            sizeList.add("Standard");
+                            break;
                     }
 
-                    String newFileName = fileName;
-                    File file = new File(uploadPath + File.separator + newFileName);
-                    int count = 1;
-
-                    // Nếu file đã tồn tại, thêm số vào tên file
-                    while (file.exists()) {
-                        newFileName = fileBaseName + "(" + count + ")" + fileExtension;
-                        file = new File(uploadPath + File.separator + newFileName);
-                        count++;
+                    // Kiểm tra đường dẫn thư mục lưu ảnh
+                    String uploadPath = new File(getServletContext().getRealPath("/")).getParentFile().getParent() + "/web/Images/ProductDetail/";
+                    List<String> messageList = new ArrayList<>();
+                    System.out.println("Upload Path: " + uploadPath);
+                    messageList.add("Upload Path: " + uploadPath);
+                    // Đảm bảo thư mục tồn tại
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        boolean created = uploadDir.mkdirs();
+                        System.out.println("Created directory: " + created);
+                        messageList.add("Created directory: " + created);
                     }
 
-                    String filePath = uploadPath + File.separator + newFileName;
+                    // Lấy danh sách biến thể
+//        List<Map<String, Object>> variantList = new ArrayList<>();
+                    List<Map<String, String>> variantList = new ArrayList<>();
 
+                    List<String> imagePaths = new ArrayList<>();
+                    List<String> colorList = new ArrayList<>();
+                    String colorTest = "";
+                    // Duyệt các biến thể
+                    for (int i = 1; request.getParameter("variant[" + i + "][color]") != null; i++) {
+                        String color = request.getParameter("variant[" + i + "][color]");
+                        String imgUrl = "";
+                        messageList.add(color + "\n");
+                        String newColor = request.getParameter("newColor_" + i);
+
+                        if (color.equals("Other")) {
+                            if (newColor != null && !newColor.isEmpty()) {
+                                color = newColor;
+                            } else {
+                                color = "Standard";
+                            }
+                        }
+                        colorTest += color + ", ";
+
+                        if (color.length() > 1) {
+                            color = color.toUpperCase().charAt(0) + color.toLowerCase().substring(1);
+                        } else {
+                            color = color.toUpperCase();
+                        }
+                        // Danh sách ảnh của biến thể
+                        for (Part part : request.getParts()) {
+                            if (part.getName().equals("variant[" + i + "][images]") && part.getSize() > 0) {
+
+                                String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                                String fileExtension = ""; // Phần mở rộng (ví dụ: .png, .jpg)
+                                String fileBaseName = fileName; // Tên file không có phần mở rộng
+
+                                int dotIndex = fileName.lastIndexOf(".");
+                                if (dotIndex != -1) {
+                                    fileBaseName = fileName.substring(0, dotIndex);
+                                    fileExtension = fileName.substring(dotIndex);
+                                }
+
+                                String newFileName = fileName;
+                                File file = new File(uploadPath + File.separator + newFileName);
+                                int count = 1;
+
+                                // Nếu file đã tồn tại, thêm số vào tên file
+                                while (file.exists()) {
+                                    newFileName = fileBaseName + "(" + count + ")" + fileExtension;
+                                    file = new File(uploadPath + File.separator + newFileName);
+                                    count++;
+                                }
+
+                                String filePath = uploadPath + File.separator + newFileName;
+
+                                try {
+                                    part.write(filePath);
+                                    System.out.println("File saved at: " + filePath);
+                                    messageList.add("File saved at: " + filePath);
+                                    // Lưu đường dẫn tương đối vào DB
+                                    imgUrl = "Images/ProductDetail/" + newFileName;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    System.out.println("Error saving file: " + e.getMessage());
+                                    messageList.add("Error saving file: " + e.getMessage());
+                                }
+                            }
+                        }
+
+                        if (imgUrl.isEmpty() || imgUrl == null) {
+                            imgUrl = "Images/RUN.jpg";
+                        }
+
+                        // Thêm biến thể vào danh sách
+                        Set<String> colorSet = new HashSet<>(colorList); // Chuyển List thành Set để tìm kiếm nhanh hơn
+
+                        // Kiểm tra xem color đã tồn tại chưa
+                        Map<String, String> variantData = new HashMap<>();
+                        variantData.put("color", color);
+                        variantData.put("images", imgUrl);
+
+                        boolean test = false;
+                        for (String colorE : colorList) {
+                            if (colorE.equals(variantData.get("color"))) {
+                                test = true;
+                            }
+                            if (test = true) {
+                                break;
+                            }
+                        }
+                        if (!test) {
+                            variantList.add(variantData);
+                            colorList.add(color);
+                        }
+                    }
+
+                    Product returnProduct = null;
                     try {
-                        part.write(filePath);
-                        System.out.println("File saved at: " + filePath);
-                        messageList.add("File saved at: " + filePath);
-                        // Lưu đường dẫn tương đối vào DB
-                        imgUrl = "Images/ProductDetail/" + newFileName;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("Error saving file: " + e.getMessage());
-                        messageList.add("Error saving file: " + e.getMessage());
+                        returnProduct = ProductDAO.productCreator(name, description, brandIdString, newBrand,
+                                price, categoryIdString, newCategory, variantList, sizeList);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ProductCreatorServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }
-            }
-
-            if (imgUrl.isEmpty() || imgUrl == null) {
-                imgUrl = "Images/RUN.jpg";
-            }
-
-            // Thêm biến thể vào danh sách
-            Set<String> colorSet = new HashSet<>(colorList); // Chuyển List thành Set để tìm kiếm nhanh hơn
-
-            // Kiểm tra xem color đã tồn tại chưa
-            Map<String, String> variantData = new HashMap<>();
-            variantData.put("color", color);
-            variantData.put("images", imgUrl);
-
-            boolean test = false;
-            for (String colorE : colorList) {
-                if (colorE.equals(variantData.get("color"))) {
-                    test = true;
-                }
-                if (test = true) {
-                    break;
-                }
-            }
-            if (!test) {
-                variantList.add(variantData);
-                colorList.add(color);
-            }
-        }
-
-        Product returnProduct = null;
-        try {
-            returnProduct = ProductDAO.productCreator(name, description, brandIdString, newBrand,
-                    price, categoryIdString, newCategory, variantList, sizeList);
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductCreatorServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
 //        request.setAttribute("message1", name + description + brandIdString + newBrand
 //                + price + categoryIdString + newCategory);
 //        request.setAttribute("message2", variantList);
 //        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        if (returnProduct != null) {
-            response.sendRedirect("ProductDetail?productId=" + returnProduct.getProductId());
+                    if (returnProduct != null) {
+                        response.sendRedirect("ProductDetail?productId=" + returnProduct.getProductId());
+                    } else {
+                        request.setAttribute("message1", "Unknown Error");
+                        request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                    }
+                }
+            }
         } else {
-            request.setAttribute("message1", "Unknown Error");
-            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            session.setAttribute("prevLink", "ProductCreator");
+            response.sendRedirect("Login");
         }
     }
+    // Hàm lấy tên file từ Part
 
-// Hàm lấy tên file từ Part
     private String extractFileName(Part part) {
         for (String content : part.getHeader("content-disposition").split(";")) {
             if (content.trim().startsWith("filename")) {

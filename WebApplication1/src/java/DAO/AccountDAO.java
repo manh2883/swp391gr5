@@ -130,7 +130,7 @@ public class AccountDAO extends DBContext {
 
     public Account loginWithUsername(String userName, String passWord) {
         String query = "SELECT * from Account "
-                + "where Account.username = ? and Account.password = ? "
+                + "where Account.username = ?  "
                 + "limit 1";
         Account account = new Account();
 
@@ -139,14 +139,18 @@ public class AccountDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, userName);
-            stm.setString(2, passWord);
+//            stm.setString(2, passWord);
             ResultSet rs = stm.executeQuery();
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                account.setAccountId(rs.getInt("account_id"));
-                account.setUsername(rs.getString("username"));
-                account.setRoleId(rs.getInt("role_id"));
+                String hashedPassword = rs.getString("password");
+
+                if (BCrypt.checkpw(passWord, hashedPassword)) {
+                    account.setAccountId(rs.getInt("account_id"));
+                    account.setUsername(rs.getString("username"));
+                    account.setRoleId(rs.getInt("role_id"));
+                }
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -165,7 +169,7 @@ public class AccountDAO extends DBContext {
     public Account loginWithEmail(String email, String passWord) {
         String query = "SELECT * from Account "
                 + "join User on User.user_id = Account.user_id "
-                + "where User.email = ? and Account.password = ? "
+                + "where User.email = ? "
                 + "limit 1";
         Account account = new Account();
 
@@ -174,14 +178,19 @@ public class AccountDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, email);
-            stm.setString(2, passWord);
+//            stm.setString(2, passWord);
+
             ResultSet rs = stm.executeQuery();
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                account.setAccountId(rs.getInt("account_id"));
-                account.setUsername(rs.getString("username"));
-                account.setRoleId(rs.getInt("role_id"));
+                String hashedPassword = rs.getString("password");
+
+                if (BCrypt.checkpw(passWord, hashedPassword)) {
+                    account.setAccountId(rs.getInt("account_id"));
+                    account.setUsername(rs.getString("username"));
+                    account.setRoleId(rs.getInt("role_id"));
+                }
 
             }
             // Đóng kết nối và tài nguyên
@@ -201,7 +210,7 @@ public class AccountDAO extends DBContext {
     public Account loginWithPhone(String phoneNumber, String passWord) {
         String query = "SELECT * from User "
                 + "join Account on User.user_id = Account.user_id "
-                + "where User.phone_number = ? and Account.password = ? "
+                + "where User.phone_number = ? "
                 + "limit 1";
         Account account = new Account();
 
@@ -210,14 +219,18 @@ public class AccountDAO extends DBContext {
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
             stm.setString(1, phoneNumber);
-            stm.setString(2, passWord);
+//            stm.setString(2, passWord);
             ResultSet rs = stm.executeQuery();
 
             // Lấy dữ liệu từ resultSet
             while (rs.next()) {
-                account.setAccountId(rs.getInt("account_id"));
-                account.setUsername(rs.getString("username"));
-                account.setRoleId(rs.getInt("role_id"));
+                String hashedPassword = rs.getString("password");
+
+                if (BCrypt.checkpw(passWord, hashedPassword)) {
+                    account.setAccountId(rs.getInt("account_id"));
+                    account.setUsername(rs.getString("username"));
+                    account.setRoleId(rs.getInt("role_id"));
+                }
             }
             // Đóng kết nối và tài nguyên
             rs.close();
@@ -321,6 +334,10 @@ public class AccountDAO extends DBContext {
         return 0;
     }
 
+    public static String hashPassword(String plainTextPassword) {
+        return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt(12));
+    }
+
     public Account login(String userName, String passWord) {
         Account account = verifyAccount(userName, passWord);
         if (account == null && getAccountByUserName(userName) != null) {
@@ -332,7 +349,6 @@ public class AccountDAO extends DBContext {
             updateLastLogin(userName);
         }
         return account;
-
     }
 
     public static boolean changePassword(int accountId, String newPassword) {
@@ -342,7 +358,7 @@ public class AccountDAO extends DBContext {
             java.sql.Connection con = db.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
 
-            pstmt.setString(1, newPassword); // Hàm hash mật khẩu (có thể dùng BCrypt)
+            pstmt.setString(1, hashPassword(newPassword)); // Hàm hash mật khẩu (có thể dùng BCrypt)
             pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
             pstmt.setLong(3, accountId);
 
@@ -397,9 +413,7 @@ public class AccountDAO extends DBContext {
     }
     // Hàm hash mật khẩu
 
-    private static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
+   
 
     public static Account getAccountByUserName(String userName) {
         String query = "SELECT * from Account "

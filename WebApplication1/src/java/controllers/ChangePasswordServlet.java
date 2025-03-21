@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -111,7 +112,7 @@ public class ChangePasswordServlet extends HttpServlet {
                 int userId = UserDAO.getUserIDByAccountID(acc.getAccountId());
                 User user = UserDAO.getUserById(userId);
                 String email = user.getEmail();
-                String otp = AccountDAO.getOtpByEmail(email);
+//                String otp = AccountDAO.getOtpByEmail(email);
                 java.sql.Timestamp time = AccountDAO.getOtpLastSendTimeByEmail(email);
 
                 Instant now = Instant.now();
@@ -120,44 +121,27 @@ public class ChangePasswordServlet extends HttpServlet {
 
                 String password = request.getParameter("password");
                 String rePassword = request.getParameter("rePassword");
-                String OTP = request.getParameter("OTP");
+//                String OTP = request.getParameter("OTP");
 
                 String oldPassword = request.getParameter("oldPassword");
 
-                if (password.equals(rePassword)) {
-                    if (oldPassword.equals(AccountDAO.getAccountByUserId(userId).getPassword())) {
-                        if (dur.getSeconds() <= 60) {
-                            if (otp.equals(OTP)) {
-                                AccountDAO.changePassword(acc.getAccountId(), password);
-                                request.setAttribute("defaultDropdown", "myProfile");
-                                request.setAttribute("message", "Change password successfully.");
-                                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
-                            } else {
-                                request.setAttribute("email", user.getEmail());
-                                request.setAttribute("defaultDropdown", "myProfile");
-                                request.setAttribute("nameError3", "OTP is incorrect.");
-                                request.setAttribute("message", "Change password failed");
-                                request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
-                            }
-                        } else {
-                            request.setAttribute("email", user.getEmail());
-                            request.setAttribute("defaultDropdown", "myProfile");
-                            request.setAttribute("message", "Change password failed");
-                            request.setAttribute("nameError3", "OTP is expired.");
-
-                            request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
-                        }
+                if (!oldPassword.equals(rePassword)) {
+                    if (BCrypt.checkpw(oldPassword, AccountDAO.getAccountByUserId(userId).getPassword())) {
+                        AccountDAO.changePassword(acc.getAccountId(), password);
+                        request.setAttribute("defaultDropdown", "myProfile");
+                        request.setAttribute("message", "Change password successfully.");
+                        request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
 
                     } else {
                         request.setAttribute("email", user.getEmail());
                         request.setAttribute("defaultDropdown", "myProfile");
-                        request.setAttribute("nameError0", "Password does not match.");
+                        request.setAttribute("nameError0", "Old Password is incorrect");
                         request.setAttribute("message", "Change password failed");
                         request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("email", user.getEmail());
-                    request.setAttribute("nameError2", "Passwords do not match.");
+                    request.setAttribute("nameError2", "New password match old Password");
                     request.setAttribute("message", "Change password failed");
                     request.setAttribute("defaultDropdown", "myProfile");
                     request.getRequestDispatcher("Login/ChangePassword.jsp").forward(request, response);

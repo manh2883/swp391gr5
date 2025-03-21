@@ -41,6 +41,42 @@
                 background-color: #f8f8f8;
             }
         </style>
+        <script>
+            function sendOtpRequest() {
+                let phoneNumber = document.getElementById("email").value;
+
+                fetch("Mail", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "email=" + encodeURIComponent(phoneNumber)
+                })
+                        .then(response => response.text())
+                        .then(data => {
+                            console.log("OTP Sent:", data);
+                            startOtpTimer();
+                        })
+                        .catch(error => console.error("Error sending OTP:", error));
+            }
+
+            function startOtpTimer() {
+                let button = document.getElementById("sendOtpBtn");
+                button.disabled = true;
+                let seconds = 60;
+                button.innerText = "Wait " + seconds + "s to send again";
+
+                let interval = setInterval(() => {
+                    seconds--;
+                    button.innerText = "Wait " + seconds + "s to send again";
+                    if (seconds <= 0) {
+                        clearInterval(interval);
+                        button.disabled = false;
+                        button.innerText = "Get OTP";
+                    }
+                }, 1000);
+            }
+        </script>
     </head>
     <body>
         <header>
@@ -63,7 +99,7 @@
 
                     <div class="col-sm-9 " >
                         <h2 class="title text-center">Change Password</h2>
-                        <p style="color: green">${message}</p>
+                        <p class="text-center" style="color: green">${message}</p>
                         <input name="email" id="email" value="${email}" type="hidden">
                         <form method="post" action="ChangePassword" onsubmit="return validateForm()">
                             <table style="width: 60%; table-layout: fixed; margin: auto">
@@ -84,7 +120,7 @@
                                             <input type="password" id="name0" class="form-control mt-2" name="oldPassword" required
                                                    style="color: black; width: 100%; height: 35px; margin-bottom: 10px;" 
                                                    minlength="8" maxlength="20">
-                                            <div class="text-danger" id="nameError0"></div>
+                                            <div class="text-danger" id="nameError0">${nameError0}</div>
                                         </td>
                                     </tr>
 
@@ -96,7 +132,7 @@
                                             <input type="password" id="name1" class="form-control mt-2" name="password" required
                                                    style="color: black; width: 100%; height: 35px; margin-bottom: 10px;" 
                                                    minlength="8" maxlength="20">
-                                            <div class="text-danger" id="nameError1"></div>
+                                            <div class="text-danger" id="nameError1">${nameError1}</div>
                                         </td>
                                     </tr>
 
@@ -108,7 +144,7 @@
                                             <input type="password" id="name2" class="form-control mt-2" name="rePassword" required
                                                    style="color: black; width: 100%; height: 35px; margin-bottom: 10px;" 
                                                    minlength="8" maxlength="20">
-                                            <div class="text-danger" id="nameError2"></div>
+                                            <div class="text-danger" id="nameError2">${nameError2}</div>
                                         </td>
                                     </tr>
 
@@ -123,11 +159,13 @@
                                                         <input type="text" id="name3" class="form-control mt-2" name="OTP" required
                                                                style="color: black; width: 100%; height: 35px; margin-bottom: 10px;" 
                                                                maxlength="6" oninput="limitInputLength(this, 6)">
-                                                        <div class="text-danger" id="nameError3"></div>
+                                                        <div class="text-danger" id="nameError3">${nameError3}</div>
                                                     </td>
                                                     <td>
                                                         <button type="button" id="otpButton" class="btn btn-default get-manh"
-                                                                style="background-color: transparent; color: black; font-size: 10px;font-weight: bold" onclick="sendOtpRequest()">
+                                                                style="background-color: transparent;
+                                                                color: black; font-size: 10px;font-weight: bold" 
+                                                                onclick="sendOtpRequest()">
                                                             Get OTP
                                                         </button>
                                                     </td>
@@ -194,42 +232,7 @@
                     el.value = el.value.slice(0, max);
                 }
             }
-            function sendOtpRequest() {
-                let phoneNumber = document.getElementById("email").value; // Ví dụ nếu cần số điện thoại
 
-                fetch("Mail", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "email=" + encodeURIComponent(phoneNumber)
-                })
-                        .then(response => response.text())
-                        .then(data => {
-                           console.log("OTP Sent:", data);
-                            startOtpTimer();
-                        })
-                        .catch(error => console.error("Error sending OTP:", error));
-            }
-
-
-
-            function startOtpTimer() {
-                let button = document.getElementById("otpButton");
-                button.disabled = true;
-                let seconds = 60;
-                button.innerText = "Wait " + seconds + "s to send again";
-
-                let interval = setInterval(() => {
-                    seconds--;
-                    button.innerText = "Wait " + seconds + "s to send again";
-                    if (seconds <= 0) {
-                        clearInterval(interval);
-                        button.disabled = false;
-                        button.innerText = "Get OTP";
-                    }
-                }, 1000);
-            }
         </script>
     </body>
 </html>

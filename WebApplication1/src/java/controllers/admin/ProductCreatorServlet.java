@@ -293,11 +293,6 @@ public class ProductCreatorServlet extends HttpServlet {
                         Logger.getLogger(ProductCreatorServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-//        request.setAttribute("message1", name + description + brandIdString + newBrand
-//                + price + categoryIdString + newCategory);
-//                    request.setAttribute("message1", colorList);
-//                    request.setAttribute("message2", variantList);
-//                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                     if (returnProduct != null) {
                         response.sendRedirect("ProductDetail?productId=" + returnProduct.getProductId());
                     } else {

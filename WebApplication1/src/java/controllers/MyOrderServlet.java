@@ -77,7 +77,7 @@ public class MyOrderServlet extends HttpServlet {
             role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
-                if (!pDAO.checkPermissionForRole("MyOrderList", role) && !pDAO.checkPermissionForRole("OrderManager", role)) {
+                if (!pDAO.checkPermissionForRole("MyOrderList", role) ) {
                     request.setAttribute("message", "no permission");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {

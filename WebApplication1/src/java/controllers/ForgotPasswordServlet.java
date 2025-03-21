@@ -93,7 +93,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         Instant last = time.toInstant();
         Duration dur = Duration.between(last, now);
 
-        if (dur.getSeconds() >= 60) {
+        if (dur.getSeconds() <= 60) {
             if (otpInput == null || otpInput.isEmpty()) {
                 request.setAttribute("otpError", "OTP input is required.");
             } else if (!realOtp.equals(otpInput.trim())) {
@@ -106,7 +106,7 @@ public class ForgotPasswordServlet extends HttpServlet {
             }
         } else {
             request.setAttribute("email", emailInput);
-            request.setAttribute("otpError", "OTP is expired!");
+            request.setAttribute("otpError", time + ", " + dur.getSeconds() +", " + "OTP is expired!");
         }
 
         forwardToPage(request, response);

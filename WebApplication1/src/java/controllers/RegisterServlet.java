@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Date;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -123,13 +124,16 @@ public class RegisterServlet extends HttpServlet {
         if (successful) {
             User user = new User(email, phone, null, dob, gender, firstName, lastName);
             System.out.println(user);
-            
+
             uDAO.createUser(user);
             User user1 = uDAO.getUserByEmail(email);
             System.out.println(user1);
+
+            String hashedPassword = AccountDAO.hashPassword(passWord);
+
             if (user1 != null) {
-                Account newAcc = new Account(user1.getUserId(), 2, userName, passWord, 0, 1);
-                newAcc.setPassword(passWord);
+                Account newAcc = new Account(user1.getUserId(), 2, userName, hashedPassword, 0, 1);
+                newAcc.setPassword(hashedPassword);
                 aDAO.createAccount(newAcc);
             } else {
 //                uDAO.deleteUserAndAccountById(user1.getUserId());

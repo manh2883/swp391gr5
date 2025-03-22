@@ -6,6 +6,7 @@ package controllers;
 
 import DAO.CartDAO;
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
@@ -128,8 +129,10 @@ public class ViewCartServlet extends HttpServlet {
 
         // Gửi danh sách cartDetails lên trang JSP
         if (cartDetails != null && !cartDetails.isEmpty()) {
+            request.setAttribute("maxQuan", SettingDAO.getMaxQuantityInCart());
             request.setAttribute("cartDetails", cartDetails);
             request.setAttribute("cartDetailList", cartDetailList);
+            
             request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
@@ -195,7 +198,7 @@ public class ViewCartServlet extends HttpServlet {
             session.setAttribute("checkoutItems", checkoutItems);
             session.setAttribute("user", user);
             session.setAttribute("userAddresses", userAddresses);
-            
+
             request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
         } else {
             // Nếu không có sản phẩm nào được chọn, quay lại giỏ hàng

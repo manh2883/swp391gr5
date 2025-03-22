@@ -12,11 +12,9 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/SWP/swp391gr5/WebApplication1/web/Cart/Checkout.jsp</file>
-            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/DAO/SaleDAO.java</file>
-            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/DAO/PermissionDAO.java</file>
-            <file>file:/D:/SWP/swp391gr5/WebApplication1/src/java/controllers/SaleStatisticServlet.java</file>
-            <file>file:/D:/SWP/swp391gr5/WebApplication1/web/AdminDashBoard/SaleStatistic.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Cart/Cart.jsp</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ViewCartServlet.java</file>
+            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/mail/SendOtpServlet.java</file>
         </group>
     </open-files>
 </project-private>

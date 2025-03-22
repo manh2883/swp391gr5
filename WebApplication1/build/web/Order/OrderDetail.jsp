@@ -226,7 +226,14 @@
                                             <c:set var="cartTotal" value="0" />
                                             <c:forEach var="item" items="${orderDetailList}">
                                                 <tr>
-                                                    <td>${item[1].name}</td>
+
+                                                    <td> 
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${item[1].productId}"
+                                                           style="color: black">
+                                                            ${item[1].name}
+                                                        </a>
+                                                    </td> 
+
                                                     <td>${item[2]}</td>
                                                     <td>${item[0].quantity}</td>
                                                     <td>${item[0].price}</td>
@@ -237,6 +244,7 @@
                                                         <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
                                                     </td>
                                                 </tr>
+
                                             </c:forEach>
                                             <tr>
                                                 <td colspan="4">Total</td>

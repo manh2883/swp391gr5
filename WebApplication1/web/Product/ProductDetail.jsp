@@ -421,6 +421,7 @@
                                                                 var size = document.getElementById("sizeInput").value;
                                                                 var key = color + "-" + size;
                                                                 var stock = variantData[key] || 0;
+
                                                                 var price = priceData[key] || parseFloat("${product.price}"); // Giá thay đổi theo variant
 
                                                                 console.log("Price:", price, "NetPrice:", netPrice, "Stock:", stock);

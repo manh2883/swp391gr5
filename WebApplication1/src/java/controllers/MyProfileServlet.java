@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 
 /**
  *
@@ -70,10 +71,35 @@ public class MyProfileServlet extends HttpServlet {
                 User user = UserDAO.getUserById(uId);
                 if (user != null) {
                     System.out.println("found user");
-                    
+
                     request.setAttribute("user", user);
                     request.setAttribute("account", acc);
-                    
+
+                    request.setAttribute("userName", acc.getUsername());
+                    request.setAttribute("firstName", user.getFirstName());
+                    request.setAttribute("lastName", user.getLastName());
+                    request.setAttribute("dob", user.getDoB());
+                    int gender = user.getGender();
+                    String genderString = "";
+                    switch (gender) {
+                        case 1:
+                            genderString = "Male";
+                            break;
+                        case 0:
+                            genderString = "Female";
+                            break;
+                        case 2:
+                            genderString = "Other";
+                            break;
+                        default:
+                            genderString = "Other";
+                            break;
+                    }
+
+                    request.setAttribute("genderString", genderString);
+                    request.setAttribute("gender", gender);
+                    request.setAttribute("defaultDropdown", "myProfile");
+
                     request.getRequestDispatcher("Home/Profile.jsp").forward(request, response);
                 } else {
                     session.setAttribute("prevLink", "MyProfile");
@@ -103,7 +129,38 @@ public class MyProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+
+        if (session != null) {
+            Account acc = (Account) session.getAttribute("account");
+            System.out.println(acc);
+            if (acc != null) {
+                System.out.println("found acc");
+                int uId = UserDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = UserDAO.getUserById(uId);
+                if (user != null) {
+                    String firstName = request.getParameter("firstName");
+                    String lastName = request.getParameter("lastName");
+                    String dob = request.getParameter("dob");
+                    int gender = Integer.parseInt(request.getParameter("gender"));
+                    Date dobDate = (dob != null) ? Date.valueOf(dob) : new Date(System.currentTimeMillis());
+                    UserDAO.editProfile(uId,firstName,lastName,dobDate,gender);
+                    response.sendRedirect("MyProfile");
+                } else {
+                    session.setAttribute("prevLink", "MyProfile");
+                    response.sendRedirect("Login");
+                    return;
+                }
+            } else {
+                session.setAttribute("prevLink", "MyProfile");
+                response.sendRedirect("Login");
+                return;
+            }
+        } else {
+            session.setAttribute("prevLink", "MyProfile");
+            response.sendRedirect("Login");
+            return;
+        }
     }
 
     /**

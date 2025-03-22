@@ -148,7 +148,7 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
+<!--                                    <tr>
                                         <td class="text-end">
                                             <label>OTP:</label>
                                         </td>
@@ -172,7 +172,7 @@
                                                 </tr>
                                             </table>
                                         </td>
-                                    </tr>
+                                    </tr>-->
 
                                     <tr >
                                         <td class="text-start"></td>
@@ -217,12 +217,12 @@
                     document.getElementById("nameError2").innerText = "";
                 }
 
-                if (otp.length < 1 || otp.length > 6) {
-                    document.getElementById("nameError3").innerText = "OTP must be 6 digits.";
-                    valid = false;
-                } else {
-                    document.getElementById("nameError3").innerText = "";
-                }
+//                if (otp.length < 1 || otp.length > 6) {
+//                    document.getElementById("nameError3").innerText = "OTP must be 6 digits.";
+//                    valid = false;
+//                } else {
+//                    document.getElementById("nameError3").innerText = "";
+//                }
 
                 return valid;
             }

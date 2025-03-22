@@ -115,7 +115,7 @@ public class SendOtpServlet extends HttpServlet {
                             // Gửi OTP qua email (giả sử đã có hàm sendEmail)
                        
 
-                            response.getWriter().write("OTP Sent");
+                            response.getWriter().write("Otp sent:");
 
                         } catch (MessagingException | SQLException ex) {
                             Logger.getLogger(SendOtpServlet.class.getName()).log(Level.SEVERE, "Error sending OTP", ex);

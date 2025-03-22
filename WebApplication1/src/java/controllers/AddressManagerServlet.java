@@ -2,21 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controllers.admin;
+package controllers;
 
+import DAO.UserDAO;
+import Models.UserAddress;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  *
  * @author Acer
  */
-public class AdminDashBoardServlet extends HttpServlet {
+public class AddressManagerServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +37,10 @@ public class AdminDashBoardServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminDashBoardServlet</title>");
+            out.println("<title>Servlet AddressManagerServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminDashBoardServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddressManagerServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,17 +58,9 @@ public class AdminDashBoardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//
-////        HttpSession session = session.get
-//        //side bar open
-//        request.setAttribute("defaultDropdown", "saleDashboard");
-//        // set title
-//        request.setAttribute("title", "Admin Dashboard");
-//        // set breadcrumbs
-//        request.setAttribute("breadcrumbs", "Order List");
-//    
-//        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
-        response.sendRedirect("PermissionManager");
+        List<UserAddress> addressList = UserDAO.getUserAddresses(1);
+        request.setAttribute("addressList", addressList);
+        request.getRequestDispatcher("Login/AddressManager.jsp").forward(request, response);
     }
 
     /**
@@ -80,7 +74,7 @@ public class AdminDashBoardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        processRequest(request, response);
     }
 
     /**

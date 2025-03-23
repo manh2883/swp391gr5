@@ -79,7 +79,7 @@ public class ProductListManagerServlet extends HttpServlet {
                     ArrayList<Product> ProductList = pdDAO.getAllProducts();
 
                     //side bar open
-                    request.setAttribute("defaultDropdown", "productManager");
+                    request.setAttribute("defaultDropdown", "permissionManager");
                     // set title
                     request.setAttribute("title", "Admin Dashboard");
                     // set breadcrumbs

@@ -71,6 +71,9 @@ public class SaleStatisticServlet extends HttpServlet {
             // Giá trị mặc định nếu người dùng không chọn
             Date startDate = (startDateStr != null) ? Date.valueOf(startDateStr) : new Date(System.currentTimeMillis() - 6L * 24 * 60 * 60 * 1000);
             Date endDate = (endDateStr != null) ? Date.valueOf(endDateStr) : new Date(System.currentTimeMillis());
+            
+            
+            
             int top = (topStr != null) ? Integer.parseInt(topStr) : 3;
             boolean asc = "asc".equalsIgnoreCase(order);
             sortBy = (sortBy != null && (sortBy.equals("revenue") || sortBy.equals("quantity_sold"))) ? sortBy : "revenue";
@@ -89,7 +92,7 @@ public class SaleStatisticServlet extends HttpServlet {
             request.setAttribute("order", order);
             request.setAttribute("top", top);
             //side bar open
-            request.setAttribute("defaultDropdown", "saleDashBoard");
+            request.setAttribute("defaultDropdown", "saleDashboard");
             // Forward sang JSP
             request.getRequestDispatcher("AdminDashBoard/SaleStatistic.jsp").forward(request, response);
         } catch (Exception e) {

@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,34 @@ import java.util.Map;
  * @author Acer
  */
 public class UserDAO extends DBContext {
+
+    public static boolean editProfile(int userId, String firstName, String lastName, Date dob, int gender) {
+
+        String queUser = "UPDATE user SET first_name = ?, last_name = ?, dob = ?, "
+                + "gender = ?, updated_at = ? WHERE user_id = ?";
+        try {
+            DBContext db = new DBContext();
+
+            java.sql.Connection conn = db.getConnection();
+            conn.setAutoCommit(false);
+
+            PreparedStatement pstmtUser = conn.prepareStatement(queUser);
+
+            pstmtUser.setString(1, firstName);
+            pstmtUser.setString(2, lastName);
+            pstmtUser.setDate(3, new java.sql.Date(dob.getTime()));
+            pstmtUser.setInt(4, gender);
+            pstmtUser.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // updated_date
+            pstmtUser.setInt(6, userId);
+            pstmtUser.executeUpdate();
+
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public static List<User> getAllUser() {
         String query = "SELECT * FROM User";
@@ -294,7 +323,7 @@ public class UserDAO extends DBContext {
         return userID;
     }
 
-    public List<UserAddress> getUserAddresses(int userId) {
+    public static List<UserAddress> getUserAddresses(int userId) {
         List<UserAddress> addressList = new ArrayList<>();
         String query = "SELECT address_id, user_id, address_content FROM user_address WHERE user_id = ?";
 
@@ -391,8 +420,6 @@ public class UserDAO extends DBContext {
 //        }
 //        return customers;
 //    }
-    
-
     // Phương thức kiểm tra địa chỉ đã tồn tại chưa
     public boolean checkAddressExist(int userId, String address) {
         String query = "SELECT COUNT(*) FROM user_address WHERE user_id = ? AND address_content = ?";
@@ -415,7 +442,7 @@ public class UserDAO extends DBContext {
     // Phương thức lưu địa chỉ mới
     public boolean saveNewAddress(int userId, String newAddress) {
         String query = "INSERT INTO user_address (user_id, address_content) VALUES (?, ?)";
-        try{
+        try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query.toString());
@@ -509,8 +536,8 @@ public class UserDAO extends DBContext {
         List<Object> params = new ArrayList<>();
 
         // Search trên tất cả các trường
-    if (search != null && !search.isEmpty()) {
-        query += """
+        if (search != null && !search.isEmpty()) {
+            query += """
             AND (
                 LOWER(u.first_name) LIKE ? 
                 OR LOWER(u.last_name) LIKE ? 
@@ -520,72 +547,72 @@ public class UserDAO extends DBContext {
                 OR LOWER(r.role_name) LIKE ?
             )
         """;
-        String searchPattern = "%" + search.toLowerCase() + "%";
-        params.add(searchPattern);
-        params.add(searchPattern);
-        params.add(searchPattern);
-        params.add(searchPattern);
-        params.add(searchPattern);
-        params.add(searchPattern);
-    }
-
-    // Lọc theo từng trường cụ thể
-    if (name != null && !name.isEmpty()) {
-        query += " AND (LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ?)";
-        params.add("%" + name.toLowerCase() + "%");
-        params.add("%" + name.toLowerCase() + "%");
-    }
-    if (email != null && !email.isEmpty()) {
-        query += " AND LOWER(u.email) LIKE ?";
-        params.add("%" + email.toLowerCase() + "%");
-    }
-    if (phone != null && !phone.isEmpty()) {
-        query += " AND u.phone_number LIKE ?";
-        params.add("%" + phone + "%");
-    }
-    if (username != null && !username.isEmpty()) {
-        query += " AND LOWER(a.username) LIKE ?";
-        params.add("%" + username.toLowerCase() + "%");
-    }
-    if (roleId != null) {
-        query += " AND a.role_id = ?";
-        params.add(roleId);
-    }
-    if (roleName != null && !roleName.isEmpty()) {
-        query += " AND LOWER(r.role_name) LIKE ?";
-        params.add("%" + roleName.toLowerCase() + "%");
-    }
-
-    // Kết nối Database
-    try{
-    DBContext db = new DBContext();
-         java.sql.Connection con = db.getConnection();
-         PreparedStatement ps = con.prepareStatement(query);
-        
-        // Gán tham số vào câu SQL
-        for (int i = 0; i < params.size(); i++) {
-            ps.setObject(i + 1, params.get(i));
+            String searchPattern = "%" + search.toLowerCase() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
         }
 
-        // Thực thi truy vấn
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Object[] row = new Object[7];
-                row[0] = rs.getInt("user_id");
-                row[1] = rs.getString("first_name") + " " + rs.getString("last_name");
-                row[2] = rs.getString("email");
-                row[3] = rs.getString("phone_number");
-                row[4] = rs.getString("username");
-                row[5] = rs.getString("role_name");
-                list.add(row);
+        // Lọc theo từng trường cụ thể
+        if (name != null && !name.isEmpty()) {
+            query += " AND (LOWER(u.first_name) LIKE ? OR LOWER(u.last_name) LIKE ?)";
+            params.add("%" + name.toLowerCase() + "%");
+            params.add("%" + name.toLowerCase() + "%");
+        }
+        if (email != null && !email.isEmpty()) {
+            query += " AND LOWER(u.email) LIKE ?";
+            params.add("%" + email.toLowerCase() + "%");
+        }
+        if (phone != null && !phone.isEmpty()) {
+            query += " AND u.phone_number LIKE ?";
+            params.add("%" + phone + "%");
+        }
+        if (username != null && !username.isEmpty()) {
+            query += " AND LOWER(a.username) LIKE ?";
+            params.add("%" + username.toLowerCase() + "%");
+        }
+        if (roleId != null) {
+            query += " AND a.role_id = ?";
+            params.add(roleId);
+        }
+        if (roleName != null && !roleName.isEmpty()) {
+            query += " AND LOWER(r.role_name) LIKE ?";
+            params.add("%" + roleName.toLowerCase() + "%");
+        }
+
+        // Kết nối Database
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+
+            // Gán tham số vào câu SQL
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
             }
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
 
-    return list;
-}
+            // Thực thi truy vấn
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Object[] row = new Object[7];
+                    row[0] = rs.getInt("user_id");
+                    row[1] = rs.getString("first_name") + " " + rs.getString("last_name");
+                    row[2] = rs.getString("email");
+                    row[3] = rs.getString("phone_number");
+                    row[4] = rs.getString("username");
+                    row[5] = rs.getString("role_name");
+                    list.add(row);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
     public static int getTotalUserCount(String search, String name, String email, String phone, String username, String roleName, Integer roleId) {
         int count = 0;
@@ -648,29 +675,9 @@ public class UserDAO extends DBContext {
     }
 
     public static void main(String[] args) {
-        List<Object[]> list = getFilterUserView(null,"manh", null, null, null, null, null);
-            for(Object[] u: list){
-                System.out.println(u[0]);
-                System.out.println(u[1]);
-                System.out.println(u[2]);
-                System.out.println(u[3]);
-                System.out.println(u[4]);
-                System.out.println(u[5]);
-                
-            }
-        
-//        for (User oj : getFilteredUsers(null, null, null, 12, 1)) {
-//            System.out.println("\n");
-//            System.out.println(oj);
-
-//        System.out.println(getFilteredUsers(null, null, null, 12, 1));
-//        for (Object[] oj : get(null, null, null, 12, 1)) {
-////            System.out.println("\n");
-////            System.out.println(oj[0]);
-////            System.out.println(oj[1]);
-//////            System.out.println(oj[2]);
-////            System.out.println("===========================\n");
+        System.out.println(getUserById(1));
+        editProfile(1,"Manh", "Customer",new Date(0), 1);
+        System.out.println(getUserById(1));
     }
-
 
 }

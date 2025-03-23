@@ -39,7 +39,11 @@ public class SettingDAO {
 
         return 5;
     }
-
+    
+    public static int getMaxQuantityInCart(){
+        return 20;
+    }
+    
     public static List<String> getSizeList(Object sizeStart, Object sizeEnd) {
         List<String> defaultList = new ArrayList<>();
 

@@ -11,6 +11,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.time.Duration;
+import java.time.Instant;
+import jdk.jfr.Timestamp;
 
 /**
  *
@@ -83,15 +87,26 @@ public class ForgotPasswordServlet extends HttpServlet {
         }
 
         String realOtp = AccountDAO.getOtpByEmail(emailInput);
-        if (otpInput == null || otpInput.isEmpty()) {
-            request.setAttribute("otpError", "OTP input is required.");
-        } else if (!realOtp.equals(otpInput.trim())) {
-            request.setAttribute("email", emailInput);  
-            request.setAttribute("otpError", "OTP does not match.");
+        java.sql.Timestamp time = AccountDAO.getOtpLastSendTimeByEmail(emailInput);
+
+        Instant now = Instant.now();
+        Instant last = time.toInstant();
+        Duration dur = Duration.between(last, now);
+
+        if (dur.getSeconds() <= 60) {
+            if (otpInput == null || otpInput.isEmpty()) {
+                request.setAttribute("otpError", "OTP input is required.");
+            } else if (!realOtp.equals(otpInput.trim())) {
+                request.setAttribute("email", emailInput);
+                request.setAttribute("otpError", "OTP does not match.");
+            } else {
+                request.setAttribute("email", emailInput);
+                request.getRequestDispatcher("Login/AddNewPassWord.jsp").forward(request, response);
+                return;
+            }
         } else {
             request.setAttribute("email", emailInput);
-            request.getRequestDispatcher("Login/AddNewPassWord.jsp").forward(request, response);
-            return;
+            request.setAttribute("otpError", time + ", " + dur.getSeconds() +", " + "OTP is expired!");
         }
 
         forwardToPage(request, response);

@@ -178,8 +178,9 @@ public class CheckoutServlet extends HttpServlet {
         Date createAt = new Date(timestamp.getTime()); // Chuyển Timestamp -> Date
 
         // Nếu Order chấp nhận double totalAmount
+        // ------Payment status: cap nhat theo API
         Order order = new Order(0, userId, totalAmount, 1,
-                createAt, null, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
+                createAt, null, Integer.parseInt(paymentMethod),0, finalAddress, orderNote, userReceive, contact);
 
         // 6. Ghi vào database
         OrderDAO orderDAO = new OrderDAO();

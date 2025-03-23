@@ -47,10 +47,10 @@
                 text-align: center;
                 background-color: #fff3cd;
                 color: #856404;
-                
+
             }
 
-            .status-6 { /* Accepted */
+            .status-2 { /* Accepted */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -58,7 +58,7 @@
                 color: #155724;
             }
 
-            .status-2 { /* Shipping */
+            .status-3 { /* Shipping */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -66,7 +66,7 @@
                 color: #004085;
             }
 
-            .status-3 { /* Delivered */
+            .status-4 { /* Delivered */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -81,14 +81,31 @@
                 background-color: #f8d7da;
                 color: #721c24;
             }
-            
-              .status-4 { /* Canceled */
+
+            .status-6 { /* Canceled */
                 padding: .2rem 10px;
                 border-radius: 2rem;
                 text-align: center;
                 background-color: #f8d7da;
                 color: #721c24;
             }
+
+            .status-7 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .status-8 { /* Received */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #cce5ff; /* Màu xanh nhạt */
+                color: #004085; /* Màu xanh đậm */
+            }
+
 
             .default-status {
                 padding: .4rem 10px;
@@ -125,25 +142,30 @@
                         <div class="category-tab shop-details-tab">
                             <div class="col-sm-12">
                                 <ul class="nav nav-tabs">
+
                                     <li class="${activeTab == '1' ? 'active' : ''}">
                                         <a href="${pageContext.request.contextPath}/MyOrder?status=1">Pending</a>
                                     </li>
 
-                                    <li class="${activeTab == '6' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=6">Accepted</a>
-                                    </li>
-
                                     <li class="${activeTab == '2' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=2">Shipping</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=2">Accepted</a>
                                     </li>
 
                                     <li class="${activeTab == '3' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Delivered</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Shipping</a>
                                     </li>
 
-                                    <li class="${activeTab == '7' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=7">Canceled</a>
+                                    <li class="${activeTab == '4' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=4">Delivered</a>
                                     </li>
+
+                                    <li class="${activeTab == '9' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=9">Canceled</a>
+                                    </li>
+                                    <li class="${activeTab == '8' ? 'active' : ''}">
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=8">Received</a>
+                                    </li>
+
                                 </ul>
 
                             </div>
@@ -164,8 +186,8 @@
                                             <c:when test="${not empty orders}">
                                                 <c:forEach var="order" items="${orders}">
                                                     <tr style="vertical-align: middle;"
-                                                        onclick="window.location.href = 
-                                                                    '${pageContext.request.contextPath}/OrderDetail?orderId=${order.orderId}'">
+                                                        onclick="window.location.href =
+                                                                        '${pageContext.request.contextPath}/OrderDetail?orderId=${order.orderId}'">
                                                         <td class="cart_price">
                                                             <p>${order.orderId}</p> 
                                                         </td>

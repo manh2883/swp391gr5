@@ -694,16 +694,16 @@ public class ProductDAO extends DBContext {
 //            System.out.println("cart_id: " + ca);
 
             int variantId = getVariantByColorAndSize(productId, color, size);
-//            System.out.println("product_id " + productId);
-//            System.out.println("color " + color);
-//            System.out.println("size " + size);
-//            System.out.println("variant_id " + variantId);
+
 
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
 //                System.out.println("cartDetailId " + cartDetailId);
                 if (cartDetailId > 0) {
-                    cartdao.editCartDetailByID(userId, cartDetailId, "increment");
+                    CartDetail cd = CartDAO.getCartDetailByID(cartDetailId);
+                    if(cd.getQuantity() < SettingDAO.getMaxQuantityInCart()){
+                        cartdao.editCartDetailByID(userId, cartDetailId, "increment");
+                    }    
                 } else {
 //                    System.out.println("getStockForVariantProduct " + getStockForVariantProduct(productId, color, size));
                     if (getStockForVariantProduct(productId, color, size) > 0) {

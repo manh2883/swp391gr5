@@ -90,7 +90,7 @@ public class PublicProductListServlet extends HttpServlet {
         List<Product> productFilter = new ArrayList<>();
         try {
             productFilter = ProductDAO.productFilterList(null, null, brand, category, null, null, null, null, null, null);
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(PublicProductListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -144,15 +144,15 @@ public class PublicProductListServlet extends HttpServlet {
         request.setAttribute("productList", subProductList);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", currentPage);
-
         request.setAttribute("currentLink", currentLink);
+
+        request.setAttribute("maxQuan", SettingDAO.getMaxQuantityInCart());
 
         if (productList != null && !productList.isEmpty()) {
             request.setAttribute("productList", subProductList);
         }
 
         // phan trang end
-
         // truyen du lieu
         request.getRequestDispatcher("Home/ViewPublicProductList.jsp").forward(request, response);
     }

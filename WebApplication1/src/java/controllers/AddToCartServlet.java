@@ -104,28 +104,33 @@ public class AddToCartServlet extends HttpServlet {
                 String addMessage = null;
                 if (!color.isEmpty() || !size.isEmpty()) {
                     int quanBef = CartDAO.getCartItemQuantityForUserId(userId);
+                    
                     int itemNumber = CartDAO.getCartItemNumberForUserId(userId);
                     
                     int maxItemNumber = SettingDAO.getMaxQuantityItemInCart();
-
+                    System.out.println(maxItemNumber);
                     if (itemNumber < maxItemNumber) {
+                        
                         ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
                         int quanAf = CartDAO.getCartItemQuantityForUserId(userId);
                         addStatus = (quanAf > quanBef) ? "true" : "false";
                     } else {
                         addStatus = "out";
                     }
+                    
                 } else {
-                    addStatus = "false";
+                    addStatus = "unknown";
                 }
                 switch (addStatus) {
                     case "true":
                         addMessage = "Add to cart successfully!!";
                         break;
                     case "false":
-                        addMessage = "Add to cart fail!!";
+                        addMessage = "You reached max limit quantity.";
                         break;
-
+                    case "unknown":
+                        addMessage = "Add to cart fail";
+                        break;
                     case "out":
                         addMessage = "Your Cart is full. Please remove some items!!";
                         break;

@@ -7,52 +7,10 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login_css.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let countdownTime = parseInt("${waitTime}", 10) || 0; // Chuyển thành số nguyên
-                let countdownText = document.getElementById("countdownText");
-                let sendOtpBtn = document.getElementById("sendOtpBtn");
-                let resendForm = document.getElementById("resendForm");
-
-                function startCountdown() {
-                    if (countdownTime > 0) {
-                        sendOtpBtn.disabled = true;
-                        sendOtpBtn.style.visibility = "hidden";
-                        countdownText.innerText = `Wait ${countdownTime} seconds to resend...`;
-
-                        let countdownInterval = setInterval(() => {
-                            countdownTime--;
-                            countdownText.innerText = `Wait ${countdownTime} seconds to resend...`;
-
-                            if (countdownTime <= 0) {
-                                clearInterval(countdownInterval);
-                                countdownText.innerText = "";
-                                sendOtpBtn.disabled = false;
-                                sendOtpBtn.style.visibility = "visible";
-                            }
-                        }, 1000);
-                    }
-                }
-
-                function resendOTP() {
-                    if (resendForm) {
-                        resendForm.submit(); // Gửi form để lấy OTP mới
-                    }
-
-                    // Reset countdown về 60 giây sau khi bấm resend
-                    countdownTime = 60;
-                    startCountdown();
-                }
-
-                startCountdown(); // Chạy countdown ngay khi vào trang
-
-                // Gán sự kiện khi bấm nút "Resend OTP"
-                if (sendOtpBtn) {
-                    sendOtpBtn.addEventListener("click", resendOTP);
-                }
-            });
-
+//          
 
 
             function validateEmail() {
@@ -75,6 +33,74 @@
                     if (submitButton)
                         submitButton.disabled = false;
                 }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                startOtpTimerOnLoad();
+            });
+
+            function sendOtpRequest() {
+                let phoneNumber = document.getElementById("email").value;
+
+                fetch("Mail", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "email=" + encodeURIComponent(phoneNumber)
+                })
+                        .then(response => response.text())
+                        .then(data => {
+                            console.log("OTP Sent:", data);
+                            let expiryTime = Date.now() + 60000; // 60 giây hết hạn
+
+                            // Lưu cả vào localStorage và sessionStorage
+                            localStorage.setItem("otpExpiry", expiryTime);
+                            sessionStorage.setItem("otpExpiry", expiryTime);
+
+                            startOtpTimer();
+                        })
+                        .catch(error => console.error("Error sending OTP:", error));
+            }
+
+            function startOtpTimer() {
+                let button = document.getElementById("sendOtpBtn");
+                button.disabled = true;
+
+                function updateTimer() {
+                    let expiryTime = getOtpExpiry();
+                    let remainingTime = Math.floor((expiryTime - Date.now()) / 1000);
+
+                    if (remainingTime > 0) {
+                        button.innerText = "Wait " + remainingTime + "s to send again";
+                        setTimeout(updateTimer, 1000);
+                    } else {
+                        clearOtpExpiry();
+                        button.disabled = false;
+                        button.innerText = "Get OTP";
+                    }
+                }
+                updateTimer();
+            }
+
+            function startOtpTimerOnLoad() {
+                let expiryTime = getOtpExpiry();
+
+                if (expiryTime && Date.now() < expiryTime) {
+                    startOtpTimer();
+                } else {
+                    console.log("No active OTP timer found.");
+                }
+            }
+
+            function getOtpExpiry() {
+                // Ưu tiên lấy từ sessionStorage nếu có, nếu không thì lấy từ localStorage
+                return sessionStorage.getItem("otpExpiry") || localStorage.getItem("otpExpiry") || ${otpExpiry};
+            }
+
+            function clearOtpExpiry() {
+                localStorage.removeItem("otpExpiry");
+                sessionStorage.removeItem("otpExpiry");
             }
 
         </script>
@@ -111,6 +137,7 @@
                     <div class="main-container" style="margin-top: 8vh; margin-bottom: 8vh;">
                         <div class="login-form">
                             <h3 class="text-center">Forgot Your Password</h3>
+                            <input type="hidden" class="form-control" id="email" name="email" value="${email}">
                             <form method="post" action="ForgotPassword">
                                 <div class="form-floating mb-3">
                                     <input type="text" class="form-control" id="emailInput" name="email" value="${email}" readonly style="height: 45px">
@@ -122,10 +149,10 @@
                                     <div class="text-danger" id="otpError">${otpError}</div>
                                     <div>
                                         <a id="sendOtpBtn" class="btn-link" 
-                                            onclick="resendOTP()" style="background: transparent;
-                                            color: black;">Resend OTP</a>
+                                           onclick="sendOtpRequest()" style="background: transparent;
+                                           color: black;">Resend OTP</a>
                                     </div>
-          
+
                                 </div>
 
                                 <div class="d-grid mb-3">
@@ -138,9 +165,7 @@
                             </form>
                         </div>
                     </div>
-                    <form method="post" action="Mail" id="resendForm" style="visibility: hidden">
-                        <input type="hidden" name="email" value="${email}" >
-                    </form>
+
                 </c:otherwise>
             </c:choose>
         </section>

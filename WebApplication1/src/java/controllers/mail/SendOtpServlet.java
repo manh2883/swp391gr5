@@ -23,6 +23,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -96,16 +97,26 @@ public class SendOtpServlet extends HttpServlet {
             throws ServletException, IOException {
         String emailInput = request.getParameter("email");
 
+         HttpSession session = request.getSession();
         if (emailInput != null && !emailInput.isEmpty() && emailInput.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             User user = UserDAO.getUserByEmail(emailInput);
             System.out.println(user);
             if (user != null) {
                 if (canRequestOTP(emailInput)) {
                     if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                        try {
+                        try {   
                             boolean otpSent = SettingDAO.sendOTP(user.getEmail());
                             request.setAttribute("email", emailInput);
                             request.setAttribute("availOTP", !otpSent);
+
+                            session.setAttribute("otp", otpSent);
+                            session.setAttribute("otpExpiry", System.currentTimeMillis() + 60000); // Hết hạn sau 60s
+
+                            // Gửi OTP qua email (giả sử đã có hàm sendEmail)
+                       
+
+                            response.getWriter().write("Otp sent:");
+
                         } catch (MessagingException | SQLException ex) {
                             Logger.getLogger(SendOtpServlet.class.getName()).log(Level.SEVERE, "Error sending OTP", ex);
                             request.setAttribute("emailError", "System error. Please try again later.");
@@ -117,10 +128,7 @@ public class SendOtpServlet extends HttpServlet {
                         request.setAttribute("availOTP", true);
                     }
                 } else {
-                    request.setAttribute("emailError", "Wait 60s to get new OTP.");
-                    request.setAttribute("otpError", "Wait 60s to get new OTP.");
-                    request.setAttribute("email", emailInput);
-                    request.setAttribute("availOTP", true);
+                    return;
                 }
             } else {
                 request.setAttribute("email", emailInput);

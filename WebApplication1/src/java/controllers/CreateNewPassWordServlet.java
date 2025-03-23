@@ -100,7 +100,7 @@ public class CreateNewPassWordServlet extends HttpServlet {
                     String passWord = AccountDAO.getAccountByUserId(user.getUserId()).getPassword();
 
                     request.setAttribute("userName", email);
-                    request.setAttribute("passWord", passWord);
+//                    request.setAttribute("passWord", passWord);
                     request.getRequestDispatcher("Login/Login.jsp").forward(request, response);
 
                     if (changeStatus) {

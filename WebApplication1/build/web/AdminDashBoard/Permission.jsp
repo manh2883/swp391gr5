@@ -112,11 +112,11 @@
                                             <td>${row[1]}</td> <!-- Permission Name -->
                                             <c:forEach var="index" begin="2" end="${fn:length(row) - 1}">
                                                 <td>
-                                                    <form method="post" action="PermissionManager">
+                                                    <form class="permission-form">
 
                                                         <input type="hidden" name="permissionId" value="${row[0]}">
                                                         <input type="hidden" name="roleId" value="${index-1}">
-                                                        <button type="submit" class="btn btn-sm ${row[index] ? 'btn-success' : 'btn-danger'}">
+                                                        <button type="button" class="btn btn-sm ${row[index] ? 'btn-success' : 'btn-danger'}">
                                                             ${row[index] ? 'ON' : 'OFF'}
                                                         </button>
                                                     </form>
@@ -145,27 +145,35 @@
         </section> <!--/#cart_items-->
         <c:import url="/Template/footer1.jsp" />
     </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-//        function togglePermission(button) {
-//            let permissionId = button.getAttribute("data-permission-id");
-//            let roleId = button.getAttribute("data-role-id");
-//            let currentState = button.getAttribute("data-state") === "true";
-//            let newState = !currentState;
-//
-//            $.post("RolePermissionServlet", {
-//                permissionId: permissionId,
-//                roleId: roleId,
-//                newState: newState
-//            }).done(function (response) {
-//                if (response === "success") {
-//                    button.setAttribute("data-state", newState);
-//                    button.textContent = newState ? "ON" : "OFF";
-//                    button.classList.toggle("btn-success", newState);
-//                    button.classList.toggle("btn-danger", !newState);
-//                }
-//            }).fail(function () {
-//                alert("Lỗi cập nhật quyền");
-//            });
-//        }
+        $(document).ready(function () {
+            $(".permission-form button").click(function () {
+                let form = $(this).closest("form");
+                let button = $(this);
+                let permissionId = form.find("input[name='permissionId']").val();
+                let roleId = form.find("input[name='roleId']").val();
+
+                $.ajax({
+                    url: "PermissionManager",
+                    type: "POST",
+                    data: {
+                        permissionId: permissionId,
+                        roleId: roleId
+                    },
+                    success: function (response) {
+                        // Toggle trạng thái nút
+                        if (button.hasClass("btn-success")) {
+                            button.removeClass("btn-success").addClass("btn-danger").text("OFF");
+                        } else {
+                            button.removeClass("btn-danger").addClass("btn-success").text("ON");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
     </script>
 </html>

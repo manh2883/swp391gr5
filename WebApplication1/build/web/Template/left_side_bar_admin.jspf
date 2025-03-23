@@ -102,7 +102,7 @@
                 <div class="panel-body">
                     <ul>
                         <li><a href="#">Marketing Campaigns</a></li>
-                        <li><a href="#">Statistics</a></li>
+                        <li><a href="${pageContext.request.contextPath}/MarketingDashBoard">Statistics</a></li>
                     </ul>
                 </div>
             </div>

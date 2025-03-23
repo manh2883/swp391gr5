@@ -117,7 +117,6 @@
                                                     </a>
                                                 </h4>
                                                 <p>${cart[3]}</p>
-                                                <p>In stock: ${cart[4]}</p>
 
                                             </td>
                                             <td class="cart_price">

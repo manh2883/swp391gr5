@@ -4,26 +4,22 @@
  */
 package controllers;
 
-import DAO.OrderDAO;
-import Models.Order;
+import DAO.SettingDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Dell
  */
-public class OrderListServlet extends HttpServlet {
+public class SettingsListServlet extends HttpServlet {
 
+    private final SettingDAO settingDAO = new SettingDAO();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,10 +37,10 @@ public class OrderListServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet OrderListServlet</title>");
+            out.println("<title>Servlet SettingsListServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet OrderListServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SettingsListServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,38 +58,23 @@ public class OrderListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String searchQuery = request.getParameter("search"); // Tìm theo order ID, customer name
-        String status = request.getParameter("status"); // Lọc theo trạng thái đơn hàng
-        String fromDate = request.getParameter("fromDate"); // Lọc từ ngày
-        String toDate = request.getParameter("toDate"); // Lọc đến ngày
+       String type = request.getParameter("type");
+        Integer status = request.getParameter("status") != null ? Integer.parseInt(request.getParameter("status")) : null;
+        String search = request.getParameter("search");
+        String sortBy = request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "setting_id";
+        String order = request.getParameter("order") != null ? request.getParameter("order") : "ASC";
+        int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int limit = 10;
+        int offset = (page - 1) * limit;
 
-        int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-        int pageSize = 10;
-        int offset = (page - 1) * pageSize;
+        List<Object[]> settings = settingDAO.getSettings(type, status, search, sortBy, order, offset, limit);
+        int totalRecords = settingDAO.countSettings(type, status, search);
+        int totalPages = (int) Math.ceil((double) totalRecords / limit);
 
-        String pageStr = request.getParameter("page");
-        if (pageStr != null) {
-            try {
-                page = Integer.parseInt(pageStr);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        List<Order> orders = OrderDAO.getFilteredOrders(searchQuery, status, fromDate, toDate, page, pageSize);
-        int totalOrders = OrderDAO.countFilteredOrders(searchQuery, status, fromDate, toDate);
-        int totalPages = (int) Math.ceil((double) totalOrders / pageSize);
-        int totalAmount = OrderDAO.getTotalOrderCount(status, status, fromDate, toDate);
-
-        request.setAttribute("orders", orders);
-        request.setAttribute("currentPage", page);
+        request.setAttribute("settings", settings);
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("search", searchQuery);
-        request.setAttribute("status", status);
-        request.setAttribute("fromDate", fromDate);
-        request.setAttribute("toDate", toDate);
-        request.setAttribute("totalAmount", totalAmount);
-
-        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
+        request.setAttribute("currentPage", page);
+        request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
     }
 
     /**

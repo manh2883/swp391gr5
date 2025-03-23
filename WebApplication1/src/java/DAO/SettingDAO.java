@@ -258,12 +258,110 @@ public class SettingDAO {
 
         return otp.toString();
     }
+    
+    public static List<Object[]> getSettings(String type, Integer status, String search, String sortBy, String order, int offset, int limit) {
+        List<Object[]> settings = new ArrayList<>();
+        String sql = "SELECT * FROM setting WHERE 1=1 ";
+
+        if (type != null && !type.isEmpty()) {
+            sql += " AND setting_type = ? ";
+        }
+        if (status != null) {
+            sql += " AND setting_status = ? ";
+        }
+        if (search != null && !search.isEmpty()) {
+            sql += " AND setting_value LIKE ? ";
+        }
+        sql += " ORDER BY " + sortBy + " " + order + " LIMIT ?, ?";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            
+
+            int index = 1;
+            if (type != null && !type.isEmpty()) {
+                stmt.setString(index++, type);
+            }
+            if (status != null) {
+                stmt.setInt(index++, status);
+            }
+            if (search != null && !search.isEmpty()) {
+                stmt.setString(index++, "%" + search + "%");
+            }
+            stmt.setInt(index++, offset);
+            stmt.setInt(index++, limit);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                settings.add(new Object[]{
+                        rs.getLong("setting_id"),
+                        rs.getString("setting_name"),
+                        rs.getInt("setting_value"),
+                        rs.getString("setting_type"),
+                        rs.getInt("setting_order"),
+                        rs.getInt("setting_status")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return settings;
+    }
+    
+    public static int countSettings(String type, Integer status, String search) {
+        String sql = "SELECT COUNT(*) FROM setting WHERE 1=1 ";
+        if (type != null && !type.isEmpty()) {
+            sql += " AND setting_type = ? ";
+        }
+        if (status != null) {
+            sql += " AND setting_status = ? ";
+        }
+        if (search != null && !search.isEmpty()) {
+            sql += " AND setting_value LIKE ? ";
+        }
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+
+            int index = 1;
+            if (type != null && !type.isEmpty()) {
+                stmt.setString(index++, type);
+            }
+            if (status != null) {
+                stmt.setInt(index++, status);
+            }
+            if (search != null && !search.isEmpty()) {
+                stmt.setString(index++, "%" + search + "%");
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     public static void main(String[] args) throws MessagingException, SQLException {
-        System.out.println( getSizeList(1, 12)); // [2, 3, 4, 5]
-        System.out.println(getSizeList("M", "XXL")); // [M, L, XL, XXL]
-        System.out.println( getSizeList("XS", "L")); // [Standard]
-        System.out.println( getSizeList(2, "L")); // [Standard]
+         SettingDAO settingDAO = new SettingDAO();
+
+        // Test fetching settings
+        List<Object[]> settings = settingDAO.getSettings(null, null, null, "setting_id", "ASC", 0, 10);
+        System.out.println("===== Settings List =====");
+        for (Object[] setting : settings) {
+            System.out.printf("ID: %d | Name: %s | Value: %d | Type: %s | Order: %d | Status: %s%n",
+                setting[0], setting[1], setting[2], setting[3], setting[4], (int) setting[5] == 1 ? "Active" : "Inactive");
+        }
+
+        // Test count function
+        int totalCount = settingDAO.countSettings(null, null, null);
+        System.out.println("Total Settings: " + totalCount);
     }
 
 }

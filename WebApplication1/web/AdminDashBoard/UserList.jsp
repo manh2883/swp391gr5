@@ -110,7 +110,7 @@
                                     <table class="table table-bordered">
                                         <thead class="table-dark">
                                             <tr>
-                                               
+
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
@@ -147,6 +147,7 @@
                                             </c:if>
                                         </ul>
                                     </nav>
+                                    
                                     </div>
                                     </div>
                                     </section> <!--/#cart_items-->

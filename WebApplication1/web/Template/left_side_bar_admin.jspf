@@ -71,6 +71,7 @@
                         <li><a href="${pageContext.request.contextPath}/UserList">User List</a></li>
                         <li><a href="${pageContext.request.contextPath}/customerlist">Customer List</a></li>
                         <li><a href="#">Create New User</a></li>
+                         <li><a href="${pageContext.request.contextPath}/SettingsListServlet">Settings List</a></li>
                     </ul>
                 </div>
             </div>

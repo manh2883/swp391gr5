@@ -535,7 +535,7 @@ public class OrderDAO {
 
     public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate, int page, int pageSize) {
         ArrayList<Object[]> list = new ArrayList<>();
-        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate, 0, 0);
+        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate, 1, 1);
 
         for (Order order : orders) {
             Object[] row = new Object[6]; // Thêm 1 cột để lưu username
@@ -609,7 +609,7 @@ public class OrderDAO {
 //            System.out.println(oj[2]);
 //        }
 
-        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null, 0, 0);
+        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null, 1, 1);
         for (Object[] o : list) {
             System.out.println(o[0]);
             System.out.println(o[1]);

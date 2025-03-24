@@ -62,36 +62,42 @@ public class OrderListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String searchQuery = request.getParameter("search"); // Tìm theo order ID, customer name
-        String status = request.getParameter("status"); // Lọc theo trạng thái đơn hàng
-        String fromDate = request.getParameter("fromDate"); // Lọc từ ngày
-        String toDate = request.getParameter("toDate"); // Lọc đến ngày
+        // Lấy tham số từ request
+        String search = request.getParameter("search");
+        String status = request.getParameter("status");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
 
-        int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+        int page = 1;
         int pageSize = 10;
-        int offset = (page - 1) * pageSize;
 
-        String pageStr = request.getParameter("page");
-        if (pageStr != null) {
-            try {
-                page = Integer.parseInt(pageStr);
-            } catch (NumberFormatException ignored) {
+        try {
+            if (request.getParameter("page") != null) {
+                page = Integer.parseInt(request.getParameter("page"));
             }
+            if (request.getParameter("pageSize") != null) {
+                pageSize = Integer.parseInt(request.getParameter("pageSize"));
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
 
-        List<Order> orders = OrderDAO.getFilteredOrders(searchQuery, status, fromDate, toDate, page, pageSize);
-        int totalOrders = OrderDAO.countFilteredOrders(searchQuery, status, fromDate, toDate);
-        int totalPages = (int) Math.ceil((double) totalOrders / pageSize);
-        int totalAmount = OrderDAO.getTotalOrderCount(status, status, fromDate, toDate);
+        // Lấy tổng số đơn hàng sau khi lọc
+        int totalRecords = OrderDAO.getTotalOrderCount(search, status, fromDate, toDate);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
+        // Lấy danh sách đơn hàng
+        List<Order> orders = OrderDAO.getFilteredOrders(search, status, fromDate, toDate, page, pageSize);
+
+        // Đưa dữ liệu vào request để gửi về JSP
         request.setAttribute("orders", orders);
-        request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("search", searchQuery);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("search", search);
         request.setAttribute("status", status);
         request.setAttribute("fromDate", fromDate);
         request.setAttribute("toDate", toDate);
-        request.setAttribute("totalAmount", totalAmount);
+        request.setAttribute("pageSize", pageSize);
 
         request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
     }

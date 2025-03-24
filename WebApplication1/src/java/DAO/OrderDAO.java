@@ -221,6 +221,7 @@ public class OrderDAO {
                 pstmt.setInt(3, oldStatus);
                 success = pstmt.executeUpdate() > 0;
             } catch (Exception e) {
+                
                 e.printStackTrace();
             }
         }
@@ -292,73 +293,6 @@ public class OrderDAO {
             e.printStackTrace();
         }
         return orderId;
-    }
-    
-     public boolean updateOrderStatus(long orderId, int newStatus) {
-        String sql = "UPDATE orders SET status_id = ? WHERE order_id = ?";
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection conn = db.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            
-            ps.setInt(1, newStatus);
-            ps.setLong(2, orderId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-     
-
-    // Hủy đơn hàng (Khách hàng)
-    public boolean cancelOrderByCustomer(long orderId) {
-        return updateOrderStatus(orderId, 5);
-    }
-
-    // Hủy đơn hàng (Người bán)
-    public boolean cancelOrderBySeller(long orderId) {
-        return updateOrderStatus(orderId, 6);
-    }
-
-    // Người bán chấp nhận đơn hàng
-    public boolean acceptOrder(long orderId, int paymentMethod, int paymentStatus) {
-        if (paymentMethod == 2 || paymentStatus == 1) {
-            return updateOrderStatus(orderId, 2);
-        }
-        return false; // Không thể chấp nhận nếu chưa thanh toán trước
-    }
-
-    // Người bán bắt đầu giao hàng
-    public boolean shipOrder(long orderId) {
-        return updateOrderStatus(orderId, 3);
-    }
-
-    // Giao hàng thành công
-    public boolean deliverOrder(long orderId) {
-        return updateOrderStatus(orderId, 4);
-    }
-
-    // Khách nhận hàng
-    public boolean receiveOrder(long orderId) {
-        return updateOrderStatus(orderId, 8);
-    }
-
-    // Hoàn tiền nếu đơn hàng bị hủy (Chỉ áp dụng cho thanh toán trước)
-    public boolean refundOrder(long orderId, int paymentMethod) {
-        if (paymentMethod == 1) {
-            String sql = "UPDATE orders SET payment_status = 3 WHERE order_id = ?";
-            try {
-                DBContext db = new DBContext();
-                java.sql.Connection conn = db.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setLong(1, orderId);
-                return ps.executeUpdate() > 0;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
     public static List<Order> filterOrder(Long userId, Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
@@ -669,7 +603,74 @@ public class OrderDAO {
         return count;
     }
     
-     public static boolean addTxnRefToOrder(int orderId, String txnRef) {
+    // Cập nhật trạng thái đơn hàng
+    public boolean updateOrderStatus(long orderId, int newStatus) {
+        String sql = "UPDATE orders SET status_id = ? WHERE order_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, newStatus);
+            ps.setLong(2, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Hủy đơn hàng (Khách hàng)
+    public boolean cancelOrderByCustomer(long orderId) {
+        return updateOrderStatus(orderId, 5);
+    }
+
+    // Hủy đơn hàng (Người bán)
+    public boolean cancelOrderBySeller(long orderId) {
+        return updateOrderStatus(orderId, 6);
+    }
+
+    // Người bán chấp nhận đơn hàng
+    public boolean acceptOrder(long orderId, int paymentMethod, int paymentStatus) {
+        if (paymentMethod == 2 || paymentStatus == 1) {
+            return updateOrderStatus(orderId, 2);
+        }
+        return false; // Không thể chấp nhận nếu chưa thanh toán trước
+    }
+
+    // Người bán bắt đầu giao hàng
+    public boolean shipOrder(long orderId) {
+        return updateOrderStatus(orderId, 3);
+    }
+
+    // Giao hàng thành công
+    public boolean deliverOrder(long orderId) {
+        return updateOrderStatus(orderId, 4);
+    }
+
+    // Khách nhận hàng
+    public boolean receiveOrder(long orderId) {
+        return updateOrderStatus(orderId, 8);
+    }
+
+    // Hoàn tiền nếu đơn hàng bị hủy (Chỉ áp dụng cho thanh toán trước)
+    public boolean refundOrder(long orderId, int paymentMethod) {
+        if (paymentMethod == 1) {
+            String sql = "UPDATE orders SET payment_status = 3 WHERE order_id = ?";
+            try {
+                DBContext db = new DBContext();
+                java.sql.Connection conn = db.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setLong(1, orderId);
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+    
+    public static boolean addTxnRefToOrder(int orderId, String txnRef) {
         String sql = "UPDATE orders SET note = ? WHERE order_id = ?";
         try {
             DBContext db = new DBContext();
@@ -683,7 +684,7 @@ public class OrderDAO {
             return false;
         }
     }
-
+    
     public static void main(String[] args) throws SQLException {
 //        for( Object[] oj: getOrderDetailViewByOrderId(1)){
 //            System.out.println(oj[0]);

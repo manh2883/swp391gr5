@@ -80,7 +80,7 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("sliderLink", sliderLink);
 
         }
-        request.getRequestDispatcher("Home/Home.jsp").forward(request, response);
+        request.getRequestDispatcher("/Home/Home.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

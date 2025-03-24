@@ -3,77 +3,58 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Manage Addresses</title>
-        <style>
-            .hidden {
-                display: none;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Addresses</title>
+    <style>
+        .hidden { display: none; }
+    </style>
+    <script>
+        function enableEdit(addressId) {
+            document.getElementById('input-' + addressId).removeAttribute('readonly');
+            document.getElementById('edit-' + addressId).classList.add('hidden');
+            document.getElementById('delete-' + addressId).classList.add('hidden');
+            document.getElementById('save-' + addressId).classList.remove('hidden');
+        }
+
+        function validateAndSubmit(formId) {
+            const input = document.getElementById(formId).querySelector("input[name='addressLine']");
+            if (input.value.trim() === '' || input.value.length > 100) {
+                alert("Address cannot be empty and must be less than 100 characters.");
+                return false;
             }
-        </style>
-        <script>
-            function enableEdit(addressID) {
-                let form = document.querySelector(`form input[name='addressID'][value='${addressID}']`).closest("form");
-                let inputField = form.querySelector("input[name='addressContent']");
-                let editButton = form.querySelector("button:nth-of-type(1)");
-                let deleteButton = form.querySelector("button:nth-of-type(2)");
-                let saveButton = form.querySelector("button:nth-of-type(3)");
+            document.getElementById(formId).submit();
+        }
 
-                inputField.readOnly = false;
-                editButton.style.display = "none";
-                deleteButton.style.display = "none";
-                saveButton.classList.remove("hidden");
-            }
-
-            function validateAndSubmit(form) {
-                let inputField = form.querySelector("input[name='addressContent']");
-                let value = inputField.value.trim();
-
-                if (!value) {
-                    alert("Address cannot be empty.");
-                    return;
-                }
-                if (value.length > 120) {
-                    alert("Address cannot exceed 120 characters.");
-                    return;
-                }
-
-                form.submit();
-            }
-
-            function addNewAddress() {
-                let container = document.getElementById("address-list");
-                let form = document.createElement("form");
-                let addButton = document.getElementById("add-button");
-                form.setAttribute("action", "AddressManager");
-                form.setAttribute("method", "post");
-
-                form.innerHTML = `
-        <input type="text" name="addressContent" placeholder="Enter new address">
-        <button type="button" onclick="validateAndSubmit(this.closest('form'))">Save</button>
-    `;
-
-                container.appendChild(form);
-            }
-
-        </script>
-    </head>
-    <body>
-        <h2>Manage Addresses</h2>
-        <div id="address-list">
-            <c:forEach var="address" items="${addressList}">
+        function addNewAddress() {
+            const container = document.getElementById("address-list");
+            const newId = "new-address";
+            container.innerHTML += `
                 <form id="form" action="AddressManager" method="post">
-                    <input type="text"  name="addressID" value="${address.addressID}" readonly style="visibility: hidden">
-                    <input type="text"  name="addressContent" value="${address.addressLine}" readonly>
-                    <button type="button"  
-                            onclick="enableEdit()">Edit</button>
-                    <button type="button" >Delete</button>
-                    <button type="button"  class="hidden" 
-                            onclick="validateAndSubmit()">Save</button>
+                    <input type="text" id="input-${newId}" name="addressLine" maxlength="100">
+                    <button type="button" onclick="validateAndSubmit('form-${newId}')">Save</button>
                 </form>
-            </c:forEach>
-        </div>
-        <button id="add-button" onclick="addNewAddress()">Add Address</button>
-    </body>
+            `;
+            document.getElementById("add-button").classList.add("hidden");
+        }
+    </script>
+</head>
+<body>
+    <h2>Manage Addresses</h2>
+    <div id="address-list">
+        <c:forEach var="address" items="${addressList}">
+            <form id="form" action="AddressManager" method="post">
+                <input type="text"  name="addressLine" value="${address.addressLine}" readonly>
+                <button type="button"  
+                        onclick="enableEdit()">Edit</button>
+                <button type="button" >Delete</button>
+                <button type="button"  class="hidden" 
+                        onclick="validateAndSubmit()">Save</button>
+                        
+            </form>
+        </c:forEach>
+    </div>
+    <button id="add-button" onclick="addNewAddress()">Add Address</button>
+</body>
 </html>

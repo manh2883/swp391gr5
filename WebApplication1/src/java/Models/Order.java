@@ -4,6 +4,7 @@
  */
 package Models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -18,45 +19,25 @@ public class Order {
     private int statusId;
     private Date createAt;
     private Date completedAt;
-    private int paymentMethod;
-
-    public int getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(int paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public int getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(int paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-    private int paymentStatus;
+    private int paymentmethod;
     private String address;
     private String orderNote;
     private String userReceive;
     private String contact;
 
-    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, Date completedAt, int paymentMethod, int paymentStatus, String address, String orderNote, String userReceive, String contact) {
+    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, Date completedAt, int paymentmethod, String address, String orderNote, String userReceive, String contact) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
         this.statusId = statusId;
         this.createAt = createAt;
         this.completedAt = completedAt;
-        this.paymentMethod = paymentMethod;
-        this.paymentStatus = paymentStatus;
+        this.paymentmethod = paymentmethod;
         this.address = address;
         this.orderNote = orderNote;
         this.userReceive = userReceive;
         this.contact = contact;
     }
-
-     
 
     public Order() {
     }
@@ -110,11 +91,11 @@ public class Order {
     }
 
     public int getPaymentmethod() {
-        return paymentMethod;
+        return paymentmethod;
     }
 
     public void setPaymentmethod(int paymentmethod) {
-        this.paymentMethod = paymentmethod;
+        this.paymentmethod = paymentmethod;
     }
 
     public String getAddress() {
@@ -151,24 +132,8 @@ public class Order {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Order{");
-        sb.append("orderId=").append(orderId);
-        sb.append(", userId=").append(userId);
-        sb.append(", totalamount=").append(totalamount);
-        sb.append(", statusId=").append(statusId);
-        sb.append(", createAt=").append(createAt);
-        sb.append(", completedAt=").append(completedAt);
-        sb.append(", paymentMethod=").append(paymentMethod);
-        sb.append(", paymentStatus=").append(paymentStatus);
-        sb.append(", address=").append(address);
-        sb.append(", orderNote=").append(orderNote);
-        sb.append(", userReceive=").append(userReceive);
-        sb.append(", contact=").append(contact);
-        sb.append('}');
-        return sb.toString();
+        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", completedAt=" + completedAt + ", paymentmethod=" + paymentmethod + ", address=" + address + ", orderNote=" + orderNote + ", userReceive=" + userReceive + ", contact=" + contact + '}';
     }
-   
 
    
     

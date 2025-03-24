@@ -4,16 +4,12 @@
  */
 package controllers.marketing;
 
-import DAO.MKTDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -38,7 +34,7 @@ public class MarketingDashBoardServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MarketingDashBoardServlet</title>");
+            out.println("<title>Servlet MarketingDashBoardServlet</title>");            
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet MarketingDashBoardServlet at " + request.getContextPath() + "</h1>");
@@ -57,35 +53,23 @@ public class MarketingDashBoardServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productId = request.getParameter("product_id");
-        MKTDAO mktDAO = new MKTDAO();
-        if (productId != null && !productId.isEmpty()) {
-            List<Map<String, Object>> productList = mktDAO.searchProductById(productId);
-            request.setAttribute("productList", productList);
-            request.setAttribute("productId", productId);
-        }
-
-        request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        MKTDAO mktDAO = new MKTDAO();
-        try {
-            String productId = request.getParameter("product_id");
-            int variantId = Integer.parseInt(request.getParameter("variant_id"));
-            int newPrice = Integer.parseInt(request.getParameter("new_price"));
-            Date startDate = Date.valueOf(request.getParameter("start_date"));
-            Date endDate = Date.valueOf(request.getParameter("end_date"));
-
-            mktDAO.updateProductPrice(productId, variantId, newPrice, startDate, endDate);
-            response.sendRedirect("MarketingDashBoard");
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Có lỗi xảy ra khi cập nhật!");
-            request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
-        }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**

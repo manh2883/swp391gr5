@@ -105,297 +105,170 @@
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
-
-        <section id="cart_items">
-            <div class="container">
-                <div class="breadcrumbs">
-                    <ol class="breadcrumb">
-                        <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
-                        <li><a href="${pageContext.request.contextPath}/${breadcumbLink}">${breadcumb}</a></li>
-                        <li class="active">Order: ${orderInformation.orderId}</li>
-                    </ol>
-                </div>
-
-                <div class="shopper-informations">
-                    <div class="row">
-                        <div class="col-sm-4 clearfix" >
-                            <div class="bill-to">
-
-                                <p>Bill To</p>
-                                <div class="form-floating mb-10">
-                                    <input id="nameInput" class="form-control" type="text" name="name" style="height: 45px; margin-bottom: 10px"
-                                           placeholder="Name*" value="${orderInformation.userReceive}" readonly >
-                                    <label for="nameInput">Receiver:</label>
-                                    <div class="text-danger" id="nameError"></div>
-                                </div>
-
-                                <div class="form-floating mb-10">
-                                    <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
-                                           placeholder="Contact*" value="${orderInformation.contact}" readonly>
-                                    <label for="contactInput">Contact:</label>
-                                    <div class="text-danger" id="contactError"></div>
-                                </div>    
-
-                                <div class="form-floating mb-10">
-                                    <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
-                                           placeholder="Address*" value="${orderInformation.address}" readonly>
-                                    <label for="adress">Address</label>
-                                    <div class="text-danger" id="addressError"></div>
-                                </div>  
-
-
-                                <div class="form-floating mb-10">
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Created At: </span>
-                                        <span style="font-size: 15px">${orderInformation.createAt}</span>
-                                    </p>
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Completed At: </span>
-                                        <c:choose>
-                                            <c:when test="${not empty orderInformation.completedAt and orderInformation.completedAt != 'null'}">
-                                                <span style="font-size: 15px">${orderInformation.completedAt}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span>N/A</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Payment method: </span>
-                                        <c:choose>
-                                            <c:when test="${not empty orderInformation.paymentmethod and orderInformation.paymentmethod ne null}">
-                                                <c:choose>
-                                                    <c:when test="${orderInformation.paymentmethod == 1}">
-                                                        <span style="font-size: 15px">Online Banking</span>
-                                                    </c:when>
-                                                    <c:when test="${orderInformation.paymentmethod == 2}">
-                                                        <span style="font-size: 15px">COD</span>
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span style="font-size: 15px">Unknown</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                </div>  
-                                <div class="order-message">
-                                    <p>Shipping Order</p>
-                                    <textarea name="orderNote" id="orderNote" placeholder="${orderInformation.orderNote}" rows="3"></textarea>
-                                    <!--<label><input type="checkbox"> Shipping to bill address</label>-->
-                                    <span id="orderNoteError" class="error-message text-danger"></span>
-                                </div>
-                                <!--</div>-->
-                            </div>
-                        </div>
-                        <div class="col-sm-8" >
-                            <p>
-                                <span style="font-weight: bold">Status: </span>
-                                <span style="font-size: 9px;" class=" status-${orderInformation.statusId}">
-                                    <c:choose>
-                                        <c:when test="${orderInformation.statusId == '1'}">Pending</c:when>
-                                        <c:when test="${orderInformation.statusId == '6'}">Accepted</c:when>
-                                        <c:when test="${orderInformation.statusId == '2'}">Shipping</c:when>
-                                        <c:when test="${orderInformation.statusId == '3'}">Delivered</c:when>
-                                        <c:when test="${orderInformation.statusId == '4'}">Canceled By Customer</c:when>
-                                        <c:when test="${orderInformation.statusId == '5'}">Canceled By Seller</c:when>
-                                        <c:otherwise>Unknown</c:otherwise>
-                                    </c:choose>
-                                </span>
-                            </p>
-                            <div class="review-payment">
-                                <h2>Review & Payment</h2>
-                            </div>
-
-                            <div class="table-responsive cart_info">
-                                <table class="table">
-                                    <thead style="background-color: #FE980F;">
-                                        <tr>
-                                            <th>Item</th>
-                                            <th></th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:set var="cartTotal" value="0" />
-                                        <c:forEach var="item" items="${orderDetailList}">
-                                            <tr>
-
-                                                <td> 
-                                                    <a href="${pageContext.request.contextPath}/ProductDetail?productId=${item[1].productId}"
-                                                       style="color: black">
-                                                        ${item[1].name}
-                                                    </a>
-                                                </td> 
-
-                                                <td>${item[2]}</td>
-                                                <td>${item[0].quantity}</td>
-                                                <td>${item[0].price}</td>
-
-                                                <td class="subtotal">
-                                                    <c:set var="itemTotal" value="${item[0].quantity * item[0].price}" />
-                                                    ${itemTotal}
-                                                    <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
-                                                </td>
-                                            </tr>
-
-                                        </c:forEach>
-                                        <tr>
-                                            <td colspan="4">Total</td>
-                                            <td><strong>${cartTotal}</strong></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row" style="height: 50px; vertical-align: middle;">
-                                <p>Role: ${role}</p>
-                                <p>Order ID: ${orderInformation.orderId}</p>
-                                <p>Status ID: ${orderInformation.statusId}</p>
-                                <p>Payment Method: ${orderInformation.paymentmethod}</p>
-                                <p>Payment Status: ${orderInformation.paymentStatus}</p>
-
-                                <div class="text-right col-sm-12" style="visibility: hidden">
-                                    <c:set var="isDisabled" value="${orderInformation.statusId == 4 || orderInformation.statusId == 5 
-                                                                     || orderInformation.statusId == 6 || orderInformation.statusId == 7 
-                                                                     || orderInformation.statusId == 8}" />
-                                    <c:set var="cannotAccept" value="${orderInformation.paymentmethod == 1 && orderInformation.paymentStatus != 1}" />
-
-                                    <table style="border:1px solid red;width: 100%;">
-                                        <tbody>
-                                            <tr>
-                                                <td style="width: 40%;visibility: hidden"></td>
-
-                                                <%-- Manager Refund --%>
-                                                <td style="width: 20%" class="text-start">
-                                                    <c:if test="${role == 'manager' 
-                                                                 
-                                                          }">
-                                                          <button class="btn btn-primary"
-                                                                  onclick="submitOrderUpdate(${orderInformation.orderId}, 'refund')"
-                                                                  ${isDisabled ? 'disabled' : ''}>Refund</button>
-                                                    </c:if>
-                                                </td>
-
-                                                <%-- Manager Cancel --%>
-                                                <td style="width: 20%" class="text-start">
-                                                    <c:if test="${role == 'manager' }">
-                                                        <button class="btn btn-danger"
-                                                                onclick="submitOrderUpdate(${orderInformation.orderId}, 'cancelBySeller')"
-                                                                ${isDisabled ? 'disabled' : ''}>Cancel</button>
-                                                    </c:if>
-                                                </td>
-
-                                                <%-- Manager Update --%>
-                                                <td style="width: 20%" class="text-start">
-                                                    <c:if test="${role == 'manager' }">
-                                                        <c:choose>
-                                                            <%-- Accept Order --%>
-                                                            <c:when test="${orderInformation.statusId == 1}">
-                                                                <button class="btn btn-primary"
-                                                                        onclick="submitOrderUpdate(${orderInformation.orderId}, 'accept')"
-                                                                        ${cannotAccept ? 'disabled' : ''}>Accept</button>
-                                                            </c:when>
-
-                                                            <%-- Ship Order --%>
-                                                            <c:when test="${orderInformation.statusId == 2}">
-                                                                <button class="btn btn-primary"
-                                                                        onclick="submitOrderUpdate(${orderInformation.orderId}, 'ship')">Ship</button>
-                                                            </c:when>
-
-                                                            <%-- Delivered --%>
-                                                            <c:when test="${orderInformation.statusId == 3}">
-                                                                <button class="btn btn-primary"
-                                                                        onclick="submitOrderUpdate(${orderInformation.orderId}, 'delivered')">Delivered</button>
-                                                            </c:when>
-                                                        </c:choose>
-                                                    </c:if>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <%-- Customer Actions --%>
-                                <div class="text-right col-sm-12" style="visibility: hidden">
-                                    <table style="border:1px solid red;width: 100%;">
-                                        <tbody>
-                                            <tr>
-                                                <td style="width: 40%;visibility: hidden"></td>
-
-                                                <%-- Customer Cancel --%>
-                                                <td style="width: 30%">
-                                                    <c:if test="${role == 'customer' && (orderInformation.statusId == 1 || orderInformation.statusId == 2)}">
-                                                        <button class="btn btn-danger"
-                                                                onclick="submitOrderUpdate(${orderInformation.orderId}, 'cancel')"
-                                                                ${isDisabled ? 'disabled' : ''}>Cancel</button>
-                                                    </c:if>
-                                                </td>
-
-                                                <%-- Customer Received --%>
-                                                <td style="width: 30%" class="text-start">
-                                                    <c:if test="${role == 'customer' && (orderInformation.statusId == 3 || orderInformation.statusId == 4)}">
-                                                        <button class="btn btn-success"
-                                                                onclick="submitOrderUpdate(${orderInformation.orderId}, 'receive')"
-                                                                ${isDisabled ? 'disabled' : ''}>Received</button>
-                                                    </c:if>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>          
-                        </div>               
+        <form action="Checkout" method="post" onsubmit="return validateForm(event)">
+            <section id="cart_items">
+                <div class="container">
+                    <div class="breadcrumbs">
+                        <ol class="breadcrumb">
+                            <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
+                            <li><a href="${pageContext.request.contextPath}/${breadcumbLink}">${breadcumb}</a></li>
+                            <li class="active">Order: ${orderInformation.orderId}</li>
+                        </ol>
                     </div>
+
+                    <div class="shopper-informations">
+                        <div class="row">
+                            <div class="col-sm-4 clearfix" >
+                                <div class="bill-to">
+
+                                    <p>Bill To</p>
+                                    <div class="form-floating mb-10">
+                                        <input id="nameInput" class="form-control" type="text" name="name" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Name*" value="${orderInformation.userReceive}" readonly >
+                                        <label for="nameInput">Receiver:</label>
+                                        <div class="text-danger" id="nameError"></div>
+                                    </div>
+
+                                    <div class="form-floating mb-10">
+                                        <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Contact*" value="${orderInformation.contact}" readonly>
+                                        <label for="contactInput">Contact:</label>
+                                        <div class="text-danger" id="contactError"></div>
+                                    </div>    
+
+                                    <div class="form-floating mb-10">
+                                        <input id="contactInput" class="form-control" type="text" name="contact" style="height: 45px; margin-bottom: 10px"
+                                               placeholder="Address*" value="${orderInformation.address}" readonly>
+                                        <label for="adress">Address</label>
+                                        <div class="text-danger" id="addressError"></div>
+                                    </div>  
+
+
+                                    <div class="form-floating mb-10">
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Created At: </span>
+                                            <span style="font-size: 15px">${orderInformation.createAt}</span>
+                                        </p>
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Completed At: </span>
+                                            <c:choose>
+                                                <c:when test="${not empty orderInformation.completedAt and orderInformation.completedAt != 'null'}">
+                                                    <span style="font-size: 15px">${orderInformation.completedAt}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span>N/A</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
+                                        <p>
+                                            <span style="font-weight:  bold;font-size:17px ">Payment method: </span>
+                                            <c:choose>
+                                                <c:when test="${not empty orderInformation.paymentmethod and orderInformation.paymentmethod ne null}">
+                                                    <c:choose>
+                                                        <c:when test="${orderInformation.paymentmethod == 1}">
+                                                            <span style="font-size: 15px">Online Banking</span>
+                                                        </c:when>
+                                                        <c:when test="${orderInformation.paymentmethod == 2}">
+                                                            <span style="font-size: 15px">Credit Card</span>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span style="font-size: 15px">Unknown</span>
+                                                </c:otherwise>
+                                            </c:choose>
+
+
+                                        </p>
+
+                                    </div>  
+
+                                    <div class="order-message">
+                                        <p>Shipping Order</p>
+                                        <textarea name="orderNote" id="orderNote" placeholder="${orderInformation.orderNote}" rows="3"></textarea>
+                                        <!--<label><input type="checkbox"> Shipping to bill address</label>-->
+                                        <span id="orderNoteError" class="error-message text-danger"></span>
+                                    </div>
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                            <div class="col-sm-8" >
+                                <p>
+                                    <span style="font-weight: bold">Status: </span>
+                                    <span style="font-size: 9px;" class=" status-${orderInformation.statusId}">
+                                        <c:choose>
+                                            <c:when test="${orderInformation.statusId == '1'}">Pending</c:when>
+                                            <c:when test="${orderInformation.statusId == '6'}">Accepted</c:when>
+                                            <c:when test="${orderInformation.statusId == '2'}">Shipping</c:when>
+                                            <c:when test="${orderInformation.statusId == '3'}">Delivered</c:when>
+                                            <c:when test="${orderInformation.statusId == '4'}">Canceled By Customer</c:when>
+                                            <c:when test="${orderInformation.statusId == '5'}">Canceled By Seller</c:when>
+                                            <c:otherwise>Unknown</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </p>
+                                <div class="review-payment">
+                                    <h2>Review & Payment</h2>
+                                </div>
+
+                                <div class="table-responsive cart_info">
+                                    <table class="table">
+                                        <thead style="background-color: #FE980F;">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th></th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:set var="cartTotal" value="0" />
+                                            <c:forEach var="item" items="${orderDetailList}">
+                                                <tr>
+
+                                                    <td> 
+                                                        <a href="${pageContext.request.contextPath}/ProductDetail?productId=${item[1].productId}"
+                                                           style="color: black">
+                                                            ${item[1].name}
+                                                        </a>
+                                                    </td> 
+
+                                                    <td>${item[2]}</td>
+                                                    <td>${item[0].quantity}</td>
+                                                    <td>${item[0].price}</td>
+
+                                                    <td class="subtotal">
+                                                        <c:set var="itemTotal" value="${item[0].quantity * item[0].price}" />
+                                                        ${itemTotal}
+                                                        <c:set var="cartTotal" value="${cartTotal + itemTotal}" />
+                                                    </td>
+                                                </tr>
+
+                                            </c:forEach>
+                                            <tr>
+                                                <td colspan="4">Total</td>
+                                                <td><strong>${cartTotal}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row" style="height: 50px; vertical-align: middle;">
+
+                                    <div class="text-right col-sm-12 ">
+                                        <button type="submit" class="btn btn-primary" disabled >Button</button>
+                                    </div>
+                                </div>          
+                            </div>               
+                        </div>
+                    </div>
+
+
+
                 </div>
-            </div>
-        </section>
+            </section>
+        </form>
 
-        <!-- Modal -->
-        <div id="confirmModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <p id="modalMessage"></p>
-                <button id="confirmBtn">Confirm</button>
-                <button onclick="closeModal()">Cancel</button>
-            </div>
-        </div>
-
-        <script>
-            function openModal(orderId, action) {
-                let message = "Are you sure you want to " + action + " this order?";
-                document.getElementById("modalMessage").innerText = message;
-                document.getElementById("confirmBtn").setAttribute("onclick", 'updateOrder(' + orderId + ',' + action + ')');
-                document.getElementById("confirmModal").style.display = "block";
-            }
-
-            function closeModal() {
-                document.getElementById("confirmModal").style.display = "none";
-            }
-
-            function submitOrderUpdate(orderId, action) {
-                let form = document.createElement("form");
-                form.method = "POST";
-                form.action = "OrderDetail"; // Servlet xử lý
-
-                let orderInput = document.createElement("input");
-                orderInput.type = "hidden";
-                orderInput.name = "orderId";
-                orderInput.value = orderId;
-                form.appendChild(orderInput);
-
-                let actionInput = document.createElement("input");
-                actionInput.type = "hidden";
-                actionInput.name = "action";
-                actionInput.value = action;
-                form.appendChild(actionInput);
-
-                document.body.appendChild(form);
-                form.submit();
-            }
-
-        </script>
 
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>
@@ -406,3 +279,49 @@
     </body>
 </html>
 
+
+
+
+
+
+<!--<div class="container mt-4">
+    <h2>My Orders</h2>
+    <p>${message}</p>
+    <p>${orderInformation}</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Product</th>
+                <th>Size, Color</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+<c:choose>
+    <c:when test="${not empty orderDetailList}">
+        <c:forEach var="order" items="${orderDetailList}">
+            <tr>
+                <td><c:out value="${order[0].orderdetailId}" /></td>
+                <td><c:out value="${order[1].name}" /></td>
+                <td><c:out value="${order[2]}" /></td>
+                <td><c:out value="${order[0].quantity}" /></td>
+                <td><c:out value="${order[0].price}" /></td>
+
+            </tr>
+        </c:forEach>
+    </c:when>
+    <c:otherwise>
+        <tr>
+            <td colspan="6" style="text-align: center; font-weight: bold;">No items found</td>
+        </tr>
+    </c:otherwise>
+</c:choose>
+</tbody>
+
+</table>
+</div>
+
+
+-->

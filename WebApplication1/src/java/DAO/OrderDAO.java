@@ -4,13 +4,10 @@
  */
 package DAO;
 
-import static DAO.UserDAO.getUserById;
 import DBContext.DBContext;
-import Models.Account;
 import Models.Order;
 import Models.OrderDetail;
 import Models.Product;
-import Models.User;
 import java.sql.Timestamp;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -18,25 +15,24 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import models.OrderDetailViewDTO;
 
 /**
  *
  * @author Dell
  */
 public class OrderDAO {
-    
+
     public static List<Order> getAllOrderListByStatus(int status) {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders WHERE status_id = ? ORDER BY created_at  DESC";
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, status);
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setUserId(rs.getInt("user_id"));
@@ -55,20 +51,20 @@ public class OrderDAO {
         }
         return orders;
     }
-    
+
     public static List<Order> getOrderListByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
-        
+
         try {
-            
+
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, userId);
-            
+
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setUserId(rs.getInt("user_id"));
@@ -85,20 +81,20 @@ public class OrderDAO {
         }
         return orders;
     }
-    
+
     public List<Order> getOrdersByUserIdAndStatus(int userId, String status) {
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders WHERE user_id = ? AND status_id = ? ORDER BY created_at DESC";
-        
+
         try {
-            
+
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, userId);
             stm.setString(2, status);
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setUserId(rs.getInt("user_id"));
@@ -116,9 +112,9 @@ public class OrderDAO {
         }
         return orders;
     }
-    
+
     public static Order getOrderInformationById(int orderId) {
-        
+
         String query = "SELECT * FROM orders WHERE order_id = ? limit 1";
         Order order = new Order();
         try {
@@ -127,9 +123,9 @@ public class OrderDAO {
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, orderId);
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
-                
+
                 order.setUserId(rs.getInt("user_id"));
                 order.setOrderId(rs.getInt("order_id"));
                 order.setContact(rs.getString("contact"));
@@ -142,49 +138,49 @@ public class OrderDAO {
                 order.setCompletedAt(rs.getTimestamp("completed_at"));
                 order.setAddress(rs.getString("address"));
                 order.setOrderNote(rs.getString("note"));
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return order;
     }
-    
+
     public static List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String query = "SELECT * FROM order_detail WHERE order_id = ?";
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
             stm.setInt(1, orderId);
             ResultSet rs = stm.executeQuery();
-            
+
             while (rs.next()) {
                 OrderDetail orderdt = new OrderDetail();
-                
+
                 orderdt.setOrderdetailId(rs.getInt("order_detail_id"));
                 orderdt.setOrderId(rs.getInt("order_id"));
                 orderdt.setProductId(rs.getString("product_id"));
                 orderdt.setProductvariantId(rs.getInt("product_variant_id"));
                 orderdt.setQuantity(rs.getInt("quantity"));
                 orderdt.setPrice(rs.getInt("price"));
-                
+
                 orderDetails.add(orderdt);
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return orderDetails;
     }
-    
+
     public static ArrayList<Object[]> getOrderDetailViewByOrderId(int orderId) {
         List<OrderDetail> orderDetails = OrderDAO.getOrderDetailsByOrderId(orderId);
-        
+
         ArrayList<Object[]> view = new ArrayList<>();
-        
+
         for (OrderDetail oD : orderDetails) {
 //            OrderDetailViewDTO viewItem = new OrderDetailViewDTO();
             Object[] viewItem = new Object[3];
@@ -201,9 +197,9 @@ public class OrderDAO {
             System.out.println("[" + variant + "]");
             view.add(viewItem);
         }
-        
+
         return view;
-        
+
     }
 
     // Huy don, ship, tra hang, da giao hang
@@ -225,7 +221,7 @@ public class OrderDAO {
                 e.printStackTrace();
             }
         }
-        
+
         return success;
     }
 
@@ -240,7 +236,7 @@ public class OrderDAO {
         }
         return false;
     }
-    
+
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;
         String orderSQL = "INSERT INTO orders (user_id, total_amount, status_id, "
@@ -262,7 +258,7 @@ public class OrderDAO {
                 orderstm.setString(6, order.getOrderNote());
                 orderstm.setString(7, order.getUserReceive());
                 orderstm.setString(8, order.getContact());
-                
+
                 orderstm.executeUpdate();
                 try (ResultSet rs = orderstm.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -294,7 +290,7 @@ public class OrderDAO {
         }
         return orderId;
     }
-    
+
     public static List<Order> filterOrder(Long userId, Long orderId, Long mintotalAmount, Long maxtotalAmount, Long statusId,
             Long paymentMethod, String address, String userReceive, String contact,
             Timestamp createdStartDate, Timestamp createdEndDate,
@@ -305,9 +301,9 @@ public class OrderDAO {
     FROM orders o
     JOIN order_status s ON o.status_id = s.order_status_id
     WHERE 1=1 """;
-        
+
         List<Object> params = new ArrayList<>();
-        
+
         if (userId != null) {
             query += " AND o.user_id = ?";
             params.add(userId);
@@ -332,7 +328,7 @@ public class OrderDAO {
         // Search by status ID
         if (statusId != null) {
             Long status = Long.valueOf(statusId);
-            
+
             if (status.equals(9L)) {
                 query += " AND (o.status_id = 7 OR o.status_id = 5 Or o.status_id = 6) ";
             } else {
@@ -360,22 +356,22 @@ public class OrderDAO {
             query += " AND o.completed_at <= ?";
             params.add(completedEndDate);
         }
-        
+
         if (paymentMethod != null) {
             query += " AND o.payment_method = ?";
             params.add(paymentMethod);
         }
-        
+
         if (address != null) {
             query += " AND o.address = ?";
             params.add(address);
         }
-        
+
         if (userReceive != null) {
             query += " AND o.user_receive = ?";
             params.add(userReceive);
         }
-        
+
         if (contact != null) {
             query += " AND o.contact = ?";
             params.add(contact);
@@ -383,15 +379,15 @@ public class OrderDAO {
 
         // Sap xep
         query += " Order by created_at desc";
-        
+
         DBContext db = new DBContext();
         java.sql.Connection con = db.getConnection();
         PreparedStatement ps = con.prepareStatement(query);
-        
+
         for (int i = 0; i < params.size(); i++) {
             ps.setObject(i + 1, params.get(i));
         }
-        
+
         try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Order order = new Order();
@@ -405,11 +401,11 @@ public class OrderDAO {
                 order.setUserReceive(rs.getString("user_receive"));
                 order.setContact(rs.getString("contact"));
                 order.setOrderNote(rs.getString("note"));
-                
+
                 orderList.add(order);
             }
         }
-        
+
         return orderList;
     }
 
@@ -417,7 +413,7 @@ public class OrderDAO {
     public int getTotalOrderCount(String search, String status, String fromDate, String toDate) {
         int totalRecords = 0;
         String query = "SELECT COUNT(*) FROM orders WHERE 1=1";
-        
+
         if (search != null && !search.isEmpty()) {
             query += " AND (order_id LIKE ? OR user_id LIKE ?)";
         }
@@ -427,7 +423,7 @@ public class OrderDAO {
             } else {
                 query += " AND status_id = ?";
             }
-            
+
         }
         if (fromDate != null && !fromDate.isEmpty()) {
             query += " AND created_at >= ?";
@@ -435,7 +431,7 @@ public class OrderDAO {
         if (toDate != null && !toDate.isEmpty()) {
             query += " AND created_at <= ?";
         }
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -454,7 +450,7 @@ public class OrderDAO {
             if (toDate != null && !toDate.isEmpty()) {
                 ps.setString(index++, toDate);
             }
-            
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 totalRecords = rs.getInt(1);
@@ -468,15 +464,15 @@ public class OrderDAO {
     // Lấy danh sách đơn hàng có phân trang
     public static List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate) {
         List<Order> orders = new ArrayList<>();
-        
+
         String query = "SELECT DISTINCT * FROM orders o "
                 + "LEFT JOIN account a ON o.user_id = a.user_id "
                 + "WHERE 1=1 ";
-        
+
         if (search != null && !search.isEmpty()) {
             query += "AND o.order_id LIKE ? OR a.username LIKE ? ";
         }
-        
+
         if (status != null && !status.isEmpty()) {
             query += "AND o.status_id = ? ";
         }
@@ -486,12 +482,12 @@ public class OrderDAO {
         if (toDate != null && !toDate.isEmpty()) {
             query += "AND o.created_at <= ? ";
         }
-        
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement ps = con.prepareStatement(query);
-            
+
             int index = 1;
             if (search != null && !search.isEmpty()) {
                 ps.setString(index++, "%" + search + "%"); // Cho order_id
@@ -506,7 +502,7 @@ public class OrderDAO {
             if (toDate != null && !toDate.isEmpty()) {
                 ps.setString(index++, toDate);
             }
-            
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Order order = new Order();
@@ -518,21 +514,21 @@ public class OrderDAO {
 
                 // Set username từ bảng account
                 String usernameResult = rs.getString("username");
-                
+
                 orders.add(order); // Thêm order vào danh sách kết quả
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return orders;
     }
-    
+
     public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate) {
         ArrayList<Object[]> list = new ArrayList<>();
         List<Order> orders = getFilteredOrders(search, status, fromDate, toDate);
-        
+
         for (Order order : orders) {
             Object[] row = new Object[6]; // Thêm 1 cột để lưu username
             row[0] = order.getOrderId();
@@ -542,7 +538,7 @@ public class OrderDAO {
             row[4] = AccountDAO.getAccountByUserId(order.getUserId()).getUsername();
             list.add(row);
         }
-        
+
         return list;
     }
 
@@ -553,7 +549,7 @@ public class OrderDAO {
             DBContext db = new DBContext();
             java.sql.Connection conn = db.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
-            
+
             ps.setInt(1, newStatus);
             ps.setLong(2, orderId);
             return ps.executeUpdate() > 0;
@@ -612,24 +608,20 @@ public class OrderDAO {
         }
         return false;
     }
-    
-    public static void main(String[] args) throws SQLException {
-//        for( Object[] oj: getOrderDetailViewByOrderId(1)){
-//            System.out.println(oj[0]);
-//            System.out.println(oj[1]);
-//            System.out.println(oj[2]);
-//        }
-//
-//        ArrayList<Object[]> list = getFilterOrderView("1", null, null, null);
-//        for (Object[] o : list) {
-//            System.out.println(o[0]);
-//            System.out.println(o[1]);
-//            System.out.println(o[2]);
-//            System.out.println(o[3]);
-//            System.out.println(o[4]);
-//
-//        }
-        System.out.println(getOrderInformationById(39));
+
+    public static boolean addTxnRefToOrder(int orderId, String txnRef) {
+        String sql = "UPDATE orders SET note = ? WHERE order_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, txnRef);
+            ps.setInt(2, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-    
+
 }

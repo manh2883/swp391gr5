@@ -44,7 +44,7 @@
     <body>
         <c:import url="/Template/header1.jsp" />
         <c:import url="/Template/header2.jsp" />
-        <form action="Checkout" method="post" onsubmit="return validateForm(event)">
+        <form action="Checkout" id="checkoutForm" method="post" onsubmit="return validateForm(event)">
             <section id="cart_items">
                 <div class="container">
                     <div class="breadcrumbs">
@@ -321,7 +321,10 @@
 
                 validateForm();
             });
-
+            fetch("CheckoutServlet", {
+                method: "POST",
+                body: formData
+            })
 
 //            document.querySelector("form").addEventListener("submit", validateForm);
         </script>

@@ -86,8 +86,7 @@
                         <thead>
                             <tr class="cart_menu">
                                 <td class="select " style="text-align: center; /* Căn giữa nội dung văn bản */
-                                    vertical-align: middle;">
-                                    <input type="checkbox" id="selectAll"  style="width: 16px; height: 16px; border-radius: 0px"  /></td>
+                                    vertical-align: middle;"><input type="checkbox" id="selectAll" /></td>
                                 <td class="image"></td>
                                 <td class="description">Item</td>
                                 <td class="price">Price</td>
@@ -104,13 +103,10 @@
                                         <tr>
                                             <td class="select " style="text-align: center; /* Căn giữa nội dung văn bản */
                                                 vertical-align: middle;">
-                                                <input type="checkbox" name="selectedItems" 
-                                                       style="width: 16px; height: 16px; border-radius: 0px" 
-                                                       value="${cart[0].cartDetailID}" class="itemCheckbox" />
+                                                <input type="checkbox" name="selectedItems" value="${cart[0].cartDetailID}" class="itemCheckbox" />
                                             </td>
                                             <td class="cart_product">
-                                                <a href="${pageContext.request.contextPath}/ProductDetail?productId=${cart[0].productID}">
-                                                    <img class="product-img"
+                                                <a href=""><img class="product-img"
                                                                 src="${pageContext.request.contextPath}/${cart[1]}" alt="${cart[5]}"></a>
                                             </td>
                                             <td class="cart_description">
@@ -121,8 +117,7 @@
                                                     </a>
                                                 </h4>
                                                 <p>${cart[3]}</p>
-                                                <!--<p>In stock: ${cart[4]}</p>-->
-                                                <p></p>
+
                                             </td>
                                             <td class="cart_price">
                                                 <p>${cart[2].intValue()}</p>
@@ -135,7 +130,7 @@
                                                     <input class="" type="text" name="quantity" value="${cart[0].quantity}" autocomplete="off" size="2" readonly>
 
                                                     <button type="button" class="btn" style="width: 35px; height: 35px; border-radius: 0px" 
-                                                            onclick="submitCartForm(${cart[0].cartDetailID}, 'increment')"> + </button>  
+                                                            onclick="submitCartForm(${cart[0].cartDetailID}, 'increment')"> + </button>
                                                 </div>
                                             </td>
                                             <td class="cart_total">
@@ -146,7 +141,7 @@
                                                 <button type="button" class="cart_quantity_delete btn" 
                                                         onclick="submitCartForm(${cart[0].cartDetailID}, 'delete')">
                                                     <i class="fa fa-times"></i>
-                                                </button>                               
+                                                </button>
                                             </td>
                                         </tr>
                                         <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
@@ -154,9 +149,7 @@
                                     <tr>
                                         <td colspan="5" style="text-align: right;">Cart Value:</td>
                                         <td class="cart_total">
-                                            <p class="cart_total_price">0
-                                                <!--${totalPrice.intValue()}-->
-                                            </p>
+                                            <p class="cart_total_price">${totalPrice.intValue()}</p>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -184,27 +177,6 @@
         <script src="js/jquery.prettyPhoto.js"></script>
         <script src="js/main.js"></script>
         <script>
-                            $(document).ready(function () {
-                                $(".itemCheckbox, #selectAll").change(function () {
-                                    updateCartTotal();
-                                });
-
-                                function updateCartTotal() {
-                                    let total = 0;
-                                    $(".itemCheckbox:checked").each(function () {
-                                        let row = $(this).closest("tr");
-                                        let itemTotal = parseFloat(row.find(".cart_total_price").text());
-                                        total += itemTotal;
-                                    });
-                                    $(".cart_total_price:last").text(total);
-                                    $("#checkoutButton").prop("disabled", total === 0);
-                                }
-
-                                $("#selectAll").click(function () {
-                                    $(".itemCheckbox").prop("checked", this.checked).trigger("change");
-                                });
-                            });
-
                             document.addEventListener("DOMContentLoaded", function () {
                                 const checkboxes = document.querySelectorAll('.itemCheckbox');
                                 const checkoutButton = document.getElementById('checkoutButton');
@@ -252,26 +224,12 @@
 
                                 checkoutForm.submit();
                             }
-
-                            document.querySelectorAll('.itemCheckbox').forEach(checkbox => {
-                                checkbox.addEventListener('change', function () {
-                                    let selected = document.querySelectorAll('.itemCheckbox:checked').length;
-                                    if (selected >= 5) {
-                                        document.querySelectorAll('.itemCheckbox:not(:checked)').forEach(cb => cb.disabled = true);
-                                    } else {
-                                        document.querySelectorAll('.itemCheckbox').forEach(cb => cb.disabled = false);
-                                    }
-                                });
-                            });
-
-
                             document.addEventListener("DOMContentLoaded", function () {
                                 document.querySelectorAll(".cart_quantity_button").forEach(container => {
                                     const plusButton = container.querySelector("button:last-child");
                                     const quantityInput = container.querySelector("input[name='quantity']");
                                     const row = container.closest("tr");
                                     const stockText = row.querySelector(".cart_description p:nth-child(3)");
-                                    const checkbox = row.querySelector('input[type="checkbox"]'); // Tìm checkbox trong hàng đó
 
                                     // Lưu giá trị gốc của số lượng tồn kho
                                     if (!stockText.dataset.originalText) {
@@ -281,18 +239,14 @@
                                     // Lấy số lượng tồn kho từ nội dung ban đầu
                                     const stockMatch = stockText.dataset.originalText.match(/\d+/);
                                     const stock = stockMatch ? parseInt(stockMatch[0], 10) : 0;
-                                    const maxQuantity = ${maxQuan};
-                                    console.log(maxQuantity);
+
                                     function updateButtonState() {
                                         const quantity = parseInt(quantityInput.value, 10);
 
-                                        if (quantity >= maxQuantity) {
+                                        if (quantity >= stock) {
                                             plusButton.disabled = true;
                                             stockText.textContent = "Bạn đã đạt giới hạn số lượng";
                                             stockText.style.color = "red";
-                                            if (checkbox) {
-                                                checkbox.disabled = true; // Disable checkbox
-                                            }
                                         } else {
                                             plusButton.disabled = false;
                                             stockText.textContent = stockText.dataset.originalText; // Khôi phục nội dung gốc
@@ -308,6 +262,8 @@
                                     observer.observe(quantityInput, {attributes: true, childList: true, characterData: true});
                                 });
                             });
+
+
         </script>
 
         <c:import url="/Template/footer1.jsp" />

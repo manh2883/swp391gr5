@@ -14,6 +14,7 @@ import Models.Order;
 import Models.OrderDetail;
 import Models.User;
 import Models.UserAddress;
+import com.vnpay.common.Config;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,10 +22,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.Timestamp;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  *
@@ -106,6 +114,7 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
 
@@ -113,8 +122,9 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
+
         int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-        // 2. Lấy thông tin từ request
+
         String selectedAddress = request.getParameter("address");
         String newAddress = request.getParameter("newAddress");
         String finalAddress = (selectedAddress.equals("Other")) ? newAddress : selectedAddress;
@@ -122,25 +132,7 @@ public class CheckoutServlet extends HttpServlet {
         String orderNote = request.getParameter("orderNote");
         String userReceive = request.getParameter("name");
         String contact = request.getParameter("contact");
-        // Kiểm tra và lưu địa chỉ mới nếu cần
-        if (selectedAddress.equals("Other")) {
-            UserDAO userDAO = new UserDAO();
 
-            // Kiểm tra xem địa chỉ mới đã tồn tại chưa
-            if (userDAO.checkAddressExist(userId, newAddress)) {
-                request.setAttribute("message", "Địa chỉ này đã tồn tại.");
-                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
-                return;
-            }
-
-            // Lưu địa chỉ mới vào database
-            if (!userDAO.saveNewAddress(userId, newAddress)) {
-                request.setAttribute("message", "Lỗi khi lưu địa chỉ mới.");
-                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
-                return;
-            }
-        }
-        // 3. Lấy giỏ hàng từ session
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         if (cartDetails == null || cartDetails.isEmpty()) {
             request.setAttribute("message", "Giỏ hàng trống! Vui lòng chọn sản phẩm.");
@@ -148,66 +140,124 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        // 4. Tạo danh sách OrderDetail và tính tổng tiền
         List<OrderDetail> orderDetails = new ArrayList<>();
         int totalAmount = 0;
+        ProductDAO productDAO = new ProductDAO();
 
-        if (cartDetails != null && !cartDetails.isEmpty()) {
-            for (CartDetail item : cartDetails) {
-                String productId = item.getProductID();
-                int variantId = (int) item.getProductVariantID();
-                int quantity = item.getQuantity();
-                ProductDAO productDAO = new ProductDAO();
-                int stock = productDAO.getStockByProductAndVariant(productId, variantId);
-                // Lấy giá từ bảng product_price
-                double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
-                if (quantity > stock) {
-                    request.setAttribute("message", "Không còn sản phẩm!");
-                    request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
-                    return;
-                }
-                //  Thêm vào danh sách OrderDetail
-                OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
-                orderDetails.add(orderDetail);
-                // Tính tổng tiền
-                totalAmount += (int) (price * quantity);
+        for (CartDetail item : cartDetails) {
+            String productId = item.getProductID();
+            int variantId = item.getProductVariantID();
+            int quantity = item.getQuantity();
+            int stock = productDAO.getStockByProductAndVariant(productId, variantId);
+            double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+
+            if (quantity > stock) {
+                request.setAttribute("message", "Không còn sản phẩm!");
+                request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+                return;
             }
+
+            OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
+            orderDetails.add(orderDetail);
+            totalAmount += (int) (price * quantity);
         }
-        // 5. Tạo Order
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Date createAt = new Date(timestamp.getTime()); // Chuyển Timestamp -> Date
 
-        // Nếu Order chấp nhận double totalAmount
-        Order order = new Order(0, userId, totalAmount, 1,
-                createAt, null, Integer.parseInt(paymentMethod), finalAddress, orderNote, userReceive, contact);
+        // Create Order object
+        Order order = new Order(
+                0,
+                userId,
+                totalAmount,
+                1, // status = pending
+                new Date(),
+                null,
+                Integer.parseInt(paymentMethod),
+                0, // paymentStatus: 0 = chưa thanh toán
+                finalAddress,
+                orderNote,
+                userReceive,
+                contact
+        );
 
-        // 6. Ghi vào database
         OrderDAO orderDAO = new OrderDAO();
         long orderId = orderDAO.createOrder(order, orderDetails);
 
-        if (orderId > 0) {
-            session.removeAttribute("checkoutItems"); // Xóa giỏ hàng sau khi đặt hàng thành công
-//            response.sendRedirect(request.getContextPath() + "/Home/test.jsp"); // Chuyển đến My Order
+        if (orderId <= 0) {
+            request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
+            request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+            return;
+        }
+
+        // ===================== COD ==========================
+        if ("2".equals(paymentMethod)) {
+            session.removeAttribute("checkoutItems");
             session.setAttribute("orderMessage", "Đặt hàng thành công: " + orderId);
+
             for (OrderDetail ode : orderDetails) {
                 if (ode.getOrderdetailId() != -1) {
                     CartDAO.deleteCartDetailByID(userId, ode.getOrderdetailId());
                 }
-
             }
-//            request.getRequestDispatcher("Order/MyOrder.jsp").forward(request, response);
+
             response.sendRedirect("MyOrder");
-        } else {
-            request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
-            request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
+            return;
         }
+
+        // ===================== VNPAY ==========================
+        String txnRef = Config.getRandomNumber(8);
+        OrderDAO.addTxnRefToOrder((int) orderId, txnRef); // lưu vào note hoặc cột txn_ref
+
+        String vnp_Url = Config.vnp_PayUrl;
+        String vnp_Returnurl = Config.vnp_ReturnUrl + "?orderId=" + orderId;
+        String vnp_TmnCode = Config.vnp_TmnCode;
+        String vnp_HashSecret = Config.vnp_HashSecret;
+
+        Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_Version", "2.1.0");
+        vnp_Params.put("vnp_Command", "pay");
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(totalAmount * 100));
+        vnp_Params.put("vnp_CurrCode", "VND");
+        vnp_Params.put("vnp_TxnRef", txnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang #" + orderId);
+        vnp_Params.put("vnp_OrderType", "other");
+        vnp_Params.put("vnp_Locale", "vn");
+        vnp_Params.put("vnp_ReturnUrl", vnp_Returnurl);
+        vnp_Params.put("vnp_IpAddr", Config.getIpAddress(request));
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        for (String fieldName : fieldNames) {
+            String value = vnp_Params.get(fieldName);
+            if ((value != null) && (!value.isEmpty())) {
+                hashData.append(fieldName).append('=').append(URLEncoder.encode(value, StandardCharsets.US_ASCII));
+                query.append(fieldName).append('=').append(URLEncoder.encode(value, StandardCharsets.US_ASCII));
+                if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
+                    hashData.append('&');
+                    query.append('&');
+                }
+            }
+        }
+
+        String vnp_SecureHash = Config.hmacSHA512(vnp_HashSecret, hashData.toString());
+        query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+        String paymentUrl = vnp_Url + "?" + query.toString();
+
+        // Gửi JSON để redirect từ JS
+        response.sendRedirect(paymentUrl);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+
     @Override
     public String getServletInfo() {
         return "Short description";

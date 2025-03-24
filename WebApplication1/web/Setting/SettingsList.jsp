@@ -51,62 +51,7 @@
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
 
-            .status-1 { /* Pending */
-                padding: .4rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #fff3cd;
-                color: #856404;
-                
-            }
-
-            .status-6 { /* Accepted */
-                padding: .4rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #d4edda;
-                color: #155724;
-            }
-
-            .status-2 { /* Shipping */
-                padding: .4rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #cce5ff;
-                color: #004085;
-            }
-
-            .status-3 { /* Delivered */
-                padding: .4rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #d1ecf1;
-                color: #0c5460;
-            }
-
-            .status-5 { /* Canceled */
-                padding: .2rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-            
-              .status-4 { /* Canceled */
-                padding: .2rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-
-            .default-status {
-                padding: .4rem 10px;
-                border-radius: 2rem;
-                text-align: center;
-                background-color: #e2e3e5;
-                color: #383d41;
-            }
+          
             
         </style>
     </head>

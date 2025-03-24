@@ -157,6 +157,10 @@
         <servlet-class>controllers.AddressManagerServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>SettingsListServlet</servlet-name>
+        <servlet-class>controllers.SettingsListServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CustomerDetailServlet</servlet-name>
         <servlet-class>controllers.CustomerDetailServlet</servlet-class>
     </servlet>
@@ -231,6 +235,10 @@
     <servlet-mapping>
         <servlet-name>ShipperDashBoardServlet</servlet-name>
         <url-pattern>/ShipperDashBoard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SettingsListServlet</servlet-name>
+        <url-pattern>/SettingsListServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddToCartServlet</servlet-name>

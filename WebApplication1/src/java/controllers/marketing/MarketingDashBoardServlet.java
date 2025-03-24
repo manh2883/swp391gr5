@@ -3,13 +3,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controllers.marketing;
-
+import DAO.MKTDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -53,9 +56,16 @@ public class MarketingDashBoardServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String productId = request.getParameter("product_id");
+        MKTDAO mktDAO = new MKTDAO();
+        if (productId != null && !productId.isEmpty()) {
+            List<Map<String, Object>> productList = mktDAO.searchProductById(productId);
+            request.setAttribute("productList", productList);
+            request.setAttribute("productId", productId);
+        }
+
+        request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
     }
 
     /**
@@ -69,7 +79,22 @@ public class MarketingDashBoardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         MKTDAO mktDAO = new MKTDAO();
+        try {
+            String productId = request.getParameter("product_id");
+            int variantId = Integer.parseInt(request.getParameter("variant_id"));
+            int newPrice = Integer.parseInt(request.getParameter("new_price"));
+            Date startDate = Date.valueOf(request.getParameter("start_date"));
+            Date endDate = Date.valueOf(request.getParameter("end_date"));
+
+            mktDAO.updateProductPrice(productId, variantId, newPrice, startDate, endDate);
+            response.sendRedirect("MarketingDashBoard");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Có lỗi xảy ra khi cập nhật!");
+            request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
+        }
+        
     }
 
     /**

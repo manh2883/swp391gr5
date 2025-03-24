@@ -94,14 +94,12 @@
                             <input type="text" name="product_id" value="${productId}" required>
                             <button type="submit" class="btn btn-default get-manh" style="margin-bottom: 10px">Search</button>
                         </form>
-
                         <canvas id="orderChart"></canvas>
                         <br>
                         <br>
                         <c:if test="${not empty productList}">
                             <table>
-                                <tr>
-                                    <th>Product ID</th>
+                                <tr><th>Product ID</th>
                                     <th>Variant ID</th>
                                     <th>Color</th>
                                     <th>Size</th>
@@ -109,6 +107,7 @@
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                 </tr>
+
                                 <c:forEach var="product" items="${productList}">
                                     <tr>
                                     <form action="MarketingDashBoard" method="post">

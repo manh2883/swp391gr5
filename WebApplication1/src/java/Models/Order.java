@@ -20,12 +20,13 @@ public class Order {
     private Date createAt;
     private Date completedAt;
     private int paymentmethod;
+    private int paymentStatus;
     private String address;
     private String orderNote;
     private String userReceive;
     private String contact;
 
-    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, Date completedAt, int paymentmethod, String address, String orderNote, String userReceive, String contact) {
+    public Order(int orderId, int userId, int totalamount, int statusId, Date createAt, Date completedAt, int paymentmethod, int paymentStatus, String address, String orderNote, String userReceive, String contact) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalamount = totalamount;
@@ -33,11 +34,14 @@ public class Order {
         this.createAt = createAt;
         this.completedAt = completedAt;
         this.paymentmethod = paymentmethod;
+        this.paymentStatus = paymentStatus;
         this.address = address;
         this.orderNote = orderNote;
         this.userReceive = userReceive;
         this.contact = contact;
     }
+
+   
 
     public Order() {
     }
@@ -130,10 +134,22 @@ public class Order {
         this.contact = contact;
     }
 
+    public int getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(int paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
     @Override
     public String toString() {
-        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", completedAt=" + completedAt + ", paymentmethod=" + paymentmethod + ", address=" + address + ", orderNote=" + orderNote + ", userReceive=" + userReceive + ", contact=" + contact + '}';
+        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", totalamount=" + totalamount + ", statusId=" + statusId + ", createAt=" + createAt + ", completedAt=" + completedAt + ", paymentmethod=" + paymentmethod + ", paymentStatus=" + paymentStatus + ", address=" + address + ", orderNote=" + orderNote + ", userReceive=" + userReceive + ", contact=" + contact + '}';
     }
+    
+    
+
+    
 
    
     

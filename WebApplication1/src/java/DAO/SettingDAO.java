@@ -259,20 +259,22 @@ public class SettingDAO {
         return otp.toString();
     }
     
-    public static List<Object[]> getSettings(String type, Integer status, String search, String sortBy, String order, int offset, int limit) {
+    public static List<Object[]> getSettings(int page, int pageSize, String searchValue, String filterType, Integer filterStatus, String sortBy, String sortOrder) {
         List<Object[]> settings = new ArrayList<>();
-        String sql = "SELECT * FROM setting WHERE 1=1 ";
+        String sql = "SELECT setting_id, setting_type, setting_value, setting_order, setting_status FROM setting WHERE 1=1";
 
-        if (type != null && !type.isEmpty()) {
-            sql += " AND setting_type = ? ";
+        if (searchValue != null && !searchValue.isEmpty()) {
+            sql += " AND setting_value LIKE ?";
         }
-        if (status != null) {
-            sql += " AND setting_status = ? ";
+        if (filterType != null && !filterType.isEmpty()) {
+            sql += " AND setting_type = ?";
         }
-        if (search != null && !search.isEmpty()) {
-            sql += " AND setting_value LIKE ? ";
+        if (filterStatus != null) {
+            sql += " AND setting_status = ?";
         }
-        sql += " ORDER BY " + sortBy + " " + order + " LIMIT ?, ?";
+        
+        sql += " ORDER BY " + sortBy + " " + sortOrder;
+        sql += " LIMIT ? OFFSET ?";
 
         try {
             DBContext db = new DBContext();
@@ -280,29 +282,31 @@ public class SettingDAO {
             PreparedStatement stmt = con.prepareStatement(sql);
             
 
-            int index = 1;
-            if (type != null && !type.isEmpty()) {
-                stmt.setString(index++, type);
+             int paramIndex = 1;
+
+            if (searchValue != null && !searchValue.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + searchValue + "%");
             }
-            if (status != null) {
-                stmt.setInt(index++, status);
+            if (filterType != null && !filterType.isEmpty()) {
+                stmt.setString(paramIndex++, filterType);
             }
-            if (search != null && !search.isEmpty()) {
-                stmt.setString(index++, "%" + search + "%");
+            if (filterStatus != null) {
+                stmt.setInt(paramIndex++, filterStatus);
             }
-            stmt.setInt(index++, offset);
-            stmt.setInt(index++, limit);
+
+            stmt.setInt(paramIndex++, pageSize);
+            stmt.setInt(paramIndex, (page - 1) * pageSize);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                settings.add(new Object[]{
-                        rs.getLong("setting_id"),
-                        rs.getString("setting_name"),
-                        rs.getInt("setting_value"),
-                        rs.getString("setting_type"),
-                        rs.getInt("setting_order"),
-                        rs.getInt("setting_status")
-                });
+                Object[] setting = new Object[]{
+                    rs.getInt("setting_id"),
+                    rs.getString("setting_type"),
+                    rs.getInt("setting_value"),
+                    rs.getInt("setting_order"),
+                    rs.getInt("setting_status")
+                };
+                settings.add(setting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -310,16 +314,16 @@ public class SettingDAO {
         return settings;
     }
     
-    public static int countSettings(String type, Integer status, String search) {
-        String sql = "SELECT COUNT(*) FROM setting WHERE 1=1 ";
-        if (type != null && !type.isEmpty()) {
-            sql += " AND setting_type = ? ";
+    public static int countSettings(String searchValue, String filterType, Integer filterStatus) {
+        String sql = "SELECT COUNT(*) FROM setting WHERE 1=1";
+        if (searchValue != null && !searchValue.isEmpty()) {
+            sql += " AND setting_value LIKE ?";
         }
-        if (status != null) {
-            sql += " AND setting_status = ? ";
+        if (filterType != null && !filterType.isEmpty()) {
+            sql += " AND setting_type = ?";
         }
-        if (search != null && !search.isEmpty()) {
-            sql += " AND setting_value LIKE ? ";
+        if (filterStatus != null) {
+            sql += " AND setting_status = ?";
         }
 
         try {
@@ -327,15 +331,15 @@ public class SettingDAO {
             java.sql.Connection con = db.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
 
-            int index = 1;
-            if (type != null && !type.isEmpty()) {
-                stmt.setString(index++, type);
+            int paramIndex = 1;
+            if (searchValue != null && !searchValue.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + searchValue + "%");
             }
-            if (status != null) {
-                stmt.setInt(index++, status);
+            if (filterType != null && !filterType.isEmpty()) {
+                stmt.setString(paramIndex++, filterType);
             }
-            if (search != null && !search.isEmpty()) {
-                stmt.setString(index++, "%" + search + "%");
+            if (filterStatus != null) {
+                stmt.setInt(paramIndex++, filterStatus);
             }
 
             ResultSet rs = stmt.executeQuery();
@@ -346,22 +350,15 @@ public class SettingDAO {
             e.printStackTrace();
         }
         return 0;
+    
     }
 
     public static void main(String[] args) throws MessagingException, SQLException {
-         SettingDAO settingDAO = new SettingDAO();
-
-        // Test fetching settings
-        List<Object[]> settings = settingDAO.getSettings(null, null, null, "setting_id", "ASC", 0, 10);
-        System.out.println("===== Settings List =====");
+          System.out.println("===== TEST: Get Settings =====");
+        List<Object[]> settings = SettingDAO.getSettings(1, 10, "", "", null, "setting_id", "ASC");
         for (Object[] setting : settings) {
-            System.out.printf("ID: %d | Name: %s | Value: %d | Type: %s | Order: %d | Status: %s%n",
-                setting[0], setting[1], setting[2], setting[3], setting[4], (int) setting[5] == 1 ? "Active" : "Inactive");
+            System.out.println("ID: " + setting[0] + ", Type: " + setting[1] + ", Value: " + setting[2] +
+                    ", Order: " + setting[3] + ", Status: " + setting[4]);
         }
-
-        // Test count function
-        int totalCount = settingDAO.countSettings(null, null, null);
-        System.out.println("Total Settings: " + totalCount);
     }
-
 }

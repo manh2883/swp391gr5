@@ -465,9 +465,9 @@ public class OrderDAO {
     }
 
     // Lấy danh sách đơn hàng có phân trang
-    public static List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate, int page, int pageSize) {
+    public static List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate) {
         List<Order> orders = new ArrayList<>();
-        int offset = (page - 1) * pageSize; // Tính offset cho phân trang
+//        int offset = (page - 1) * pageSize; // Tính offset cho phân trang
 
         String query = "SELECT DISTINCT o.*, a.username FROM orders o "
                 + "LEFT JOIN account a ON o.user_id = a.user_id "
@@ -486,7 +486,7 @@ public class OrderDAO {
             query += "AND o.created_at <= ? ";
         }
 
-        query += "ORDER BY o.created_at DESC LIMIT ? OFFSET ?"; // Thêm phân trang
+//        query += "ORDER BY o.created_at DESC LIMIT ? OFFSET ?"; // Thêm phân trang
 
         try {
             DBContext db = new DBContext();
@@ -508,8 +508,8 @@ public class OrderDAO {
                 ps.setString(index++, toDate);
             }
 
-            ps.setInt(index++, pageSize);
-            ps.setInt(index++, offset);
+//            ps.setInt(index++, pageSize);
+//            ps.setInt(index++, offset);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -533,9 +533,9 @@ public class OrderDAO {
         return orders;
     }
 
-    public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate, int page, int pageSize) {
+    public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate) {
         ArrayList<Object[]> list = new ArrayList<>();
-        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate, 1, 1);
+        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate);
 
         for (Order order : orders) {
             Object[] row = new Object[6]; // Thêm 1 cột để lưu username
@@ -609,7 +609,7 @@ public class OrderDAO {
 //            System.out.println(oj[2]);
 //        }
 
-        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null, 1, 1);
+        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null);
         for (Object[] o : list) {
             System.out.println(o[0]);
             System.out.println(o[1]);

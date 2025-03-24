@@ -43,8 +43,71 @@
 
             .productinfo .btn {
                 display: inline-block; /* Đảm bảo các nút được xếp thành dòng ngang */
-
             }
+                .product-img {
+                width: 242px;
+                height: 225px;
+                object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
+                background-color: #f8f8f8; /* Màu nền cho khoảng trống */
+            }
+
+            .status-1 { /* Pending */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #fff3cd;
+                color: #856404;
+                
+            }
+
+            .status-6 { /* Accepted */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-2 { /* Shipping */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            .status-3 { /* Delivered */
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #d1ecf1;
+                color: #0c5460;
+            }
+
+            .status-5 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+            
+              .status-4 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .default-status {
+                padding: .4rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #e2e3e5;
+                color: #383d41;
+            }
+            
         </style>
     </head>
 
@@ -66,53 +129,81 @@
                     <div class="col-sm-3">
                         <%@ include file="/Template/left_side_bar_admin.jspf" %>
                     </div>
-                    <div class="col-sm-9">
-                        <div class="table-responsive cart_info">
-                            <a href="add-setting.jsp" class="btn btn-primary mb-3">Add New Setting</a>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Type</th>
-                                        <th>Value</th>
-                                        <th>Order</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="setting" items="${settings}">
-                                        <tr>
-                                            <td>${setting[0]}</td>
-                                            <td>${setting[3]}</td>
-                                            <td>${setting[2]}</td>
-                                            <td>${setting[4]}</td>
-<!--                                            <td>${setting[5] == 1 ? "Active" : "Inactive"}</td>-->
-                                            <td>
-                                                <a href="view-setting.jsp?id=${setting[0]}" class="btn btn-info btn-sm">View</a>
-                                                <a href="edit-setting.jsp?id=${setting[0]}" class="btn btn-warning btn-sm">Edit</a>
-<!--                                                <a href="toggle-setting.jsp?id=${setting[0]}" class="btn btn-danger btn-sm">
-                                                    ${setting[5] == 1 ? "Deactivate" : "Activate"}
-                                                </a>-->
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
-                            <c:forEach begin="1" end="${totalPages}" var="i">
-                                <a href="?page=${i}" class="btn btn-secondary">${i}</a>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </div>
+                    
+                    
+                    <!-- Bộ lọc và tìm kiếm -->
+        <form method="get" action="settings-list" class="row g-2">
+            <div class="col-md-4">
+                <input type="text" name="searchValue" class="form-control" placeholder="Search by Value" value="${searchValue}">
             </div>
+            <div class="col-md-3">
+                <select name="filterType" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="Type1" ${filterType == 'Type1' ? 'selected' : ''}>Type1</option>
+                    <option value="Type2" ${filterType == 'Type2' ? 'selected' : ''}>Type2</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="filterStatus" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="1" ${filterStatus == 1 ? 'selected' : ''}>Active</option>
+                    <option value="0" ${filterStatus == 0 ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary">Filter</button>
+            </div>
+        </form>
+                
+                                    <!-- Bảng danh sách -->
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th><a href="?sortBy=setting_id&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">ID</a></th>
+                    <th><a href="?sortBy=setting_type&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Type</a></th>
+                    <th><a href="?sortBy=setting_value&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Value</a></th>
+                    <th><a href="?sortBy=setting_order&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Order</a></th>
+                    <th><a href="?sortBy=setting_status&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Status</a></th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="setting" items="${settings}">
+                    <tr>
+                        <td>${setting[0]}</td>
+                        <td>${setting[1]}</td>
+                        <td>${setting[2]}</td>
+                        <td>${setting[3]}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${setting[4] == 1}">Active</c:when>
+                                <c:otherwise>Inactive</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <a href="view-setting.jsp?id=${setting[0]}" class="btn btn-info btn-sm">View</a>
+                            <a href="edit-setting.jsp?id=${setting[0]}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="toggle-setting.jsp?id=${setting[0]}" class="btn btn-danger btn-sm">
+                                <c:choose>
+                                    <c:when test="${setting[4] == 1}">Deactivate</c:when>
+                                    <c:otherwise>Activate</c:otherwise>
+                                </c:choose>
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+                    
+                            <!-- Phân trang -->
+        <div>
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <a href="?page=${i}&sortBy=${sortBy}&sortOrder=${sortOrder}" class="btn btn-secondary">${i}</a>
+            </c:forEach>
+        </div>
+                </div>
         </section>
 
-        <script src="js/jquery.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/jquery.scrollUp.min.js"></script>
-        <script src="js/jquery.prettyPhoto.js"></script>
-        <script src="js/main.js"></script>
         <c:import url="/Template/footer1.jsp" />
     </body>
 </html>

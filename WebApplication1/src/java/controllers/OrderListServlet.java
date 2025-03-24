@@ -63,41 +63,29 @@ public class OrderListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy tham số từ request
-        String search = request.getParameter("search");
-        String status = request.getParameter("status");
-        String fromDate = request.getParameter("fromDate");
-        String toDate = request.getParameter("toDate");
+        String searchQuery = request.getParameter("search"); // Tìm theo order ID, customer name
+        String status = request.getParameter("status"); // Lọc theo trạng thái đơn hàng
+        String fromDate = request.getParameter("fromDate"); // Lọc từ ngày
+        String toDate = request.getParameter("toDate"); // Lọc đến ngày
 
-        int page = 1;
-        int pageSize = 10;
-
+//        int page = 1;
+//        int pageSize = 10;
+        ArrayList<Object[]> list;
         try {
-            if (request.getParameter("page") != null) {
-                page = Integer.parseInt(request.getParameter("page"));
-            }
-            if (request.getParameter("pageSize") != null) {
-                pageSize = Integer.parseInt(request.getParameter("pageSize"));
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+            list = OrderDAO.getFilterOrderView(searchQuery, status, fromDate, toDate);
+        } catch (Exception ex) {
+            Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("errorMessage", "Có lỗi khi tải danh sách đơn hàng.");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            return;
         }
-
         // Lấy tổng số đơn hàng sau khi lọc
-        int totalRecords = OrderDAO.getTotalOrderCount(search, status, fromDate, toDate);
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        int totalRecords = OrderDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate);
 
-        // Lấy danh sách đơn hàng
-        List<Order> orders = OrderDAO.getFilteredOrders(search, status, fromDate, toDate, page, pageSize);
+//        // Lấy danh sách đơn hàng
+//        List<Order> orders = OrderDAO.getFilteredOrders(search, status, fromDate, toDate, page, pageSize);
 
-        // Đưa dữ liệu vào request để gửi về JSP
-        request.setAttribute("orders", orders);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("search", search);
-        request.setAttribute("status", status);
-        request.setAttribute("fromDate", fromDate);
-        request.setAttribute("toDate", toDate);
-        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("orders", list);
 
         request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
     }

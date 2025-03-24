@@ -87,68 +87,59 @@
                     <div class="col-sm-3">
                         <%@ include file="/Template/auto_left_side_bar.jspf" %>
                     </div>
-                    <h2 class="title text-center">Marketing - Product Price Management</h2>
-                    <c:if test="${param.success == '1'}">
-                        <p style="color: green;">Cập nhật giá thành công!</p>
-                    </c:if>
-                    <c:if test="${param.error == '1'}">
-                        <p style="color: red;">Có lỗi xảy ra. Vui lòng thử lại!</p>
-                    </c:if>
-                    <form action="MarketingDashBoard" method="get">
-                        <label>Nhập Product ID:</label>
-                        <input type="text" name="product_id" value="${productId}" required>
-                        <button type="submit">Tìm</button>
-                    </form>
+                    <div class="col-sm-9">
+                        <h2 class="title text-center">Marketing - Product Price Management</h2>
+                        <form action="MarketingDashBoard" method="get">
+                            <label>Product ID:</label>
+                            <input type="text" name="product_id" value="${productId}" required>
+                            <button type="submit" class="btn btn-default get-manh" style="margin-bottom: 10px">Search</button>
+                        </form>
 
-                    <canvas id="orderChart"></canvas>
-                    <br>
-                    <br>
-                    <c:if test="${not empty productList}">
-                        <table>
-                            <tr>
-                                <th>Product ID</th>
-                                <th>Variant ID</th>
-                                <th>Color</th>
-                                <th>Size</th>
-                                <th>Current Price</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Update</th>
-                            </tr>
-                            <c:forEach var="product" items="${productList}">
+                        <canvas id="orderChart"></canvas>
+                        <br>
+                        <br>
+                        <c:if test="${not empty productList}">
+                            <table>
                                 <tr>
-                                <form action="MarketingDashBoard" method="post">
-                                    <td>
-                                        <input type="hidden" name="product_id" value="${product.product_id}">
-                                        ${product.product_id}
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="variant_id" value="${product.variant_id}">
-                                        ${product.variant_id}
-                                    </td>
-                                    <td>${product.color}</td>
-                                    <td>${product.size}</td>
-                                    <td>
-                                        <input type="number" name="new_price" value="${product.price}">
-                                    </td>
-                                    <td>
-                                        <input type="date" name="start_date" value="${product.start_price_date}">
-                                    </td>
-                                    <td>
-                                        <input type="date" name="end_date" value="${product.end_price_date}">
-                                    </td>
-                                    <td>
-                                        <button type="submit">Cập nhật</button>
-                                    </td>
-                                </form>
+                                    <th>Product ID</th>
+                                    <th>Variant ID</th>
+                                    <th>Color</th>
+                                    <th>Size</th>
+                                    <th>Current Price</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
                                 </tr>
-                            </c:forEach>
-                        </table>
-                    </c:if>
-                    <!-- Nếu không có sản phẩm -->
-                    <c:if test="${empty productList and not empty productId}">
-                        <p>Không tìm thấy sản phẩm với ID: ${productId}</p>
-                    </c:if>
+                                <c:forEach var="product" items="${productList}">
+                                    <tr>
+                                    <form action="MarketingDashBoard" method="post">
+                                        <td>
+                                            <input type="hidden" name="product_id" value="${product.product_id}">
+                                            ${product.product_id}
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="variant_id" value="${product.variant_id}">
+                                            ${product.variant_id}
+                                        </td>
+                                        <td>${product.color}</td>
+                                        <td>${product.size}</td>
+                                        <td>
+                                            <input type="number" name="new_price" value="${product.price}">
+                                        </td>
+                                        <td>
+                                            <input type="date" name="start_date" value="${product.start_price_date}">
+                                        </td>
+                                        <td>
+                                            <input type="date" name="end_date" value="${product.end_price_date}">
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-default get-manh" style="margin-bottom: 10px">Update</button>
+                                        </td>
+                                    </form>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </section> <!--/#cart_items-->

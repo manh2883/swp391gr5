@@ -101,7 +101,7 @@ public class ProductDetailServlet extends HttpServlet {
                     if (color != null && !color.isEmpty()) {
                         request.setAttribute("colorList", color);
                     } else {
-                      
+
                         request.setAttribute("message", "productId not found");
                         request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                     }
@@ -151,9 +151,7 @@ public class ProductDetailServlet extends HttpServlet {
                     request.setAttribute("message", "productId not found or invisible");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 }
-
             }
-
         } else {
             request.setAttribute("message", "productId not found");
             request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);

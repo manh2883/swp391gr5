@@ -19,8 +19,6 @@ import java.util.List;
  */
 public class SettingsListServlet extends HttpServlet {
 
-        private static final int PAGE_SIZE = 10;
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,7 +36,7 @@ public class SettingsListServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SettingsListServlet</title>");            
+            out.println("<title>Servlet SettingsListServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet SettingsListServlet at " + request.getContextPath() + "</h1>");
@@ -59,36 +57,33 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String searchValue = request.getParameter("search");
-        String filterType = request.getParameter("type");
-        String filterStatusParam = request.getParameter("status");
-        Integer filterStatus = (filterStatusParam != null && !filterStatusParam.isEmpty()) ? Integer.parseInt(filterStatusParam) : null;
-        
-        String sortBy = request.getParameter("sortBy");
-        String sortOrder = request.getParameter("sortOrder");
-        sortBy = (sortBy != null && !sortBy.isEmpty()) ? sortBy : "setting_id";  // Mặc định sắp xếp theo ID
-        sortOrder = (sortOrder != null && !sortOrder.isEmpty()) ? sortOrder : "ASC"; // Mặc định ASC
+        // Nhận tham số từ request
+        String searchValue = request.getParameter("searchValue");
+        String filterType = request.getParameter("filterType");
+        String pageParam = request.getParameter("page");
 
-        int page = 1;
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
-        }
+        int page = (pageParam != null) ? Integer.parseInt(pageParam) : 1;
+        int pageSize = 10; // Số bản ghi mỗi trang
 
-        // Gọi DAO để lấy danh sách settings
-        List<Object[]> settings = SettingDAO.getSettings(page, PAGE_SIZE, searchValue, filterType, filterStatus, sortBy, sortOrder);
-        int totalSettings = SettingDAO.countSettings(searchValue, filterType, filterStatus);
-        int totalPages = (int) Math.ceil((double) totalSettings / PAGE_SIZE);
+        // Lấy danh sách settings từ DAO
+        List<Object[]> settings = SettingDAO.getSettings(page, pageSize, searchValue, filterType);
 
-        // Đưa dữ liệu lên request để truyền sang JSP
+        // Lấy danh sách setting_type để hiển thị trong dropdown
+        List<String> settingTypes = SettingDAO.getAllSettingTypes();
+
+        // Đếm tổng số settings để phục vụ phân trang
+        int totalSettings = SettingDAO.countSettings(searchValue, filterType);
+        int totalPages = (int) Math.ceil((double) totalSettings / pageSize);
+
+        // Gửi dữ liệu sang JSP
         request.setAttribute("settings", settings);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("settingTypes", settingTypes);
         request.setAttribute("searchValue", searchValue);
         request.setAttribute("filterType", filterType);
-        request.setAttribute("filterStatus", filterStatus);
-        request.setAttribute("sortBy", sortBy);
-        request.setAttribute("sortOrder", sortOrder);
-        
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+
+        // Chuyển tiếp đến JSP
         request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
     }
 
@@ -103,7 +98,19 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String action = request.getParameter("action");
+
+        if ("edit".equals(action)) {
+            long settingId = Long.parseLong(request.getParameter("settingId"));
+            String settingName = request.getParameter("settingName");
+            int settingValue = Integer.parseInt(request.getParameter("settingValue"));
+            String settingType = request.getParameter("settingType");
+
+            boolean success = SettingDAO.updateSetting(settingId, settingName, settingValue, settingType);
+            response.getWriter().write(success ? "success" : "error");
+        }
+        
+        
     }
 
     /**
@@ -111,9 +118,8 @@ public class SettingsListServlet extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+//    @Override
+//    public String getServletInfo() {
+//        return "Short description";
+//    }// </editor-fold>
 }

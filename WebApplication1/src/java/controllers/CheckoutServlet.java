@@ -6,6 +6,7 @@ package controllers;
 
 import DAO.OrderDAO;
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.CartDetail;
@@ -160,26 +161,31 @@ public class CheckoutServlet extends HttpServlet {
         int totalAmount = 0;
         ProductDAO productDAO = new ProductDAO();
 
-          for (CartDetail item : cartDetails) {
+        for (CartDetail item : cartDetails) {
             String productId = item.getProductID();
             int variantId = item.getProductVariantID();
             int quantity = item.getQuantity();
             int stock = productDAO.getStockByProductAndVariant(productId, variantId);
             double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+            int maxQuantity = SettingDAO.getMaxQuantityInCart();
 
             if (quantity > stock) {
                 request.setAttribute("message", "Không còn sản phẩm!");
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
             }
-
+            
+            // neu it hon cho phep thi moi duoc them vao order -- manh
             OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
-            orderDetails.add(orderDetail);
-            totalAmount += (int) (price * quantity);
+            if (orderDetail.getQuantity() < maxQuantity) {
+                orderDetails.add(orderDetail);
+                totalAmount += (int) (price * quantity);
+            }
+
         }
-         
+
         // Create Order object
-        Order order = new Order (
+        Order order = new Order(
                 0,
                 userId,
                 totalAmount,
@@ -193,10 +199,10 @@ public class CheckoutServlet extends HttpServlet {
                 userReceive,
                 contact
         );
-        
-         OrderDAO orderDAO = new OrderDAO();
+
+        OrderDAO orderDAO = new OrderDAO();
         long orderId = orderDAO.createOrder(order, orderDetails);
-        
+
         if (orderId <= 0) {
             request.setAttribute("message", "Đặt hàng thất bại. Vui lòng thử lại!");
             request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
@@ -208,7 +214,7 @@ public class CheckoutServlet extends HttpServlet {
             session.removeAttribute("checkoutItems");
             session.setAttribute("orderMessage", "Đặt hàng thành công: " + orderId);
 
-              return;
+            return;
         }
 
         // ===================== VNPAY ==========================

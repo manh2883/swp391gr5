@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import DAO.PermissionDAO;
 import DAO.ProductDAO;
 import DAO.SettingDAO;
 import DAO.UserDAO;
@@ -84,63 +85,78 @@ public class ProductDetailServlet extends HttpServlet {
                 request.setAttribute("message", "product not found");
                 request.getRequestDispatcher("Home/test.jsp").forward(request, response);
             } else {
-                request.setAttribute("product", product);
-                request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
-
-                List<String> color = productDAO.getAllColorbyProductId(productId);
-                if (color != null && !color.isEmpty()) {
-                    request.setAttribute("colorList", color);
-                } else {
-                    request.setAttribute("message", "productId not found");
-                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-                }
-
-                boolean isNew = productDAO.isNewProduct(product);
-                boolean isSale = productDAO.isSaleProduct(product) != null;
-
-                String tag = null;
-                if (isSale) {
-                    tag = "isSale";
-                } else {
-                    if (isNew) {
-                        tag = "isNew";
-                    }
-                }
-                request.setAttribute("tag", tag);
-                request.setAttribute("netPrice", product.getPrice());
-
-                List<String> size = productDAO.getAllSizebyProductId(productId);
-                if (size != null && !size.isEmpty()) {
-                    request.setAttribute("sizeList", size);
-                } else {
-                    request.setAttribute("message", "productId not found");
-                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-                }
-
-                ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
-                if (imgList != null && !imgList.isEmpty()) {
-                    request.setAttribute("imgList", imgList);
-                }
-
-                ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
-                if (varList != null && !varList.isEmpty()) {
-                    request.setAttribute("variantList", varList);
-                }
-
-                List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = ProductDAO.getRecommendedProductList(3);
-                if (recommendedtList != null && !recommendedtList.isEmpty()) {
-                  request.setAttribute("recommendedtList", recommendedtList);
-                }
-
-                request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
                 HttpSession session = request.getSession();
-                session.removeAttribute("addMessage");
-                session.removeAttribute("addStatus");
+                Account acc = (Account) session.getAttribute("account");
+                Boolean validAcc = false;
+                if (acc != null) {
+                    validAcc = PermissionDAO.checkPermissionForRole("ViewProducts", acc.getRoleId());
+                }
+                Boolean isVisiblePro = productDAO.getIsVisibleForProductId(productId);
+
+                if (isVisiblePro || validAcc) {
+                    request.setAttribute("product", product);
+                    request.setAttribute("imgUrl", productDAO.getImgUrlForProductID(productId));
+
+                    List<String> color = productDAO.getAllColorbyProductId(productId);
+                    if (color != null && !color.isEmpty()) {
+                        request.setAttribute("colorList", color);
+                    } else {
+                      
+                        request.setAttribute("message", "productId not found");
+                        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+                    }
+
+                    boolean isNew = productDAO.isNewProduct(product);
+                    boolean isSale = productDAO.isSaleProduct(product) != null;
+
+                    String tag = null;
+                    if (isSale) {
+                        tag = "isSale";
+                    } else {
+                        if (isNew) {
+                            tag = "isNew";
+                        }
+                    }
+                    request.setAttribute("tag", tag);
+                    request.setAttribute("netPrice", product.getPrice());
+
+                    List<String> size = productDAO.getAllSizebyProductId(productId);
+                    if (size != null && !size.isEmpty()) {
+                        request.setAttribute("sizeList", size);
+                    } else {
+                        request.setAttribute("message", "productId not found");
+                        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+                    }
+
+                    ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
+                    if (imgList != null && !imgList.isEmpty()) {
+                        request.setAttribute("imgList", imgList);
+                    }
+
+                    ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
+                    if (varList != null && !varList.isEmpty()) {
+                        request.setAttribute("variantList", varList);
+                    }
+
+                    List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = ProductDAO.getRecommendedProductList(3);
+                    if (recommendedtList != null && !recommendedtList.isEmpty()) {
+                        request.setAttribute("recommendedtList", recommendedtList);
+                    }
+
+                    request.getRequestDispatcher("Product/ProductDetail.jsp").forward(request, response);
+
+                    session.removeAttribute("addMessage");
+                    session.removeAttribute("addStatus");
+                } else {
+                    request.setAttribute("message", "productId not found or invisible");
+                    request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                }
+
             }
 
         } else {
             request.setAttribute("message", "productId not found");
-            request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
         }
     }
 

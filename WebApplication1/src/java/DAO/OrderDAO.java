@@ -707,7 +707,7 @@ public class OrderDAO {
         return false;
     }
 
-    public boolean paidOrder(long orderId) {
+    public static boolean paidOrder(long orderId) {
         
             String sql = "UPDATE orders SET payment_status = 1 WHERE order_id = ? and payment_status = 2 ";
             try {

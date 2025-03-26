@@ -362,8 +362,6 @@
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -376,36 +374,7 @@
 
         </section>
         <c:import url="/Template/footer1.jsp" />
-        <!--        <script>
-                    $(document).ready(function () {
-                        $(".nav-tabs li").click(function (e) {
-                            e.preventDefault();
-                            let status = $(this).data("status");
-                            let userId = $("#userId").val(); // Lấy userId từ hidden input hoặc JSP
-        
-                            $(".nav-tabs li").removeClass("active");
-                            $(this).addClass("active");
-        
-                            $.ajax({
-                                url: "CustomerDetail",
-                                type: "GET",
-                                data: {userId: userId, status: status},
-                                beforeSend: function () {
-                                    $("#tabContent").html("Loading...");
-                                },
-                                success: function (response) {
-                                    $("#tabContent").html(response);
-                                },
-                                error: function () {
-                                    $("#tabContent").html("Error loading data.");
-                                }
-                            });
-                        });
-        
-                        $(".nav-tabs li.active").trigger("click");
-                    });
-        
-                </script>-->
+       
     </body>
 
 </html>

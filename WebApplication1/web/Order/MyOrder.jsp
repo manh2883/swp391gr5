@@ -146,22 +146,22 @@
                                     </li>
 
                                     <li class="${activeTab == '2' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=6">Accepted</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=2">Accepted</a>
                                     </li>
 
                                     <li class="${activeTab == '3' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=2">Shipping</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Shipping</a>
                                     </li>
 
                                     <li class="${activeTab == '4' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Delivered</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=4">Delivered</a>
                                     </li>
                                     <li class="${activeTab == '8' ? 'active' : ''}">
-                                        <a href="${pageContext.request.contextPath}/MyOrder?status=3">Completed</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=8">Completed</a>
                                     </li>
                                    
                                     <li class="${activeTab == '9' ? 'active' : ''}">
-                                        <<a href="${pageContext.request.contextPath}/MyOrder?status=2">Canceled</a>
+                                        <a href="${pageContext.request.contextPath}/MyOrder?status=9">Canceled</a>
                                     </li>
                                 </ul>
 

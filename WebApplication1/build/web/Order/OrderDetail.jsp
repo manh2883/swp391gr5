@@ -184,68 +184,96 @@
 
 
                                 <div class="form-floating mb-10">
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Created At: </span>
-                                        <span style="font-size: 15px">${orderInformation.createAt}</span>
-                                    </p>
+                                    <table>
+                                        <tbody>
+                                            <tr style="visibility: hidden">
+                                                <td style="width: 50%" >
 
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Completed At: </span>
-                                        <c:choose>
-                                            <c:when test="${not empty orderInformation.completedAt and orderInformation.completedAt != 'null'}">
-                                                <span style="font-size: 15px">${orderInformation.completedAt}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span>N/A</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Payment method: </span>
-                                        <c:choose>
-                                            <c:when test="${not empty orderInformation.paymentmethod and orderInformation.paymentmethod ne null}">
-                                                <c:choose>
-                                                    <c:when test="${orderInformation.paymentmethod == 1}">
-                                                        <span style="font-size: 15px">Online Banking</span>
-                                                    </c:when>
-                                                    <c:when test="${orderInformation.paymentmethod == 2}">
-                                                        <span style="font-size: 15px">COD</span>
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span style="font-size: 15px">Unknown</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                    <p>
-                                        <span style="font-weight:  bold;font-size:17px ">Payment Status: </span>
+                                                </td>
+                                                <td style="width: 50%" >
 
-                                        <c:choose>
-                                            <c:when test="${not empty orderInformation.paymentStatus and orderInformation.paymentStatus ne null}">
-                                                <c:choose>
-                                                    <c:when test="${orderInformation.paymentStatus == 1}">
-                                                        <span style="font-size: 15px">Paid</span>
-                                                    </c:when>
-                                                    <c:when test="${orderInformation.paymentStatus == 2}">
-                                                        <span style="font-size: 15px">Unpaid</span>
-                                                    </c:when>
-                                                    <c:when test="${orderInformation.paymentStatus == 3}">
-                                                        <span style="font-size: 15px">Refunded</span>
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span style="font-size: 15px">Unknown</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr >
+                                                <td class="text-start">
+                                                    <span style="font-weight:  bold;font-size:17px ">Created At: </span>
+                                                </td>
+                                                <td class="text-start">
+                                                    <span style="font-size: 15px">${orderInformation.createAt}</span>
+                                                </td>
+                                            </tr>
+                                            <tr >
+                                                <td class="text-start">
+                                                    <span style="font-weight:  bold;font-size:17px ">Completed At: </span>
+                                                </td>
+                                                <td class="text-start">
+                                                    <c:choose>
+                                                        <c:when test="${not empty orderInformation.completedAt and orderInformation.completedAt != 'null'}">
+                                                            <span style="font-size: 15px">${orderInformation.completedAt}</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span>N/A</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                            <tr >
+                                                <td class="text-start">
+                                                    <span style="font-weight:  bold;font-size:17px ">Payment method: </span>
+                                                </td>
+                                                <td class="text-start">
+                                                    <c:choose>
+                                                        <c:when test="${not empty orderInformation.paymentmethod and orderInformation.paymentmethod ne null}">
+                                                            <c:choose>
+                                                                <c:when test="${orderInformation.paymentmethod == 1}">
+                                                                    <span style="font-size: 15px">Online Banking</span>
+                                                                </c:when>
+                                                                <c:when test="${orderInformation.paymentmethod == 2}">
+                                                                    <span style="font-size: 15px">COD</span>
+                                                                </c:when>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span style="font-size: 15px">Unknown</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                            <tr >
+                                                <td class="text-start">
+                                                    <span style="font-weight:  bold;font-size:17px ">Payment Status: </span>
+                                                </td>
+                                                <td class="text-start">
+                                                    <c:choose>
+                                                        <c:when test="${not empty orderInformation.paymentStatus and orderInformation.paymentStatus ne null}">
+                                                            <c:choose>
+                                                                <c:when test="${orderInformation.paymentStatus == 1}">
+                                                                    <span style="font-size: 15px">Paid</span>
+                                                                </c:when>
+                                                                <c:when test="${orderInformation.paymentStatus == 2}">
+                                                                    <span style="font-size: 15px">Unpaid</span>
+                                                                </c:when>
+                                                                <c:when test="${orderInformation.paymentStatus == 3}">
+                                                                    <span style="font-size: 15px">Refunded</span>
+                                                                </c:when>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span style="font-size: 15px">Unknown</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>                                                                   
                                 </div>  
 
                                 <div class="order-message">
                                     <p>Shipping Order</p>
-                                    <textarea name="orderNote" id="orderNote" placeholder="${orderInformation.orderNote}" rows="3"></textarea>
+
+                                    <textarea name="orderNote" id="orderNote" placeholder="${orderInformation.orderNote}" rows="3" readonly></textarea>
                                     <!--<label><input type="checkbox"> Shipping to bill address</label>-->
+                                    <!--<label for="orderNote">Order Note</label>-->
                                     <span id="orderNoteError" class="error-message text-danger"></span>
                                 </div>
                                 <!--</div>-->
@@ -316,7 +344,7 @@
                             </div>
 
                             <div class="text-right col-sm-12">
-                                <table style="border:1px solid red;width: 100%;">
+                                <table style="width: 100%;">
                                     <tbody>
                                         <c:if test="${role == 'manager'}">
                                             <tr>

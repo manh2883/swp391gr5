@@ -78,9 +78,12 @@
                                     <div class="form-floating mb-10">
                                         <select name="address" id="address" class="form-control" style="height: 45px;margin-bottom: 10px;" onchange="toggleAddressInput(this)">
                                             <option value="">-- Select Address --</option>
-                                            <c:forEach var="addr" items="${userAddresses}">
-                                                <option value="${addr.addressLine}">${addr.addressLine}</option>
+                                            <c:forEach var="addr" items="${userAddresses}" varStatus="status">
+                                                <option value="${addr.addressLine}" ${status.first ? 'selected' : ''}>
+                                                    ${addr.addressLine}
+                                                </option>
                                             </c:forEach>
+
                                             <option value="Other">Other</option>
                                         </select>
 
@@ -96,6 +99,10 @@
                                     </div>    
                                     <div class="order-message">
                                         <p>Shipping Order</p>
+<!--                                        <input   type="text" name="orderNote" id="orderNote" class="form-control mt-2"
+                                                 style="height: 45px;margin-bottom: 10px;"
+                                                 placeholder="" />-->
+
                                         <textarea name="orderNote" id="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
                                         <!--<label><input type="checkbox"> Shipping to bill address</label>-->
                                         <span id="orderNoteError" class="error-message text-danger"></span>
@@ -143,7 +150,7 @@
                                 <div class="row" style="height: 50px; vertical-align: middle;">
                                     <div class="payment-options col-sm-9">
                                         <span>
-                                            <label><input type="radio" name="paymentMethod" value="1" required> Bank Transfer</label>
+                                            <label><input type="radio" name="paymentMethod" value="1" required checked> Bank Transfer</label>
                                         </span>
                                         <span>
                                             <label><input type="radio" name="paymentMethod" value="2" required> COD</label>
@@ -154,7 +161,10 @@
                                     <div class="text-right col-sm-3 ">
                                         <button type="submit" class="btn btn-primary" name="action" value="confirmOrder">Confirm Order</button>
                                     </div>
-                                </div>          
+                                </div> 
+                                <div class="row" style="visibility: hidden">
+                                    <br><br>
+                                </div>
                             </div>               
                         </div>
                     </div>

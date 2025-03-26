@@ -79,7 +79,7 @@
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
                         <li><a href="${pageContext.request.contextPath}">Home</a></li>
-                        <li><a href="${pageContext.request.contextPath}/ProductList">Product List</a></li>
+                        <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
                         <li class="active">Product Creator</li>
                     </ol>
                 </div>

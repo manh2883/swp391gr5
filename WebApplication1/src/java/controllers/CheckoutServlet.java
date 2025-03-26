@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import DAO.CartDAO;
 import DAO.OrderDAO;
 import DAO.ProductDAO;
 import DAO.SettingDAO;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +91,14 @@ public class CheckoutServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
         List<UserAddress> userAddresses = (List<UserAddress>) session.getAttribute("userAddresses");
-        List<CartDetail> checkoutItems = (List<CartDetail>) session.getAttribute("checkoutItems");
+        List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
+        List<CartDetail> checkoutItems = new ArrayList<>();
+
+        for (CartDetail cd : cartDetails) {
+            if (cd.getQuantity() <= SettingDAO.getMaxQuantityInCart()) {
+                checkoutItems.add(cd);
+            }
+        }
 
         if (user == null || checkoutItems == null || checkoutItems.isEmpty()) {
             response.sendRedirect("ViewCart");
@@ -167,21 +176,21 @@ public class CheckoutServlet extends HttpServlet {
             int quantity = item.getQuantity();
             int stock = productDAO.getStockByProductAndVariant(productId, variantId);
             double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
-            int maxQuantity = SettingDAO.getMaxQuantityInCart();
+//            int maxQuantity = SettingDAO.getMaxQuantityInCart();
 
             if (quantity > stock) {
                 request.setAttribute("message", "Không còn sản phẩm!");
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
             }
-            
-            // neu it hon cho phep thi moi duoc them vao order -- manh
+        
             OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
-            if (orderDetail.getQuantity() < maxQuantity) {
-                orderDetails.add(orderDetail);
-                totalAmount += (int) (price * quantity);
-            }
 
+            orderDetails.add(orderDetail);
+            totalAmount += (int) (price * quantity);
+            // xoa khoi gio hang
+            CartDAO.deleteCartDetailByID(userId, item.getCartDetailID());
+            
         }
 
         // Create Order object
@@ -193,7 +202,7 @@ public class CheckoutServlet extends HttpServlet {
                 new Date(),
                 null,
                 Integer.parseInt(paymentMethod),
-                0, // paymentStatus: 0 = chưa thanh toán
+                2, // paymentStatus: 0 = chưa thanh toán
                 finalAddress,
                 orderNote,
                 userReceive,
@@ -212,17 +221,18 @@ public class CheckoutServlet extends HttpServlet {
         // ===================== COD ==========================
         if ("2".equals(paymentMethod)) {
             session.removeAttribute("checkoutItems");
-            session.setAttribute("orderMessage", "Đặt hàng thành công: " + orderId);
-
+            session.setAttribute("orderMessage", "Order successfully: " + orderId);
+            response.sendRedirect("MyOrder");
             return;
         }
 
         // ===================== VNPAY ==========================
         String txnRef = Config.getRandomNumber(8);
-        OrderDAO.addTxnRefToOrder((int) orderId, txnRef); // lưu vào note hoặc cột txn_ref
+//        OrderDAO.addTxnRefToOrder((int) orderId, txnRef); // lưu vào note hoặc cột txn_ref
 
         String vnp_Url = Config.vnp_PayUrl;
         String vnp_Returnurl = Config.vnp_ReturnUrl + "?orderId=" + orderId;
+//        String vnp_Returnurl = Config.vnp_ReturnUrl;
         String vnp_TmnCode = Config.vnp_TmnCode;
         String vnp_HashSecret = Config.vnp_HashSecret;
 
@@ -233,7 +243,7 @@ public class CheckoutServlet extends HttpServlet {
         vnp_Params.put("vnp_Amount", String.valueOf(totalAmount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", txnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang #" + orderId);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang " + orderId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", vnp_Returnurl);

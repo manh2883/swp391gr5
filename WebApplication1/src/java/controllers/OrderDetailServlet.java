@@ -70,7 +70,7 @@ public class OrderDetailServlet extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         String orderIdStr = request.getParameter("orderId");
         String currentUrl = "OrderDetail?orderId=" + orderIdStr;
-        
+
         int role = -1;
         if (account != null) {
             role = account.getRoleId();
@@ -114,10 +114,18 @@ public class OrderDetailServlet extends HttpServlet {
                         request.setAttribute("orderInformation", order);
 
                         request.setAttribute("prevLink", currentUrl);
-                        request.setAttribute("breadcumb", "My Order");
                         request.setAttribute("title", "Order: " + orderIdStr);
 
-                        request.setAttribute("breadcumbLink", "MyOrder");
+                        if (pDAO.checkPermissionForRole("ViewOrderDetail", role)) {
+                            request.setAttribute("breadcumb", "Order List");
+                            request.setAttribute("breadcumbLink", "OrderList");
+                            request.setAttribute("role", "manager");
+                        } else if (userId == order.getUserId()) {
+                            request.setAttribute("breadcumb", "My Order");
+                            request.setAttribute("breadcumbLink", "MyOrder");
+                            request.setAttribute("role", "customer");
+                        }
+
                         request.getRequestDispatcher("Order/OrderDetail.jsp").forward(request, response);
 //                        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                     } else {
@@ -152,9 +160,52 @@ public class OrderDetailServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+        String action = request.getParameter("action");
+
+        OrderDAO orderDAO = new OrderDAO();
+        Order order = OrderDAO.getOrderInformationById(orderId);
+        boolean success = false;
+        String message = "Action failed!";
+
+        switch (action) {
+            case "cancel":
+                success = orderDAO.cancelOrderByCustomer(orderId);
+                message = success ? "Order cancelled successfully!" : message;
+                break;
+            case "cancelBySeller":
+                success = orderDAO.cancelOrderBySeller(orderId);
+                message = success ? "Order cancelled by seller!" : message;
+                break;
+            case "receive":
+                success = orderDAO.receiveOrder(orderId);
+                message = success ? "Order received!" : message;
+                break;
+            case "refund":
+                success = orderDAO.refundOrder(orderId);
+                message = success ? "Refund successful!" : message;
+                break;
+            case "accept":
+                success = orderDAO.acceptOrder(orderId);
+                message = success ? "Order accepted!" : message;
+                break;
+            case "ship":
+                success = orderDAO.shipOrder(orderId);
+                message = success ? "Order shipped!" : message;
+                break;
+            case "delivered":
+                success = orderDAO.deliverOrder(orderId);
+                message = success ? "Order delivered!" : message;
+                break;
+            case "pay":
+                success = orderDAO.paidOrder(orderId);
+                message = success ? "Order delivered!" : message;
+                break;
+        }
+
+        response.sendRedirect("OrderDetail?orderId=" + orderId);
+
     }
 
     /**

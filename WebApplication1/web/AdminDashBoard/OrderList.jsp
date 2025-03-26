@@ -1,4 +1,4 @@
-@ -0,0 +1,240 @@
+
 <%-- 
     Document   : OrderList
     Created on : Feb 27, 2025, 5:43:34 AM
@@ -17,7 +17,7 @@
 <html lang="en">
 
     <head>
-         <meta charset="utf-8" />
+        <meta charset="utf-8" />
         <title>${title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
@@ -72,16 +72,16 @@
                 background-color: #f8f8f8; /* Màu nền cho khoảng trống */
             }
 
-             .status-1 { /* Pending */
+            .status-1 { /* Pending */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
                 background-color: #fff3cd;
                 color: #856404;
-                
+
             }
 
-            .status-6 { /* Accepted */
+            .status-2 { /* Accepted */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -89,7 +89,7 @@
                 color: #155724;
             }
 
-            .status-2 { /* Shipping */
+            .status-3 { /* Shipping */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -97,7 +97,7 @@
                 color: #004085;
             }
 
-            .status-3 { /* Delivered */
+            .status-4 { /* Delivered */
                 padding: .4rem 10px;
                 border-radius: 2rem;
                 text-align: center;
@@ -112,13 +112,29 @@
                 background-color: #f8d7da;
                 color: #721c24;
             }
-            
-              .status-4 { /* Canceled */
+
+            .status-6 { /* Canceled */
                 padding: .2rem 10px;
                 border-radius: 2rem;
                 text-align: center;
                 background-color: #f8d7da;
                 color: #721c24;
+            }
+
+            .status-6 { /* Canceled */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .status-8 { /* Received */
+                padding: .2rem 10px;
+                border-radius: 2rem;
+                text-align: center;
+                background-color: #cce5ff; /* Màu xanh nhạt */
+                color: #004085; /* Màu xanh đậm */
             }
 
             .default-status {
@@ -128,7 +144,6 @@
                 background-color: #e2e3e5;
                 color: #383d41;
             }
-
         </style>
     </head>
     <body>
@@ -150,88 +165,93 @@
                         <%@ include file="/Template/left_side_bar_admin.jspf" %>
                     </div>
                     <div class="col-sm-9">
-                    <!-- Search and Filter Form -->
-                    <form method="GET" action="OrderList" class="row g-3 mb-3">
-                        <div class="col-md-3">
-                            <input type="text" name="search" class="form-control" placeholder="Search" value="${param.search}">
-                        </div>
-                        <div class="col-md-2">
-                            <select name="status" class="form-control">
-                                <option value="">All Status</option>
-                                <option value="1" ${param.status == '1' ? 'selected' : ''}>Pending</option>
-                                <option value="6" ${param.status == '6' ? 'selected' : ''}>Accepted</option>
-                                <option value="2" ${param.status == '2' ? 'selected' : ''}>Shipping</option>
-                                <option value="3" ${param.status == '3' ? 'selected' : ''}>Delivered</option>
-                                <option value="4" ${param.status == '4' ? 'selected' : ''}>Canceled By Customer</option>
-                                <option value="5" ${param.status == '5' ? 'selected' : ''}>Canceled By Seller</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="date" name="fromDate" class="form-control" value="${param.fromDate}">
-                        </div>
-                        <div class="col-md-2">
-                            <input type="date" name="toDate" class="form-control" value="${param.toDate}">
-                        </div>
-                        
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </form>
+                        <!-- Search and Filter Form -->
+                        <form method="GET" action="OrderList" class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <input type="text" name="search" class="form-control" placeholder="Search" value="${param.search}">
+                            </div>
+                            <div class="col-md-2">
+                                <select name="status" class="form-control">
+                                    <option value="">All Status</option>
+                                    <option value="1" ${param.status == '1' ? 'selected' : ''}>Pending</option>
+                                    <option value="6" ${param.status == '2' ? 'selected' : ''}>Accepted</option>
+                                    <option value="2" ${param.status == '3' ? 'selected' : ''}>Shipping</option>
+                                    <option value="3" ${param.status == '4' ? 'selected' : ''}>Delivered</option>
+                                    <option value="4" ${param.status == '5' ? 'selected' : ''}>Canceled By Customer</option>
+                                    <option value="5" ${param.status == '6' ? 'selected' : ''}>Canceled By Seller</option>
+                                    <option value="5" ${param.status == '7' ? 'selected' : ''}>Canceled By System</option>
+                                    <option value="5" ${param.status == '8' ? 'selected' : ''}>Completed</option>
 
-                    <!-- Orders Table -->
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Username</th>
-                                <th>Total Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th></th>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" name="fromDate" class="form-control" value="${param.fromDate}">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" name="toDate" class="form-control" value="${param.toDate}">
+                            </div>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="order" items="${orders}">
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+
+                        <!-- Orders Table -->
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td>${order[0]}</td>
-                                    <td>${order[4]}</td>
-                                    <td>${order[1]}</td>
-                                    <td class="" style="font-size: 9px;">
-                                                            <p class=" status-${order[2]}">
-                                                                <c:choose>
-                                                                    <c:when test="${order[2] == '1'}">Pending</c:when>
-                                                                    <c:when test="${order[2] == '6'}">Accepted</c:when>
-                                                                    <c:when test="${order[2] == '2'}">Shipping</c:when>
-                                                                    <c:when test="${order[2] == '3'}">Delivered</c:when>
-                                                                    <c:when test="${order[2] == '4'}">Canceled By Customer</c:when>
-                                                                    <c:when test="${order[2] == '5'}">Canceled By Seller</c:when>
-                                                                    <c:otherwise>Unknown</c:otherwise>
-                                                                </c:choose>
-                                                            </p> 
-                                                        </td>
-                                                        <td>${order[3]}</td>
-                                    
-                                    <td>
-                                        <a href="OrderDetail?orderId=${order[0]}" class="btn btn-sm btn-info">View</a>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                                    <th>Order ID</th>
+                                    <th>Username</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th></th>
 
-                    <!-- Pagination -->
-                    <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
-                        <ul class="pagination" style="justify-content: center;font-size: 14px">
-                            <c:if test="${totalPages > 0}">
-                                <c:forEach var="i" begin="1" end="${totalPages}">
-                                    <li class=" ${i == currentPage ? 'active' : ''}">
-                                        <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
-                                    </li>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="order" items="${orders}">
+                                    <tr>
+                                        <td>${order[0]}</td>
+                                        <td>${order[4]}</td>
+                                        <td>${order[1]}</td>
+                                        <td class="" style="font-size: 9px;">
+                                            <p class=" status-${order[2]}">
+                                                <c:choose>
+                                                    <c:when test="${order[2] == '1'}">Pending</c:when>
+                                                    <c:when test="${order[2] == '2'}">Accepted</c:when>
+                                                    <c:when test="${order[2] == '3'}">Shipping</c:when>
+                                                    <c:when test="${order[2] == '4'}">Delivered</c:when>
+                                                    <c:when test="${order[2] == '5'}">Canceled By Customer</c:when>
+                                                    <c:when test="${order[2] == '6'}">Canceled By Seller</c:when>
+                                                    <c:when test="${order[2] == '7'}">Canceled By Seller</c:when>
+                                                    <c:when test="${order[2] == '8'}">Received</c:when>
+                                                    <c:otherwise>Unknown</c:otherwise>
+                                                </c:choose>
+                                            </p> 
+                                        </td>
+                                        <td>${order[3]}</td>
+
+                                        <td>
+                                            <a href="OrderDetail?orderId=${order[0]}" class="btn btn-sm btn-info">View</a>
+                                        </td>
+                                    </tr>
                                 </c:forEach>
-                            </c:if>
-                        </ul>
-                    </nav>
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
+                            <ul class="pagination" style="justify-content: center;font-size: 14px">
+                                <c:if test="${totalPages > 0}">
+                                    <c:forEach var="i" begin="1" end="${totalPages}">
+                                        <li class=" ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
+                                        </li>
+                                    </c:forEach>
+                                </c:if>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>

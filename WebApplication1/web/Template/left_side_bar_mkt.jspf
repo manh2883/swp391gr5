@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
+<!--        <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" href="#userManager">
@@ -63,12 +63,14 @@
                 <div class="panel-body">
                     <ul>
                         <li><a href="#">User List</a></li>
-                        <li><a href="#">Create New User</a></li>
+                       
                     </ul>
                 </div>
             </div>
-        </div>
+        </div>-->
 
+
+                    
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">

@@ -137,6 +137,7 @@ public class OrderDAO {
                 order.setTotalamount(rs.getInt("total_amount"));
                 order.setStatusId(rs.getInt("status_id"));
                 order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setPaymentStatus(rs.getInt("payment_status"));
                 order.setCreateAt(rs.getTimestamp("created_at"));
                 order.setCompletedAt(rs.getTimestamp("completed_at"));
                 order.setAddress(rs.getString("address"));
@@ -221,7 +222,7 @@ public class OrderDAO {
                 pstmt.setInt(3, oldStatus);
                 success = pstmt.executeUpdate() > 0;
             } catch (Exception e) {
-                
+
                 e.printStackTrace();
             }
         }
@@ -333,8 +334,8 @@ public class OrderDAO {
         if (statusId != null) {
             Long status = Long.valueOf(statusId);
 
-            if (status.equals(7L)) {
-                query += " AND (o.status_id = 4 OR o.status_id = 5) ";
+            if (status.equals(9L)) {
+                query += " AND (o.status_id = 6 OR o.status_id = 5 OR o.status_id = 7) ";
             } else {
                 query += " AND o.status_id = ?";
                 params.add(status); // Chỉ thêm khi có dấu ? trong query
@@ -488,7 +489,6 @@ public class OrderDAO {
         }
 
 //        query += "ORDER BY o.created_at DESC LIMIT ? OFFSET ?"; // Thêm phân trang
-
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -511,7 +511,6 @@ public class OrderDAO {
 
 //            ps.setInt(index++, pageSize);
 //            ps.setInt(index++, offset);
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Order order = new Order();
@@ -602,15 +601,15 @@ public class OrderDAO {
 
         return count;
     }
-    
+
     // Cập nhật trạng thái đơn hàng
     public boolean updateOrderStatus(long orderId, int newStatus) {
-        String sql = "UPDATE orders SET status_id = ? WHERE order_id = ?";
+        String sql = "UPDATE orders SET status_id = ?,  orders.completed_at = now() WHERE order_id = ? ";
         try {
             DBContext db = new DBContext();
             java.sql.Connection conn = db.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
-            
+
             ps.setInt(1, newStatus);
             ps.setLong(2, orderId);
             return ps.executeUpdate() > 0;
@@ -622,16 +621,44 @@ public class OrderDAO {
 
     // Hủy đơn hàng (Khách hàng)
     public boolean cancelOrderByCustomer(long orderId) {
-        return updateOrderStatus(orderId, 5);
+        String sql = "UPDATE orders SET status_id = 5, "
+                + " orders.completed_at = now() WHERE order_id = ? and (status_id = 1 or status_id = 2)";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setLong(1, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     // Hủy đơn hàng (Người bán)
     public boolean cancelOrderBySeller(long orderId) {
-        return updateOrderStatus(orderId, 6);
+        String sql = "UPDATE orders SET status_id = 6 WHERE order_id = ? and (status_id = 1 )";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setLong(1, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // Người bán chấp nhận đơn hàng
-    public boolean acceptOrder(long orderId, int paymentMethod, int paymentStatus) {
+    public boolean acceptOrder(int orderId) {
+        Order order = getOrderInformationById(orderId);
+        int paymentMethod = order.getPaymentmethod();
+        int paymentStatus = order.getPaymentStatus();
+
         if (paymentMethod == 2 || paymentStatus == 1) {
             return updateOrderStatus(orderId, 2);
         }
@@ -639,24 +666,50 @@ public class OrderDAO {
     }
 
     // Người bán bắt đầu giao hàng
-    public boolean shipOrder(long orderId) {
-        return updateOrderStatus(orderId, 3);
+    public boolean shipOrder(int orderId) {
+
+        if (getOrderInformationById(orderId).getStatusId() == 2) {
+            return updateOrderStatus(orderId, 3);
+        }
+        return false;
     }
 
     // Giao hàng thành công
-    public boolean deliverOrder(long orderId) {
-        return updateOrderStatus(orderId, 4);
+    public boolean deliverOrder(int orderId) {
+        if (getOrderInformationById(orderId).getStatusId() == 3) {
+            return updateOrderStatus(orderId, 4);
+        }
+        return false;
     }
 
     // Khách nhận hàng
-    public boolean receiveOrder(long orderId) {
-        return updateOrderStatus(orderId, 8);
+    public boolean receiveOrder(int orderId) {
+        if (getOrderInformationById(orderId).getStatusId() == 4) {
+            return updateOrderStatus(orderId, 8);
+        }
+        return false;
     }
 
     // Hoàn tiền nếu đơn hàng bị hủy (Chỉ áp dụng cho thanh toán trước)
-    public boolean refundOrder(long orderId, int paymentMethod) {
-        if (paymentMethod == 1) {
-            String sql = "UPDATE orders SET payment_status = 3 WHERE order_id = ?";
+    public boolean refundOrder(long orderId) {
+
+        String sql = "UPDATE orders SET payment_status = 3 WHERE order_id = ? and payment_status = 1 ";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setLong(1, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean paidOrder(long orderId) {
+        
+            String sql = "UPDATE orders SET payment_status = 1 WHERE order_id = ? and payment_status = 2 ";
             try {
                 DBContext db = new DBContext();
                 java.sql.Connection conn = db.getConnection();
@@ -666,10 +719,10 @@ public class OrderDAO {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
+        
         return false;
     }
-    
+
     public static boolean addTxnRefToOrder(int orderId, String txnRef) {
         String sql = "UPDATE orders SET note = ? WHERE order_id = ?";
         try {
@@ -684,7 +737,7 @@ public class OrderDAO {
             return false;
         }
     }
-    
+
     public static void main(String[] args) throws SQLException {
 //        for( Object[] oj: getOrderDetailViewByOrderId(1)){
 //            System.out.println(oj[0]);

@@ -39,11 +39,11 @@ public class SettingDAO {
 
         return 5;
     }
-    
-    public static int getMaxQuantityInCart(){
+
+    public static int getMaxQuantityInCart() {
         return 20;
     }
-    
+
     public static List<String> getSizeList(Object sizeStart, Object sizeEnd) {
         List<String> defaultList = new ArrayList<>();
 
@@ -258,13 +258,17 @@ public class SettingDAO {
 
         return otp.toString();
     }
-    
+
     public static List<Object[]> getSettings(int page, int pageSize, String searchValue, String filterType, Integer filterStatus, String sortBy, String sortOrder) {
         List<Object[]> settings = new ArrayList<>();
         String sql = "SELECT setting_id, setting_type, setting_value, setting_order, setting_status FROM setting WHERE 1=1";
 
         if (searchValue != null && !searchValue.isEmpty()) {
-            sql += " AND setting_value LIKE ?";
+            if (searchValue.matches("\\d+")) { // Kiểm tra nếu searchValue là số
+                sql += " AND setting_value = ?";
+            } else {
+                sql += " AND setting_type LIKE ?";
+            }
         }
         if (filterType != null && !filterType.isEmpty()) {
             sql += " AND setting_type = ?";
@@ -272,7 +276,7 @@ public class SettingDAO {
         if (filterStatus != null) {
             sql += " AND setting_status = ?";
         }
-        
+
         sql += " ORDER BY " + sortBy + " " + sortOrder;
         sql += " LIMIT ? OFFSET ?";
 
@@ -280,12 +284,14 @@ public class SettingDAO {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
-            
 
-             int paramIndex = 1;
-
+            int paramIndex = 1;
             if (searchValue != null && !searchValue.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + searchValue + "%");
+                if (searchValue.matches("\\d+")) {
+                    stmt.setInt(paramIndex++, Integer.parseInt(searchValue));
+                } else {
+                    stmt.setString(paramIndex++, "%" + searchValue + "%");
+                }
             }
             if (filterType != null && !filterType.isEmpty()) {
                 stmt.setString(paramIndex++, filterType);
@@ -313,7 +319,7 @@ public class SettingDAO {
         }
         return settings;
     }
-    
+
     public static int countSettings(String searchValue, String filterType, Integer filterStatus) {
         String sql = "SELECT COUNT(*) FROM setting WHERE 1=1";
         if (searchValue != null && !searchValue.isEmpty()) {
@@ -350,15 +356,15 @@ public class SettingDAO {
             e.printStackTrace();
         }
         return 0;
-    
+
     }
 
     public static void main(String[] args) throws MessagingException, SQLException {
-          System.out.println("===== TEST: Get Settings =====");
+        System.out.println("===== TEST: Get Settings =====");
         List<Object[]> settings = SettingDAO.getSettings(1, 10, "", "", null, "setting_id", "ASC");
         for (Object[] setting : settings) {
-            System.out.println("ID: " + setting[0] + ", Type: " + setting[1] + ", Value: " + setting[2] +
-                    ", Order: " + setting[3] + ", Status: " + setting[4]);
+            System.out.println("ID: " + setting[0] + ", Type: " + setting[1] + ", Value: " + setting[2]
+                    + ", Order: " + setting[3] + ", Status: " + setting[4]);
         }
     }
 }

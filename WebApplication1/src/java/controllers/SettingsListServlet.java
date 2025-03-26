@@ -19,7 +19,8 @@ import java.util.List;
  */
 public class SettingsListServlet extends HttpServlet {
 
-    private static final int PAGE_SIZE = 10; // Số lượng setting trên mỗi trang
+        private static final int PAGE_SIZE = 10;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -58,36 +59,30 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       // Nhận tham số từ request
-        int page = 1;
-        String searchValue = request.getParameter("searchValue");
-        String filterType = request.getParameter("filterType");
-        String filterStatusStr = request.getParameter("filterStatus");
+       String searchValue = request.getParameter("search");
+        String filterType = request.getParameter("type");
+        String filterStatusParam = request.getParameter("status");
+        Integer filterStatus = (filterStatusParam != null && !filterStatusParam.isEmpty()) ? Integer.parseInt(filterStatusParam) : null;
+        
         String sortBy = request.getParameter("sortBy");
         String sortOrder = request.getParameter("sortOrder");
+        sortBy = (sortBy != null && !sortBy.isEmpty()) ? sortBy : "setting_id";  // Mặc định sắp xếp theo ID
+        sortOrder = (sortOrder != null && !sortOrder.isEmpty()) ? sortOrder : "ASC"; // Mặc định ASC
 
+        int page = 1;
         if (request.getParameter("page") != null) {
             page = Integer.parseInt(request.getParameter("page"));
         }
-        
-        Integer filterStatus = (filterStatusStr != null && !filterStatusStr.isEmpty()) ? Integer.parseInt(filterStatusStr) : null;
-        
-        // Giá trị mặc định cho sortBy và sortOrder
-        if (sortBy == null || sortBy.isEmpty()) sortBy = "setting_id";
-        if (sortOrder == null || sortOrder.isEmpty()) sortOrder = "ASC";
 
-
-        // Lấy danh sách settings
+        // Gọi DAO để lấy danh sách settings
         List<Object[]> settings = SettingDAO.getSettings(page, PAGE_SIZE, searchValue, filterType, filterStatus, sortBy, sortOrder);
         int totalSettings = SettingDAO.countSettings(searchValue, filterType, filterStatus);
         int totalPages = (int) Math.ceil((double) totalSettings / PAGE_SIZE);
 
-        
-
-        // Gửi dữ liệu đến JSP
+        // Đưa dữ liệu lên request để truyền sang JSP
         request.setAttribute("settings", settings);
-        request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.setAttribute("searchValue", searchValue);
         request.setAttribute("filterType", filterType);
         request.setAttribute("filterStatus", filterStatus);

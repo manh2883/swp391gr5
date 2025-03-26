@@ -1,0 +1,118 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%
+    String defaultDropdown = (String) request.getAttribute("defaultDropdown");
+%>
+<head>
+   
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<div class="left-sidebar">
+    <h2>Dashboard</h2>
+    <div class="panel-group category-products" id="accordian">
+
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#myProfile">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        Account
+                    </a>
+                </h4>
+            </div>
+            <div id="myProfile" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/MyProfile">My Profile</a></li>
+                        <li><a href="${pageContext.request.contextPath}/ChangePassword">Change Password</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#saleDashboard">
+                        <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        My Purchase
+                    </a>
+                </h4>
+            </div>
+            <div id="saleDashboard" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/MyOrder">My Order</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let panelTitles = document.querySelectorAll(".panel-title a");
+
+        panelTitles.forEach(panel => {
+            panel.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                let targetId = this.getAttribute("href").substring(1); // Lấy ID của dropdown
+                let targetPanel = document.getElementById(targetId);
+                if (!targetPanel)
+                    return;
+
+                let icon = this.querySelector(".fa");
+                let isActive = targetPanel.classList.contains("show");
+
+                let bsCollapse = new bootstrap.Collapse(targetPanel, {toggle: true});
+
+                // Nếu panel đang mở => Đóng nó
+                if (isActive) {
+                    bsCollapse.hide();
+                    if (icon)
+                        icon.classList.replace("fa-minus", "fa-plus");
+                } else {
+                    // Đóng tất cả các panel khác
+                    document.querySelectorAll(".panel-collapse.show").forEach(p => {
+                        let bsCollapseOther = new bootstrap.Collapse(p, {toggle: false});
+                        bsCollapseOther.hide();
+                        let otherIcon = p.previousElementSibling.querySelector(".fa");
+                        if (otherIcon)
+                            otherIcon.classList.replace("fa-minus", "fa-plus");
+                    });
+
+                    // Mở panel hiện tại
+                    bsCollapse.show();
+                    if (icon)
+                        icon.classList.replace("fa-plus", "fa-minus");
+                }
+            });
+        });
+
+        // Kiểm tra có cần mở dropdown mặc định không
+        let defaultPanelId = "<%= defaultDropdown %>";
+        if (defaultPanelId && defaultPanelId !== "none") {
+            let defaultPanel = document.getElementById(defaultPanelId);
+            if (defaultPanel) {
+                let defaultIcon = defaultPanel.previousElementSibling.querySelector(".fa");
+                let bsCollapse = new bootstrap.Collapse(defaultPanel, {toggle: true});
+                if (defaultIcon)
+                    defaultIcon.classList.replace("fa-plus", "fa-minus");
+            }
+        }
+    });
+</script>
+
+
+
+
+
+

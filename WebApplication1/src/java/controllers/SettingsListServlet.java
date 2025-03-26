@@ -57,34 +57,40 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Nhận tham số từ request
-        String searchValue = request.getParameter("searchValue");
-        String filterType = request.getParameter("filterType");
-        String pageParam = request.getParameter("page");
+        try {
+            int page = 1;
+            int pageSize = 5;
 
-        int page = (pageParam != null) ? Integer.parseInt(pageParam) : 1;
-        int pageSize = 10; // Số bản ghi mỗi trang
+            String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid page number: " + pageParam);
+                }
+            }
 
-        // Lấy danh sách settings từ DAO
-        List<Object[]> settings = SettingDAO.getSettings(page, pageSize, searchValue, filterType);
+            String search = request.getParameter("search");
+            String type = request.getParameter("type");
 
-        // Lấy danh sách setting_type để hiển thị trong dropdown
-        List<String> settingTypes = SettingDAO.getAllSettingTypes();
+            List<Object[]> settings = SettingDAO.getSettings(page, pageSize, search, type);
+            int totalRecords = SettingDAO.countSettings(search, type);
+            int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+            // Lấy danh sách type từ database
+            List<String> types = SettingDAO.getAllSettingTypes();
 
-        // Đếm tổng số settings để phục vụ phân trang
-        int totalSettings = SettingDAO.countSettings(searchValue, filterType);
-        int totalPages = (int) Math.ceil((double) totalSettings / pageSize);
+            request.setAttribute("settings", settings);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("search", search);
+            request.setAttribute("type", type);
+            request.setAttribute("types", types);
 
-        // Gửi dữ liệu sang JSP
-        request.setAttribute("settings", settings);
-        request.setAttribute("settingTypes", settingTypes);
-        request.setAttribute("searchValue", searchValue);
-        request.setAttribute("filterType", filterType);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-
-        // Chuyển tiếp đến JSP
-        request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
+            request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace(); // Hoặc dùng logger để ghi log
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Có lỗi xảy ra!");
+        }
     }
 
     /**
@@ -98,19 +104,24 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
 
-        if ("edit".equals(action)) {
-            long settingId = Long.parseLong(request.getParameter("settingId"));
+        try {
+            int settingId = Integer.parseInt(request.getParameter("settingId"));
             String settingName = request.getParameter("settingName");
             int settingValue = Integer.parseInt(request.getParameter("settingValue"));
-            String settingType = request.getParameter("settingType");
 
-            boolean success = SettingDAO.updateSetting(settingId, settingName, settingValue, settingType);
-            response.getWriter().write(success ? "success" : "error");
+            boolean success = SettingDAO.updateSetting(settingId, settingName, settingValue);
+            out.print("{\"success\": " + success + "}");
+        } catch (NumberFormatException e) {
+            out.print("{\"success\": false, \"error\": \"Invalid input format\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("{\"success\": false, \"error\": \"Internal server error\"}");
+        } finally {
+            out.flush();
         }
-        
-        
     }
 
     /**

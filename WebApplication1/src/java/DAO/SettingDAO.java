@@ -265,7 +265,7 @@ public class SettingDAO {
         String sql = "SELECT setting_id, setting_name, setting_value, setting_type FROM setting WHERE 1=1";
 
         if (searchValue != null && !searchValue.isEmpty()) {
-            sql += " AND (setting_name LIKE ? OR setting_value LIKE ?)";
+            sql += " AND (setting_value LIKE ? OR setting_name LIKE ?)";
         }
         if (filterType != null && !filterType.isEmpty()) {
             sql += " AND setting_type = ?";
@@ -278,7 +278,6 @@ public class SettingDAO {
             PreparedStatement stmt = con.prepareStatement(sql);
 
             int paramIndex = 1;
-
             if (searchValue != null && !searchValue.isEmpty()) {
                 stmt.setString(paramIndex++, "%" + searchValue + "%");
                 stmt.setString(paramIndex++, "%" + searchValue + "%");
@@ -292,7 +291,7 @@ public class SettingDAO {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Object[] setting = new Object[]{
+                Object[] setting = {
                     rs.getInt("setting_id"),
                     rs.getString("setting_name"),
                     rs.getInt("setting_value"),
@@ -305,22 +304,19 @@ public class SettingDAO {
         }
         return settings;
     }
-    
-    
 
     // Cập nhật setting
-    public static boolean updateSetting(long settingId, String settingName, int settingValue, String settingType) {
-        String sql = "UPDATE setting SET setting_name = ?, setting_value = ?, setting_type = ? WHERE setting_id = ?";
+    public static boolean updateSetting(int settingId, String name, int value) {
+        String sql = "UPDATE setting SET setting_name = ?, setting_value = ? WHERE setting_id = ?";
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, settingName);
-            stmt.setInt(2, settingValue);
-            stmt.setString(3, settingType);
-            stmt.setLong(4, settingId);
-
-            return stmt.executeUpdate() > 0;
+            stmt.setString(1, name);
+            stmt.setInt(2, value);
+            stmt.setInt(3, settingId);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -376,7 +372,7 @@ public class SettingDAO {
         String sql = "SELECT COUNT(*) FROM setting WHERE 1=1";
 
         if (searchValue != null && !searchValue.isEmpty()) {
-            sql += " AND (setting_name LIKE ? OR setting_value LIKE ?)";
+            sql += " AND (setting_value LIKE ? OR setting_name LIKE ?)";
         }
         if (filterType != null && !filterType.isEmpty()) {
             sql += " AND setting_type = ?";
@@ -406,9 +402,28 @@ public class SettingDAO {
         return 0;
 
     }
-    
-    
 
     public static void main(String[] args) throws MessagingException, SQLException {
+        // Kiểm tra hàm getSettings() với tìm kiếm theo name/value, lọc theo type
+        try {
+            List<Object[]> settings = getSettings(1, 5, "a", "");
+
+            System.out.println("🔹 Danh sách Settings:");
+            for (Object[] setting : settings) {
+                System.out.println(
+                        "ID: " + setting[0] + ", "
+                        + "Name: " + setting[1] + ", "
+                        + "Value: " + setting[2] + ", "
+                        + "Type: " + setting[3]
+                );
+            }
+
+            // Kiểm tra tổng số cài đặt tìm được
+            int total = countSettings("", "");
+            System.out.println("🔹 Tổng số settings tìm được: " + total);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

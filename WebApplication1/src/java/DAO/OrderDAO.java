@@ -242,6 +242,38 @@ public class OrderDAO {
         return false;
     }
 
+    public static List<Order> getUnrefundedOrderList() {
+       
+        List<Order> orders = new ArrayList<>();
+        String query = "SELECT * FROM orders WHERE (status_id = 5 or status_id = 6 && status_id = 7) and payment_status = 2 and payment_method = 1 ORDER BY created_at DESC";
+
+        try {
+
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stm = con.prepareStatement(query);
+            
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderId(rs.getInt("order_id"));
+                order.setTotalamount(rs.getInt("total_amount"));
+                order.setStatusId(rs.getInt("status_id"));
+                order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setPaymentStatus(rs.getInt("payment_status"));
+                order.setCreateAt(rs.getTimestamp("created_at"));
+                order.setCompletedAt(rs.getTimestamp("completed_at"));
+                order.setAddress(rs.getString("address"));
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
     public long createOrder(Order order, List<OrderDetail> orderDetails) {
         long orderId = -1;
         String orderSQL = "INSERT INTO orders (user_id, total_amount, status_id, "
@@ -302,7 +334,7 @@ public class OrderDAO {
             Timestamp completedStartDate, Timestamp completedEndDate) throws SQLException {
         List<Order> orderList = new ArrayList<>();
         String query = """
-    SELECT o.user_id ,o.order_id, o.total_amount, o.status_id, o.created_at, o.payment_Method, o.address, o.user_receive, o.contact, o.note
+    SELECT o.user_id ,o.order_id, o.total_amount, o.status_id, o.created_at, o.payment_Method, o.address, o.user_receive, o.contact, o.note, o.payment_status
     FROM orders o
     JOIN order_status s ON o.status_id = s.order_status_id
     WHERE 1=1 """;
@@ -403,6 +435,7 @@ public class OrderDAO {
                 order.setCreateAt(rs.getTimestamp("created_at"));
                 order.setAddress(rs.getString("address"));
                 order.setPaymentmethod(rs.getInt("payment_method"));
+                order.setPaymentStatus(rs.getInt("payment_status"));
                 order.setUserReceive(rs.getString("user_receive"));
                 order.setContact(rs.getString("contact"));
                 order.setOrderNote(rs.getString("note"));
@@ -708,18 +741,18 @@ public class OrderDAO {
     }
 
     public static boolean paidOrder(long orderId) {
-        
-            String sql = "UPDATE orders SET payment_status = 1 WHERE order_id = ? and payment_status = 2 ";
-            try {
-                DBContext db = new DBContext();
-                java.sql.Connection conn = db.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setLong(1, orderId);
-                return ps.executeUpdate() > 0;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        
+
+        String sql = "UPDATE orders SET payment_status = 1 WHERE order_id = ? and payment_status = 2 ";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setLong(1, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 

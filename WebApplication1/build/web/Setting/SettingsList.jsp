@@ -36,24 +36,73 @@
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
         <style>
-
-            .productinfo .btn {
-                display: inline-block; /* Đảm bảo các nút được xếp thành dòng ngang */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
             }
-            .product-img {
-                width: 242px;
-                height: 225px;
-                object-fit: contain; /* Giữ nguyên tỷ lệ, có thể có khoảng trắng */
-                background-color: #f8f8f8; /* Màu nền cho khoảng trống */
+            .pagination li {
+                margin: 0 5px;
             }
-
-
-
+            .pagination .page-link {
+                padding: 8px 12px;
+                border: 1px solid #007bff;
+                color: #007bff;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .pagination .active .page-link {
+                background-color: #007bff;
+                color: white;
+            }
         </style>
+
+        <script>
+            function enableEdit(row) {
+                $("#editBtn" + row).hide();
+                $("#saveBtn" + row).show();
+                $("#cancelBtn" + row).show();
+                $("#name" + row).prop("readonly", false);
+                $("#value" + row).prop("readonly", false);
+            }
+
+            function cancelEdit(row) {
+                $("#editBtn" + row).show();
+                $("#saveBtn" + row).hide();
+                $("#cancelBtn" + row).hide();
+                $("#name" + row).prop("readonly", true);
+                $("#value" + row).prop("readonly", true);
+            }
+
+            function saveSetting(row) {
+                let settingId = row;
+                let settingName = $("#name" + row).val();
+                let settingValue = $("#value" + row).val();
+
+                $.ajax({
+                    url: "settings",
+                    type: "POST",
+                    data: {
+                        settingId: settingId,
+                        settingName: settingName,
+                        settingValue: settingValue
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Update successful!");
+                            cancelEdit(row);
+                        } else {
+                            alert("Update failed!");
+                        }
+                    }
+                });
+            }
+        </script>
     </head>
 
 
@@ -62,6 +111,7 @@
             <c:import url="/Template/header1.jsp" />
             <c:import url="/Template/header2.jsp" />
         </header>
+
         <section id="settings_list">
             <div class="container">
                 <div class="breadcrumbs">
@@ -70,87 +120,71 @@
                         <li class="active">${breadcrumbs}</li>
                     </ol>
                 </div>
-                <div class="row">
 
+                <div class="row">
                     <div class="col-sm-3">
                         <%@ include file="/Template/left_side_bar_admin.jspf" %>
-                        </div>
-                        <div class="col-sm-9">
+                    </div>
 
-                            
-                            
-                            <!-- Search and Filter Form -->
-                            <form method="get" class="mb-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <input type="text" name="search" value="${searchValue}" class="form-control" placeholder="Search">
-                                    </div>
-<!--                                    <div class="col-md-3">
-                                        <select name="type" class="form-control">
-                                            <option value="">All Types</option>
-                                            <option value="type1" ${filterType == 'type1' ? 'selected' : ''}>Type 1</option>
-                                            <option value="type2" ${filterType == 'type2' ? 'selected' : ''}>Type 2</option>
-                                        </select>
-                                    </div>-->
-                                    <div class="col-md-2">
-                                        <select name="status" class="form-control">
-                                            <option value="">All Status</option>
-                                            <option value="1" ${filterStatus == 1 ? 'selected' : ''}>Active</option>
-                                            <option value="0" ${filterStatus == 0 ? 'selected' : ''}>Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Filter</button>
-                                        
-                                    </div>
-                                </div>
-                            </form>
+                    <div class="col-sm-9">
+                        <h2>Settings List</h2>
 
-                            <!-- Settings Table -->
-                            <table class="table table-bordered">
-                                <thead>
+                        <!-- Search & Filter Form -->
+                        <form action="SettingsListServlet" method="get">
+                            <input type="text" name="search" value="${param.search}" placeholder="Search Name or Value">
+
+                            <select name="type">
+                                <option value="">All Types</option>
+                                <c:forEach var="t" items="${types}">
+                                    <option value="${t}" ${t == type ? 'selected' : ''}>${t}</option>
+                                </c:forEach>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+
+                        <!-- Settings Table -->
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="setting" items="${settings}">
                                     <tr>
-                                        <th><a href="?sortBy=setting_id&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">ID</a></th>
-<!--                                        <th><a href="?sortBy=setting_type&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Type</a></th>-->
-                                        <th><a href="?sortBy=setting_value&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Value</a></th>
-                                        <th><a href="?sortBy=setting_order&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Order</a></th>
-                                        <th><a href="?sortBy=setting_status&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Status</a></th>
+                                        <td>${setting[0]}</td>
+                                        <td><input type="text" id="name${setting[0]}" value="${setting[1]}" readonly class="form-control"></td>
+                                        <td><input type="text" id="value${setting[0]}" value="${setting[2]}" readonly class="form-control"></td>
+                                        <td>${setting[3]}</td>
+                                        <td>
+                                            <button id="editBtn${setting[0]}" class="btn btn-warning" onclick="enableEdit(${setting[0]})">Edit</button>
+                                            <button id="saveBtn${setting[0]}" class="btn btn-success" style="display:none;" onclick="saveSetting(${setting[0]})">Save</button>
+                                            <button id="cancelBtn${setting[0]}" class="btn btn-secondary" style="display:none;" onclick="cancelEdit(${setting[0]})">Cancel</button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="setting" items="${settings}">
-                                        <tr>
-                                            <td>${setting[0]}</td>
-                                            <td>${setting[1]}</td>
-                                            <td>${setting[2]}</td>
-                                            <td>${setting[3]}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${setting[4] == 1}"><span class="badge bg-success">Active</span></c:when>
-                                                    <c:otherwise><span class="badge bg-danger">Inactive</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
+                                </c:forEach>
+                            </tbody>
+                        </table>
 
-
-                            <!-- Pagination -->
-                            <nav>
+                        <!-- Pagination -->
+                        <div>
+                            <c:if test="${totalPages > 1}">
                                 <ul class="pagination">
-                                    <<c:forEach var="i" begin="1" end="${totalPages}">
+                                    <c:forEach var="i" begin="1" end="${totalPages}">
                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="?page=${i}&searchValue=${param.searchValue}&typeFilter=${param.typeFilter}&statusFilter=${param.statusFilter}&sort=${param.sort}">${i}</a>
+                                            <a class="page-link" href="?page=${i}&search=${param.search}&type=${param.type}">${i}</a>
                                         </li>
                                     </c:forEach>
                                 </ul>
-                            </nav>
-
-                </div>
+                            </c:if>
+                        </div>
+                    </div>
                 </div>
             </div>
-                                    
         </section>
 
         <c:import url="/Template/footer1.jsp" />

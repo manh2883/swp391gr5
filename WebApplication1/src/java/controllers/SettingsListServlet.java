@@ -19,8 +19,6 @@ import java.util.List;
  */
 public class SettingsListServlet extends HttpServlet {
 
-        private static final int PAGE_SIZE = 10;
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,7 +36,7 @@ public class SettingsListServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SettingsListServlet</title>");            
+            out.println("<title>Servlet SettingsListServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet SettingsListServlet at " + request.getContextPath() + "</h1>");
@@ -59,37 +57,40 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String searchValue = request.getParameter("search");
-        String filterType = request.getParameter("type");
-        String filterStatusParam = request.getParameter("status");
-        Integer filterStatus = (filterStatusParam != null && !filterStatusParam.isEmpty()) ? Integer.parseInt(filterStatusParam) : null;
-        
-        String sortBy = request.getParameter("sortBy");
-        String sortOrder = request.getParameter("sortOrder");
-        sortBy = (sortBy != null && !sortBy.isEmpty()) ? sortBy : "setting_id";  // Mặc định sắp xếp theo ID
-        sortOrder = (sortOrder != null && !sortOrder.isEmpty()) ? sortOrder : "ASC"; // Mặc định ASC
+        try {
+            int page = 1;
+            int pageSize = 5;
 
-        int page = 1;
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
+            String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid page number: " + pageParam);
+                }
+            }
+
+            String search = request.getParameter("search");
+            String type = request.getParameter("type");
+
+            List<Object[]> settings = SettingDAO.getSettings(page, pageSize, search, type);
+            int totalRecords = SettingDAO.countSettings(search, type);
+            int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+            // Lấy danh sách type từ database
+            List<String> types = SettingDAO.getAllSettingTypes();
+
+            request.setAttribute("settings", settings);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("search", search);
+            request.setAttribute("type", type);
+            request.setAttribute("types", types);
+
+            request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace(); // Hoặc dùng logger để ghi log
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Có lỗi xảy ra!");
         }
-
-        // Gọi DAO để lấy danh sách settings
-        List<Object[]> settings = SettingDAO.getSettings(page, PAGE_SIZE, searchValue, filterType, filterStatus, sortBy, sortOrder);
-        int totalSettings = SettingDAO.countSettings(searchValue, filterType, filterStatus);
-        int totalPages = (int) Math.ceil((double) totalSettings / PAGE_SIZE);
-
-        // Đưa dữ liệu lên request để truyền sang JSP
-        request.setAttribute("settings", settings);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("searchValue", searchValue);
-        request.setAttribute("filterType", filterType);
-        request.setAttribute("filterStatus", filterStatus);
-        request.setAttribute("sortBy", sortBy);
-        request.setAttribute("sortOrder", sortOrder);
-        
-        request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
     }
 
     /**
@@ -103,7 +104,24 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+
+        try {
+            int settingId = Integer.parseInt(request.getParameter("settingId"));
+            String settingName = request.getParameter("settingName");
+            int settingValue = Integer.parseInt(request.getParameter("settingValue"));
+
+            boolean success = SettingDAO.updateSetting(settingId, settingName, settingValue);
+            out.print("{\"success\": " + success + "}");
+        } catch (NumberFormatException e) {
+            out.print("{\"success\": false, \"error\": \"Invalid input format\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("{\"success\": false, \"error\": \"Internal server error\"}");
+        } finally {
+            out.flush();
+        }
     }
 
     /**
@@ -111,9 +129,8 @@ public class SettingsListServlet extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+//    @Override
+//    public String getServletInfo() {
+//        return "Short description";
+//    }// </editor-fold>
 }

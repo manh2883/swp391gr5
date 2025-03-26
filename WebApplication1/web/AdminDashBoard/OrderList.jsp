@@ -121,7 +121,7 @@
                 color: #721c24;
             }
 
-            .status-6 { /* Canceled */
+            .status-7 { /* Canceled */
                 padding: .2rem 10px;
                 border-radius: 2rem;
                 text-align: center;

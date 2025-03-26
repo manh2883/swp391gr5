@@ -74,83 +74,84 @@
 
                     <div class="col-sm-3">
                         <%@ include file="/Template/left_side_bar_admin.jspf" %>
-                        </div>
-                        <div class="col-sm-9">
+                    </div>
+                    <div class="col-sm-9">
+                        <script>
+                            function enableEdit(settingId) {
+                                document.getElementById('name-' + settingId).removeAttribute('readonly');
+                                document.getElementById('value-' + settingId).removeAttribute('readonly');
+                                document.getElementById('save-' + settingId).style.display = 'inline';
+                                document.getElementById('cancel-' + settingId).style.display = 'inline';
+                            }
 
-                            
-                            
-                            <!-- Search and Filter Form -->
-                            <form method="get" class="mb-3">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <input type="text" name="search" value="${searchValue}" class="form-control" placeholder="Search">
-                                    </div>
-<!--                                    <div class="col-md-3">
-                                        <select name="type" class="form-control">
-                                            <option value="">All Types</option>
-                                            <option value="type1" ${filterType == 'type1' ? 'selected' : ''}>Type 1</option>
-                                            <option value="type2" ${filterType == 'type2' ? 'selected' : ''}>Type 2</option>
-                                        </select>
-                                    </div>-->
-                                    <div class="col-md-2">
-                                        <select name="status" class="form-control">
-                                            <option value="">All Status</option>
-                                            <option value="1" ${filterStatus == 1 ? 'selected' : ''}>Active</option>
-                                            <option value="0" ${filterStatus == 0 ? 'selected' : ''}>Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Filter</button>
-                                        
-                                    </div>
-                                </div>
+                            function cancelEdit(settingId) {
+                                document.getElementById('name-' + settingId).setAttribute('readonly', true);
+                                document.getElementById('value-' + settingId).setAttribute('readonly', true);
+                                document.getElementById('save-' + settingId).style.display = 'none';
+                                document.getElementById('cancel-' + settingId).style.display = 'none';
+                            }
+                        </script>
+
+                        </head>
+                        <body>
+                            <h2>Settings List</h2>
+
+                            <form action="SettingsListServlet" method="get">
+                                Search Name/Value: <input type="text" name="searchValue" value="${searchValue}">
+                                
+                                <select name="filterType">
+                                    <option value="">-- All Types --</option>
+                                    <c:forEach var="type" items="${settingTypes}">
+                                        <option value="${type}" ${type == filterType ? 'selected' : ''}>${type}</option>
+                                    </c:forEach>
+                                </select>
+
+                                <input type="submit" value="Search">
                             </form>
 
-                            <!-- Settings Table -->
-                            <table class="table table-bordered">
-                                <thead>
+                            <table border="1">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                                <c:forEach var="setting" items="${settings}">
                                     <tr>
-                                        <th><a href="?sortBy=setting_id&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">ID</a></th>
-<!--                                        <th><a href="?sortBy=setting_type&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Type</a></th>-->
-                                        <th><a href="?sortBy=setting_value&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Value</a></th>
-                                        <th><a href="?sortBy=setting_order&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Order</a></th>
-                                        <th><a href="?sortBy=setting_status&sortOrder=${sortOrder == 'ASC' ? 'DESC' : 'ASC'}">Status</a></th>
+                                        <td>${setting[0]}</td>
+                                        <td><input type="text" id="name-${setting[0]}" value="${setting[1]}" readonly></td>
+                                        <td><input type="text" id="value-${setting[0]}" value="${setting[2]}" readonly></td>
+                                        <td>${setting[3]}</td>
+                                        <td>
+                                            <button onclick="enableEdit(${setting[0]})">Edit</button>
+                                            <button id="save-${setting[0]}" style="display:none;">Save</button>
+                                            <button id="cancel-${setting[0]}" style="display:none;" onclick="cancelEdit(${setting[0]})">Cancel</button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="setting" items="${settings}">
-                                        <tr>
-                                            <td>${setting[0]}</td>
-                                            <td>${setting[1]}</td>
-                                            <td>${setting[2]}</td>
-                                            <td>${setting[3]}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${setting[4] == 1}"><span class="badge bg-success">Active</span></c:when>
-                                                    <c:otherwise><span class="badge bg-danger">Inactive</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
+                                </c:forEach>
                             </table>
 
+                            <div id="editForm" style="display: ${editSetting != null ? 'block' : 'none'};">
+                                <h3>Edit Setting</h3>
+                                <form action="SettingsListServlet" method="post">
+                                    <input type="hidden" id="settingId" name="settingId" value="${editSetting[0]}">
+                                    Name: <input type="text" id="settingName" name="settingName" value="${editSetting[1]}"><br>
+                                    Value: <input type="number" id="settingValue" name="settingValue" value="${editSetting[2]}"><br>
+                                    Type: <input type="text" id="settingType" name="settingType" value="${editSetting[3]}"><br>
+                                    <input type="submit" value="Save">
+                                    <button type="button" onclick="document.getElementById('editForm').style.display = 'none'">Cancel</button>
+                                </form>
+                            </div>
+                                    
+                                    
 
-                            <!-- Pagination -->
-                            <nav>
-                                <ul class="pagination">
-                                    <<c:forEach var="i" begin="1" end="${totalPages}">
-                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="?page=${i}&searchValue=${param.searchValue}&typeFilter=${param.typeFilter}&statusFilter=${param.statusFilter}&sort=${param.sort}">${i}</a>
-                                        </li>
-                                    </c:forEach>
-                                </ul>
-                            </nav>
+                        </body>
 
-                </div>
+                    </div>
                 </div>
             </div>
-                                    
+
         </section>
 
         <c:import url="/Template/footer1.jsp" />

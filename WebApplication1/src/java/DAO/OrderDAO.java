@@ -518,8 +518,10 @@ public class OrderDAO {
             query += "AND o.created_at >= ? ";
         }
         if (toDate != null && !toDate.isEmpty()) {
+            
             query += "AND o.created_at <= ? ";
         }
+        query += "Order by o.order_id DESC";
 
 //        query += "ORDER BY o.created_at DESC LIMIT ? OFFSET ?"; // Thêm phân trang
         try {

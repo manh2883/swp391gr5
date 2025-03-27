@@ -77,8 +77,9 @@
             <div class="container">
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
-                        <li><a href="#">Home</a></li>
-                        <li class="active">${breadcrumbs}</li>
+                        <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
+                        <li><a href="${pageContext.request.contextPath}/SaleStatistic">Sale Statistic</a></li>
+                        <li class="active">MKT Dashboard</li>
                     </ol>
                 </div>
 

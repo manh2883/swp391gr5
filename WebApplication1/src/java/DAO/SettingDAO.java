@@ -35,13 +35,32 @@ import java.util.Properties;
  */
 public class SettingDAO {
 
+    public static Integer getSettingValueByName(String name) {
+        String query = "SELECT setting_value FROM setting WHERE setting_name = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+            stmt.setString(1, name);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("setting_value");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static int getPublicProductPerPage() {
 
-        return 5;
+        return getSettingValueByName("publicProductPerPage") != null ? getSettingValueByName("publicProductPerPage") : 6;
     }
 
     public static int getMaxQuantityInCart() {
-        return 20;
+        return getSettingValueByName("maxQuantityInCart") != null ? getSettingValueByName("maxQuantityInCart") : 20;
     }
 
     public static List<String> getSizeList(Object sizeStart, Object sizeEnd) {
@@ -163,7 +182,7 @@ public class SettingDAO {
     }
 
     public static int getMaxQuantityItemInCart() {
-        return 5;
+        return getSettingValueByName("maxQuantityItemInCart") != null ? getSettingValueByName("maxQuantityItemInCart") : 6;
     }
 
     public static void sendEmail(String to, String subject, String messageContent) throws MessagingException {

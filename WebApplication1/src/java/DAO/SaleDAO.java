@@ -40,7 +40,7 @@ public class SaleDAO extends DBContext {
                 + "           SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as success_orders, "
                 + "           SUM(CASE WHEN status_id = ? THEN total_amount ELSE 0 END) as revenue "
                 + "    FROM orders "
-                + "    WHERE created_at BETWEEN ? AND ? "
+                + "    WHERE completed_at BETWEEN ? AND ? "
                 + "    GROUP BY order_date "
                 + ") o ON ds.order_date = o.order_date "
                 + "ORDER BY ds.order_date ASC";
@@ -88,7 +88,7 @@ public class SaleDAO extends DBContext {
                 + "FROM order_detail od "
                 + "JOIN orders o ON od.order_id = o.order_id "
                 + "JOIN product p ON od.product_id = p.product_id "
-                + "WHERE o.created_at BETWEEN ? AND ? "
+                + "WHERE o.completed_at BETWEEN ? AND ? "
                 + "GROUP BY p.product_id, p.name "
                 + "ORDER BY " + sortBy + " " + orderDirection + " "
                 + "LIMIT ?";

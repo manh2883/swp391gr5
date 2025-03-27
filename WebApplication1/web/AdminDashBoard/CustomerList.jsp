@@ -17,7 +17,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>${title}</title>
+        <title>Customer List</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -107,7 +107,7 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach var="customer" items="${customers}">
-                                        <tr>
+                                        <tr onclick="handleRowClick('${customer[0]}')"> <!-- customer[0] là ID của khách hàng -->
                                             <td>${customer[1]}</td> <!-- full_name -->
                                             <td>${customer[2]}</td> <!-- username -->
                                             <td>${customer[3]}</td> <!-- order_count -->
@@ -121,7 +121,14 @@
                                                 </c:choose>
                                             </td>
                                         </tr>
-                                    </c:forEach>
+
+                                    <script>
+                                        function handleRowClick(customerId) {
+                                            window.location.href = '${pageContext.request.contextPath}/CustomerDetail?userId=' + customerId;
+                                        }
+                                    </script>
+
+                                </c:forEach>
                                 </tbody>
                             </table>
                         </div>

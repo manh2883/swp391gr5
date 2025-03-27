@@ -59,7 +59,7 @@ public class SettingsListServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             int page = 1;
-            int pageSize = 5;
+            int pageSize = 3;
 
             String pageParam = request.getParameter("page");
             if (pageParam != null) {

@@ -65,42 +65,58 @@
                     <div class="col-sm-9">
                         <h2 class="title text-center">Address Manager</h2>
                         <!--<p class="text-center" style="color: green">${message}</p>-->
-                        <!-- Nút thêm địa chỉ -->
+                        
                         <div class="d-flex justify-content-between align-items-center">
                             <h4>My Addresses</h4>
-                            <form action="AddressManager" method="post" class="d-flex">
+                            <form action="AddressManager" method="post" class="d-flex gap-2">
                                 <input type="hidden" name="action" value="add" />
-                                <input type="text" name="newAddress" placeholder="Enter new address" class="form-control me-2" required />
-                                <button type="submit" class="btn btn-primary">+ Add New Address</button>
+                                <input type="text" name="newAddress" placeholder="Enter new address" class="form-control" required />
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center" 
+                                        style="height: 38px; margin-top: auto; margin-bottom: auto;">
+                                    + Add New Address
+                                </button>
                             </form>
                         </div>
 
-                        <!-- Danh sách địa chỉ -->
+
+
                         <div class="mt-3">
                             <c:forEach var="address" items="${addressList}">    
                                 <div class="address-card p-3 border rounded mb-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="w-75">
-                                            <strong>${user.firstName} ${user.lastName}</strong> | ${user.phoneNumber}
-                                            <form action="AddressManager" method="post" class="mt-2 d-flex">
-                                                <input type="hidden" name="action" value="update" />
-                                                <input type="hidden" name="addressId" value="${address.addressID}" />
-                                                <input type="text" name="updatedAddress" value="${address.addressLine}" class="form-control me-2" />
-                                                <button type="submit" class="btn btn-warning">Update</button>
-                                            </form>
-                                        </div>
+                                    <div>
+                                        <strong>${user.firstName} ${user.lastName}</strong> | ${user.phoneNumber}
+                                        <table class="w-100 mt-2">
+                                            <tr>
 
-                                        <div class="text-end">
-                                            <form action="${pageContext.request.contextPath}/AddressManager" method="post" onsubmit="return confirm('Are you sure to delete this address?')">
-                                                <input type="hidden" name="action" value="delete" />
-                                                <input type="hidden" name="addressId" value="${address.addressID}" />
-                                                <button type="submit" class="btn btn-danger">Delete</button>
-                                            </form>
-                                        </div>
+                                                <td class="w-75">
+                                                    <form action="AddressManager" method="post">
+                                                        <input type="hidden" name="action" value="update" />
+                                                        <input type="hidden" name="addressId" value="${address.addressID}" />
+                                                        <input type="text" name="updatedAddress" value="${address.addressLine}" 
+                                                               class="form-control" />
+                                                </td>
+
+                                                <td class="w-15">
+                                                    <button type="submit" class="btn btn-warning w-100">Update</button>
+                                                    </form>
+                                                </td>
+
+                                                <td class="w-10">
+                                                    <form action="${pageContext.request.contextPath}/AddressManager" method="post" 
+                                                          onsubmit="return confirm('Are you sure to delete this address?')">
+                                                        <input type="hidden" name="action" value="delete" />
+                                                        <input type="hidden" name="addressId" value="${address.addressID}" />
+                                                        <button type="submit" class="btn btn-danger w-100">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
                                 </div>
                             </c:forEach>
                         </div>
+
+
                     </div>
                 </div>
         </section>

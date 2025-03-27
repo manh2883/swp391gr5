@@ -1,4 +1,3 @@
-</html>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -94,10 +93,12 @@
                             <input type="text" name="product_id" value="${productId}" required>
                             <button type="submit" class="btn btn-default get-manh" style="margin-bottom: 10px">Search</button>
                         </form>
-                        <canvas id="orderChart"></canvas>
+
                         <br>
                         <br>
                         <c:if test="${not empty productList}">
+                            <h3 class="text-center">Sales Stats (Last 7 Days)</h3>
+                            <canvas id="salesChart" width="800" height="400"></canvas>
                             <table>
                                 <tr><th>Product ID</th>
                                     <th>Variant ID</th>
@@ -146,4 +147,95 @@
         <br>
         <c:import url="/Template/footer1.jsp" />
     </body>
+    <script>
+        const labels = [
+        <c:forEach var="item" items="${stats}" varStatus="loop">
+            "${item[0]}",
+        </c:forEach>
+        ];
+
+        const quantities = [
+        <c:forEach var="item" items="${stats}">
+            ${item[1]},
+        </c:forEach>
+        ];
+
+        const revenues = [
+        <c:forEach var="item" items="${stats}">
+            ${item[2]},
+        </c:forEach>
+        ];
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const maxRevenue = Math.max(...revenues); // Tìm giá trị lớn nhất
+        const yRevenueMax = Math.ceil(maxRevenue * 1.2); // Làm tròn cho đẹp (nếu cần)
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Revenue (VND)',
+                        data: revenues,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'yRevenue'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Quantity Sold',
+                        data: quantities,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        yAxisID: 'yQuantity',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    yRevenue: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Revenue (VND)'
+                        },
+                        beginAtZero: true,
+                        max: yRevenueMax, // gán max theo biến tính được
+                        ticks: {
+                            callback: function (value) {
+                                return new Intl.NumberFormat('vi-VN').format(value) + ' VNĐ';
+                            }
+                        }
+                    },
+                    yQuantity: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Quantity Sold'
+                        },
+                        ticks: {
+                            callback: function (value) {
+                                return value + ' sp';
+                            },
+                            stepSize: 5 // tuỳ chọn: hiển thị mỗi 5 đơn vị
+                        },
+                        min: 0,
+                        max: 25,
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </html>

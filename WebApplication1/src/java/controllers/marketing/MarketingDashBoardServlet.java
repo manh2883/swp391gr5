@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controllers.marketing;
+
 import DAO.MKTDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,7 +38,7 @@ public class MarketingDashBoardServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MarketingDashBoardServlet</title>");            
+            out.println("<title>Servlet MarketingDashBoardServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet MarketingDashBoardServlet at " + request.getContextPath() + "</h1>");
@@ -64,7 +65,8 @@ public class MarketingDashBoardServlet extends HttpServlet {
             request.setAttribute("productList", productList);
             request.setAttribute("productId", productId);
         }
-
+        List<Object> stats = mktDAO.getProductStatsLast7Days(productId);
+        request.setAttribute("stats", stats);
         request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
     }
 
@@ -79,7 +81,7 @@ public class MarketingDashBoardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         MKTDAO mktDAO = new MKTDAO();
+        MKTDAO mktDAO = new MKTDAO();
         try {
             String productId = request.getParameter("product_id");
             int variantId = Integer.parseInt(request.getParameter("variant_id"));
@@ -94,7 +96,7 @@ public class MarketingDashBoardServlet extends HttpServlet {
             request.setAttribute("error", "Có lỗi xảy ra khi cập nhật!");
             request.getRequestDispatcher("AdminDashBoard/MKTStatistic.jsp").forward(request, response);
         }
-        
+
     }
 
     /**

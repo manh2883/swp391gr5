@@ -1,87 +1,73 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controllers;
 
-import DAO.UserDAO;
+import Models.Account;
 import Models.UserAddress;
+import DAO.AddressDAO;
+import DAO.UserDAO;
+import Models.User;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
-/**
- *
- * @author Acer
- */
 public class AddressManagerServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AddressManagerServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AddressManagerServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<UserAddress> addressList = UserDAO.getUserAddresses(1);
+        AddressDAO addressDAO = new AddressDAO();
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        }
+        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+
+        List<UserAddress> addressList = addressDAO.getUserAddresses(userId);
+
+        request.setAttribute("user", UserDAO.getUserById(userId));
         request.setAttribute("addressList", addressList);
-        request.getRequestDispatcher("Login/AddressManager.jsp").forward(request, response);
+        request.getRequestDispatcher("/Login/AddressManager.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        AddressDAO addressDAO = new AddressDAO();
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        }
+        
+        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+        
+        String action = request.getParameter("action");
+        if ("add".equals(action)) {
+            String newAddress = request.getParameter("newAddress");
+            if (newAddress != null && !newAddress.trim().isEmpty()) {
+                addressDAO.addAddress(userId, newAddress);
+            }
+        } else if ("delete".equals(action)) {
+            if (request.getParameter("addressId") != null) {
+                int addressId = Integer.parseInt(request.getParameter("addressId"));
+                addressDAO.deleteAddress(addressId);
+            }
+        } else if ("update".equals(action)) {
+            int addressId = Integer.parseInt(request.getParameter("addressId"));
+            String updatedAddress = request.getParameter("updatedAddress");
+            addressDAO.updateAddress(addressId, updatedAddress);
+        }
+        
+        response.sendRedirect(request.getContextPath() + "/AddressManager");
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

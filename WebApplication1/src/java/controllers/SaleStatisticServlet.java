@@ -76,7 +76,7 @@ public class SaleStatisticServlet extends HttpServlet {
             sortBy = (sortBy != null && (sortBy.equals("revenue") || sortBy.equals("quantity_sold"))) ? sortBy : "revenue";
 
             // Lấy dữ liệu từ DAO
-            int successStatus = 3;
+            int successStatus = 8;
             List<Map<String, Object>> orderStats = orderDAO.getOrderStatistics(startDate, endDate, successStatus);
             List<Map<String, Object>> topProducts = orderDAO.getTopProducts(startDate, endDate, top, sortBy, asc);
 

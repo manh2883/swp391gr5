@@ -63,9 +63,12 @@
                 text-align: center;
             }
 
-
+            tr:hover {
+                background-color: #f5f5f5;
+            }
         </style>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </head>
     <body>
         <header>
@@ -166,7 +169,8 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach var="product" items="${topProducts}">
-                                        <tr>
+                                        <tr style="cursor: pointer;" 
+                                            onclick="window.location = '${pageContext.request.contextPath}/MarketingDashBoard?product_id=${product.product_id}'">
                                             <td>${product.product_id}</td>
                                             <td>${product.product_name}</td>
                                             <td>${product.quantity_sold}</td>

@@ -97,15 +97,17 @@ public class SendOtpServlet extends HttpServlet {
             throws ServletException, IOException {
         String emailInput = request.getParameter("email");
 
-         HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
+        UserDAO uDAO = new UserDAO();
+        SettingDAO sDAO = new SettingDAO();
         if (emailInput != null && !emailInput.isEmpty() && emailInput.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            User user = UserDAO.getUserByEmail(emailInput);
+            User user = uDAO.getUserByEmail(emailInput);
             System.out.println(user);
             if (user != null) {
                 if (canRequestOTP(emailInput)) {
                     if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                        try {   
-                            boolean otpSent = SettingDAO.sendOTP(user.getEmail());
+                        try {
+                            boolean otpSent = sDAO.sendOTP(user.getEmail());
                             request.setAttribute("email", emailInput);
                             request.setAttribute("availOTP", !otpSent);
 
@@ -113,8 +115,6 @@ public class SendOtpServlet extends HttpServlet {
                             session.setAttribute("otpExpiry", System.currentTimeMillis() + 60000); // Hết hạn sau 60s
 
                             // Gửi OTP qua email (giả sử đã có hàm sendEmail)
-                       
-
                             response.getWriter().write("Otp sent:");
 
                         } catch (MessagingException | SQLException ex) {

@@ -4,6 +4,7 @@
  */
 package controllers;
 
+import DAO.AccountDAO;
 import DAO.UserDAO;
 import Models.Account;
 import Models.User;
@@ -67,8 +68,10 @@ public class MyProfileServlet extends HttpServlet {
             System.out.println(acc);
             if (acc != null) {
                 System.out.println("found acc");
-                int uId = UserDAO.getUserIDByAccountID(acc.getAccountId());
-                User user = UserDAO.getUserById(uId);
+                UserDAO uDAO = new UserDAO();
+                AccountDAO aDAO = new AccountDAO();
+                int uId = uDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = uDAO.getUserById(uId);
                 if (user != null) {
                     System.out.println("found user");
 
@@ -130,31 +133,30 @@ public class MyProfileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
+        UserDAO uDAO = new UserDAO();
+        
         if (session != null) {
             Account acc = (Account) session.getAttribute("account");
             System.out.println(acc);
             if (acc != null) {
                 System.out.println("found acc");
-                int uId = UserDAO.getUserIDByAccountID(acc.getAccountId());
-                User user = UserDAO.getUserById(uId);
+                int uId = uDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = uDAO.getUserById(uId);
                 if (user != null) {
                     String firstName = request.getParameter("firstName");
                     String lastName = request.getParameter("lastName");
                     String dob = request.getParameter("dob");
                     int gender = Integer.parseInt(request.getParameter("gender"));
                     Date dobDate = (dob != null) ? Date.valueOf(dob) : new Date(System.currentTimeMillis());
-                    UserDAO.editProfile(uId,firstName,lastName,dobDate,gender);
+                    uDAO.editProfile(uId,firstName,lastName,dobDate,gender);
                     response.sendRedirect("MyProfile");
                 } else {
                     session.setAttribute("prevLink", "MyProfile");
                     response.sendRedirect("Login");
-                    return;
                 }
             } else {
                 session.setAttribute("prevLink", "MyProfile");
                 response.sendRedirect("Login");
-                return;
             }
         } else {
             session.setAttribute("prevLink", "MyProfile");

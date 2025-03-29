@@ -89,12 +89,12 @@ public class ProductListManagerServlet extends HttpServlet {
 
                 }
             } else {
-                request.setAttribute("message", "role not found");
-                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                session.setAttribute("prevLink", "ProductListManager");
+                response.sendRedirect("Login");
             }
         } else {
-            request.setAttribute("message", "account not found");
-            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+            session.setAttribute("prevLink", "ProductListManager");
+            response.sendRedirect("Login");
         }
 
     }
@@ -108,9 +108,17 @@ public class ProductListManagerServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        String productId = request.getParameter("productId");
+        ProductDAO pDAO = new ProductDAO();
+        boolean success = pDAO.toggleProductVisibility(productId);
+        int newState = pDAO.getIsVisibleForProductId(productId) == true ? 1 : 0;
+
+//            response.setContentType("application/json");
+//            response.getWriter().write("{\"success\": " + success + ", \"newState\": " + newState + "}");
+        response.sendRedirect("ProductListManager");
+
     }
 
     /**

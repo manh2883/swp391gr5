@@ -56,16 +56,7 @@ public class AdminDashBoardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//
-////        HttpSession session = session.get
-//        //side bar open
-//        request.setAttribute("defaultDropdown", "saleDashboard");
-//        // set title
-//        request.setAttribute("title", "Admin Dashboard");
-//        // set breadcrumbs
-//        request.setAttribute("breadcrumbs", "Order List");
-//    
-//        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
+
         response.sendRedirect("PermissionManager");
     }
 

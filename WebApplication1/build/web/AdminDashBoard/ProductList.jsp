@@ -56,6 +56,11 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Thay dòng này -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+        <!-- Bằng dòng này -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 
         <style>
@@ -111,7 +116,7 @@
                                         <td class="image" style="width: 150px ">Item</td>
 
                                         <td class="price">Net Price</td>
-                                        <td class="price">Current Price</td>
+                                        <!--<td class="price">Current Price</td>-->
                                         <td class="total">Name</td>
 
                                         <td class="total">Visibility</td>
@@ -124,7 +129,7 @@
                                     <c:choose>
                                         <c:when test="${not empty ProductList}">
                                             <c:forEach var="product" items="${ProductList}">
-                                                <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
+                                                <tr >
                                                     <td class="cart_price">
                                                         <p>${product.productId}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
@@ -132,22 +137,25 @@
                                                         <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}">
                                                             <img src="${pageContext.request.contextPath}/${product.imgUrl}" alt="${product.name}" class="product-img"></a>
                                                     </td>
-                                                    <td class="cart_price">
-                                                        <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
-                                                    </td>
+
                                                     <td class="cart_price">
                                                         <p>${product.price}</p> <!-- Thay bằng giá từ DB nếu có -->
                                                     </td>
                                                     <td class="cart_quantity">
-                                                        <div> 
+                                                        <div onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'"> 
                                                             <p>${product.name}</p>
                                                         </div>
                                                     </td>
 
-                                                    <td>
-                                                        <div> 
-                                                            <p>Yes</p> 
-                                                        </div>
+
+                                                    <td class="cart_visibility">
+                                                        <form action="ProductListManager" method="post">
+                                                            <input type="hidden" name="productId" value="${product.productId}" />
+                                                            <button type="submit" class="${product.isVisible ? 'btn btn-success' : 'btn btn-danger'}">
+                                                                ${product.isVisible ? 'Visible' : 'Hidden'}
+                                                            </button>
+                                                        </form>
+
                                                     </td>
                                                     <td>
                                                         <div> 
@@ -192,6 +200,31 @@
         <c:import url="/Template/footer1.jsp" />
     </body>
     <script>
+        $(document).ready(function () {
+            $(".toggle-visibility button").click(function () {
+                let form = $(this).closest("form");
+                let button = $(this);
+                let productId = form.find("input[name='productId']").val();
+
+                $.ajax({
+                    url: "ProductListManager",
+                    type: "POST",
+                    data: {productId: productId},
+                    success: function (response) {
+                        if (response.success) {
+                            if (button.hasClass("btn-success")) {
+                                button.removeClass("btn-success").addClass("btn-danger").text("Hidden");
+                            } else {
+                                button.removeClass("btn-danger").addClass("btn-success").text("Visible");
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
 
     </script>
 </html>

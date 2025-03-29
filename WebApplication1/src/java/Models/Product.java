@@ -21,6 +21,15 @@ public class Product {
     private int categoryId;
     private Date createAt;
     private String imgUrl;
+    private boolean isVisible;
+
+    public boolean isIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
     
     public Product() {
     }

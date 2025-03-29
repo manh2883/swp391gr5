@@ -128,7 +128,7 @@
                                         </thead>
                                         <tbody>
                                             <c:set var="cartTotal" value="0" />
-                                            <c:forEach var="item" items="${checkoutItems}">
+                                            <c:forEach var="item" items="${checkoutItemList}">
                                                 <tr>
                                                     <td>${item.product.name}</td>
                                                     <td>${item.quantity}</td>

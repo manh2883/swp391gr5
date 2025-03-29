@@ -129,9 +129,11 @@ public class AccountDAO extends DBContext {
     }
 
     public Account loginWithUsername(String userName, String passWord) {
-        String query = "SELECT * from Account "
-                + "where Account.username = ?  "
-                + "limit 1";
+        String query = """
+                       SELECT * from Account where Account.username = ?  and  LENGTH(password) = 60
+                                                 and (password  LIKE '$2a$%' 
+                                                 or password  LIKE '$2b$%' 
+                                                 or password  LIKE '$2y$%') limit 1""";
         Account account = new Account();
 
         try {
@@ -167,10 +169,13 @@ public class AccountDAO extends DBContext {
     }
 
     public Account loginWithEmail(String email, String passWord) {
-        String query = "SELECT * from Account "
-                + "join User on User.user_id = Account.user_id "
-                + "where User.email = ? "
-                + "limit 1";
+        String query = """
+                       SELECT * from Account 
+                       join User on User.user_id = Account.user_id 
+                       where User.email = ? and LENGTH(password) = 60
+                          and (password  LIKE '$2a$%' 
+                          or password  LIKE '$2b$%' 
+                          or password  LIKE '$2y$%') limit 1""";
         Account account = new Account();
 
         try {
@@ -208,10 +213,11 @@ public class AccountDAO extends DBContext {
     }
 
     public Account loginWithPhone(String phoneNumber, String passWord) {
-        String query = "SELECT * from User "
-                + "join Account on User.user_id = Account.user_id "
-                + "where User.phone_number = ? "
-                + "limit 1";
+        String query = """
+                       SELECT * from User join Account on User.user_id = Account.user_id where User.phone_number = ? and  LENGTH(password) = 60
+                                                 AND (password  LIKE '$2a$%' 
+                                                 or password  LIKE '$2b$%' 
+                                                 or password  LIKE '$2y$%') limit 1""";
         Account account = new Account();
 
         try {
@@ -324,6 +330,10 @@ public class AccountDAO extends DBContext {
                 System.out.println("No account found for user: " + userName);
             }
 
+            rs.close();
+            updateStm.close();
+            con.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -363,6 +373,8 @@ public class AccountDAO extends DBContext {
             pstmt.setLong(3, accountId);
 
             int updatedRows = pstmt.executeUpdate();
+            pstmt.close();
+            con.close();
             return updatedRows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -412,8 +424,6 @@ public class AccountDAO extends DBContext {
 
     }
     // Hàm hash mật khẩu
-
-   
 
     public static Account getAccountByUserName(String userName) {
         String query = "SELECT * from Account "
@@ -528,6 +538,8 @@ public class AccountDAO extends DBContext {
                 System.out.println("No account found for user: " + userName);
             }
 
+            updateStm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -556,6 +568,8 @@ public class AccountDAO extends DBContext {
                 System.out.println("No account found for user: " + userName);
             }
 
+            updateStm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -586,6 +600,9 @@ public class AccountDAO extends DBContext {
                 lastSend = rs.getString(1);
                 System.out.println(lastSend);
             }
+            rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -610,11 +627,13 @@ public class AccountDAO extends DBContext {
                 pstmt.setLong(3, accId);
                 pstmt.executeUpdate();
                 System.out.println("setup: " + accId + ", " + otp);
+
+                con.close();
+                pstmt.close();
             } catch (Exception e) {
 
             }
         }
-
     }
 
     public static Timestamp getOtpLastSendTimeByEmail(String email) {
@@ -639,7 +658,9 @@ public class AccountDAO extends DBContext {
                 lastSend = rs.getTimestamp(1);
                 System.out.println(lastSend);
             }
-
+            rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -678,6 +699,9 @@ public class AccountDAO extends DBContext {
                 account.setWrongLoginCount(rs.getInt("wrong_login_count"));
                 System.out.println(account);
             }
+            rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -715,6 +739,10 @@ public class AccountDAO extends DBContext {
                 } else {
                     System.out.println("No account found for user: " + accountID);
                 }
+                
+                updateStm.close();
+                con.close();
+                
             } catch (SQLException e) {
             }
         }

@@ -86,6 +86,7 @@ public class CreateNewPassWordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        AccountDAO aDAO = new AccountDAO();
         String email = request.getParameter("email");
         String newPassWord = request.getParameter("newPassword");
         System.out.println(email + ", " + newPassWord);
@@ -95,9 +96,9 @@ public class CreateNewPassWordServlet extends HttpServlet {
 
             if (user != null) {
                 if (newPassWord != null && !newPassWord.isEmpty()) {
-                    int accId = AccountDAO.getAccountByUserId(user.getUserId()).getAccountId();
-                    changeStatus = AccountDAO.changePassword(accId, newPassWord);
-                    String passWord = AccountDAO.getAccountByUserId(user.getUserId()).getPassword();
+                    int accId = aDAO.getAccountByUserId(user.getUserId()).getAccountId();
+                    changeStatus = aDAO.changePassword(accId, newPassWord);
+                    String passWord = aDAO.getAccountByUserId(user.getUserId()).getPassword();
 
                     request.setAttribute("userName", email);
 //                    request.setAttribute("passWord", passWord);

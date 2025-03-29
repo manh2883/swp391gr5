@@ -88,7 +88,7 @@
                                 <td class="select " style="text-align: center; /* Căn giữa nội dung văn bản */
                                     vertical-align: middle;">
                                     <input type="checkbox" id="selectAll"  style="width: 16px; height: 16px; border-radius: 0px"  /></td>
-                                <td class="image"></td>
+                                <td class="image" style="width: max-content"></td>
                                 <td class="description">Item</td>
                                 <td class="price">Price</td>
                                 <td class="quantity">Quantity</td>
@@ -128,13 +128,13 @@
                                                 <p>${cart[2].intValue()}</p>
                                             </td>
                                             <td class="cart_quantity">
-                                                <div class="cart_quantity_button d-flex flex-row search_box" style="width: 35px; height: 35px;">
-                                                    <button type="button" class="btn" style="width: 35px; height: 35px; border-radius: 0px" 
+                                                <div class="cart_quantity_button d-flex flex-row search_box" style="width:30px; height: 30px;">
+                                                    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 0px" 
                                                             onclick="submitCartForm(${cart[0].cartDetailID}, 'decrement')"> - </button>
 
                                                     <input class="" type="text" name="quantity" value="${cart[0].quantity}" autocomplete="off" size="2" readonly>
 
-                                                    <button type="button" class="btn" style="width: 35px; height: 35px; border-radius: 0px" 
+                                                    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 0px" 
                                                             onclick="submitCartForm(${cart[0].cartDetailID}, 'increment')"> + </button>                                                  </div>
                                             </td>
                                             <td class="cart_total">
@@ -148,13 +148,13 @@
                                                 </button>                               
                                             </td>
                                         </tr>
-                                        <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
+
                                     </c:forEach>
                                     <tr>
                                         <td colspan="5" style="text-align: right;">Cart Value:</td>
                                         <td class="cart_total">
                                             <p class="cart_total_price">0
-                                                <!--${totalPrice.intValue()}-->
+
                                             </p>
                                         </td>
                                         <td></td>
@@ -185,25 +185,38 @@
         <script>
 
                             $(document).ready(function () {
-                                $(".itemCheckbox, #selectAll").change(function () {
-                                    updateCartTotal();
-                                });
-
                                 function updateCartTotal() {
                                     let total = 0;
-                                    $(".itemCheckbox:checked").each(function () {
-                                        let row = $(this).closest("tr");
-                                        let itemTotal = parseFloat(row.find(".cart_total_price").text());
-                                        total += itemTotal;
-                                    });
-                                    $(".cart_total_price:last").text(total);
+                                    let checkedItems = $(".itemCheckbox:checked");
+
+                                    if (checkedItems.length > 0) {
+                                        checkedItems.each(function () {
+                                            let row = $(this).closest("tr");
+                                            let itemTotal = parseFloat(row.find(".cart_total_price").text()) || 0;
+                                            total += itemTotal;
+                                        });
+                                    }
+
+                                    // Luôn cập nhật giá trị tổng
+                                    $(".cart_total_price:last").text(total > 0 ? total.toFixed(2) : "0.00");
                                     $("#checkoutButton").prop("disabled", total === 0);
+                                    console.log(total);
                                 }
 
+
+                                $(".itemCheckbox").change(updateCartTotal);
+
                                 $("#selectAll").click(function () {
-                                    $(".itemCheckbox").prop("checked", this.checked).trigger("change");
+                                    let isChecked = this.checked;
+                                    $(".itemCheckbox:not(:disabled)").each(function () {
+                                        if ($(this).prop("checked") !== isChecked) {
+                                            $(this).prop("checked", isChecked).trigger("change");
+                                        }
+                                    });
                                 });
+
                             });
+
 
                             document.addEventListener("DOMContentLoaded", function () {
                                 const checkboxes = document.querySelectorAll('.itemCheckbox');
@@ -253,16 +266,29 @@
                                 checkoutForm.submit();
                             }
 
-                             document.querySelectorAll('.itemCheckbox').forEach(checkbox => {
+                            document.querySelectorAll('.itemCheckbox').forEach(checkbox => {
                                 checkbox.addEventListener('change', function () {
                                     let selected = document.querySelectorAll('.itemCheckbox:checked').length;
+
+                                    // Kiểm tra xem có cần disable các checkbox còn lại không
                                     if (selected >= 5) {
-                                        document.querySelectorAll('.itemCheckbox:not(:checked)').forEach(cb => cb.disabled = true);
+                                        document.querySelectorAll('.itemCheckbox:not(:checked)').forEach(cb => {
+                                            if (!cb.disabled) { // Chỉ disable nếu chưa bị disable trước đó
+                                                cb.dataset.wasDisabled = "true"; // Đánh dấu trạng thái disable
+                                                cb.disabled = true;
+                                            }
+                                        });
                                     } else {
-                                        document.querySelectorAll('.itemCheckbox').forEach(cb => cb.disabled = false);
+                                        document.querySelectorAll('.itemCheckbox').forEach(cb => {
+                                            if (cb.dataset.wasDisabled === "true") { // Chỉ mở khóa nếu nó bị disable trước đó
+                                                cb.disabled = false;
+                                                delete cb.dataset.wasDisabled; // Xóa trạng thái đánh dấu
+                                            }
+                                        });
                                     }
                                 });
                             });
+
 
 
                             document.addEventListener("DOMContentLoaded", function () {
@@ -286,7 +312,7 @@
                                     function updateButtonState() {
                                         const quantity = parseInt(quantityInput.value, 10);
 
-                                        if (quantity >= maxQuantity) {
+                                        if (quantity > maxQuantity) {
                                             plusButton.disabled = true;
                                             stockText.textContent = "Bạn đã đạt giới hạn số lượng";
                                             stockText.style.color = "red";

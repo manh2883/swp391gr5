@@ -48,6 +48,9 @@ public class UserDAO extends DBContext {
             pstmtUser.executeUpdate();
 
             conn.commit();
+            pstmtUser.close();
+
+            conn.close();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -120,6 +123,9 @@ public class UserDAO extends DBContext {
                     rs.getDouble("total_spent")
                 });
             }
+            stm.close();
+            rs.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -341,6 +347,9 @@ public class UserDAO extends DBContext {
                 address.setAddressLine(resultSet.getString("address_content"));
                 addressList.add(address);
             }
+            stm.close();
+            resultSet.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -365,6 +374,9 @@ public class UserDAO extends DBContext {
                 address.setUserID(resultSet.getInt("user_id"));
                 address.setAddressLine(resultSet.getString("address_content"));
             }
+            stm.close();
+            resultSet.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -676,7 +688,7 @@ public class UserDAO extends DBContext {
 
     public static void main(String[] args) {
         System.out.println(getUserById(1));
-        editProfile(1,"Manh", "Customer",new Date(0), 1);
+        editProfile(1, "Manh", "Customer", new Date(0), 1);
         System.out.println(getUserById(1));
     }
 

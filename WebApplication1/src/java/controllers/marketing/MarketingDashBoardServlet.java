@@ -4,13 +4,17 @@
  */
 package controllers.marketing;
 
+import DAO.CartDAO;
 import DAO.MKTDAO;
+import DAO.PermissionDAO;
+import Models.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +63,20 @@ public class MarketingDashBoardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getParameter("product_id");
+        HttpSession session = request.getSession();
+        
+        String currentLink = "MarketingDashBoard";
+        // Lấy account từ session
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            session.setAttribute("prevLink", currentLink);
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        } else if (!PermissionDAO.checkPermissionForRole("MktDashBoard", account.getRoleId())) {
+            request.setAttribute("message", "No Permission");
+
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+        }
         MKTDAO mktDAO = new MKTDAO();
         if (productId != null && !productId.isEmpty()) {
             List<Map<String, Object>> productList = mktDAO.searchProductById(productId);

@@ -4,13 +4,16 @@
  */
 package controllers;
 
+import DAO.PermissionDAO;
 import DAO.SaleDAO;
+import Models.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +63,20 @@ public class SaleStatisticServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         SaleDAO orderDAO = new SaleDAO();
+         HttpSession session = request.getSession();
+        
+        String currentLink = "SaleDashBoard";
+        // Lấy account từ session
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            session.setAttribute("prevLink", currentLink);
+            response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        } else if (!PermissionDAO.checkPermissionForRole("SaleDashBoard", account.getRoleId())) {
+            request.setAttribute("message", "No Permission");
+
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+        }
         try {
             // Lấy thông tin filter từ request
             String startDateStr = request.getParameter("startDate");

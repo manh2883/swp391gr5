@@ -85,9 +85,9 @@ public class ForgotPasswordServlet extends HttpServlet {
             forwardToPage(request, response);
             return;
         }
-
-        String realOtp = AccountDAO.getOtpByEmail(emailInput);
-        java.sql.Timestamp time = AccountDAO.getOtpLastSendTimeByEmail(emailInput);
+        AccountDAO aDAO = new AccountDAO();
+        String realOtp = aDAO.getOtpByEmail(emailInput);
+        java.sql.Timestamp time = aDAO.getOtpLastSendTimeByEmail(emailInput);
 
         Instant now = Instant.now();
         Instant last = time.toInstant();
@@ -106,7 +106,7 @@ public class ForgotPasswordServlet extends HttpServlet {
             }
         } else {
             request.setAttribute("email", emailInput);
-            request.setAttribute("otpError", time + ", " + dur.getSeconds() +", " + "OTP is expired!");
+            request.setAttribute("otpError", time + ", " + dur.getSeconds() + ", " + "OTP is expired!");
         }
 
         forwardToPage(request, response);

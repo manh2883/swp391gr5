@@ -50,6 +50,9 @@ public class OrderDAO {
 
 //                orders.add(new Order(orderId, userId, totalAmount, statusId, createdAt));
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,6 +83,9 @@ public class OrderDAO {
                 order.setAddress(rs.getString("address"));
                 orders.add(order);
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,6 +117,9 @@ public class OrderDAO {
                 order.setAddress(rs.getString("address"));
                 orders.add(order);
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,6 +153,9 @@ public class OrderDAO {
                 order.setOrderNote(rs.getString("note"));
 
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,8 +184,11 @@ public class OrderDAO {
                 orderdt.setPrice(rs.getInt("price"));
 
                 orderDetails.add(orderdt);
-
             }
+
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -221,6 +236,9 @@ public class OrderDAO {
                 pstmt.setLong(2, orderId);
                 pstmt.setInt(3, oldStatus);
                 success = pstmt.executeUpdate() > 0;
+
+                pstmt.close();
+                conn.close();
             } catch (Exception e) {
 
                 e.printStackTrace();
@@ -243,7 +261,7 @@ public class OrderDAO {
     }
 
     public static List<Order> getUnrefundedOrderList() {
-       
+
         List<Order> orders = new ArrayList<>();
         String query = "SELECT * FROM orders WHERE (status_id = 5 or status_id = 6 && status_id = 7) and payment_status = 2 and payment_method = 1 ORDER BY created_at DESC";
 
@@ -252,7 +270,7 @@ public class OrderDAO {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stm = con.prepareStatement(query);
-            
+
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
@@ -268,6 +286,9 @@ public class OrderDAO {
                 order.setAddress(rs.getString("address"));
                 orders.add(order);
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -322,6 +343,8 @@ public class OrderDAO {
             } finally {
                 con.setAutoCommit(true);// Bật lại auto-commit
             }
+
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -442,6 +465,9 @@ public class OrderDAO {
 
                 orderList.add(order);
             }
+            rs.close();
+            ps.close();
+            con.close();
         }
 
         return orderList;
@@ -493,6 +519,11 @@ public class OrderDAO {
             if (rs.next()) {
                 totalRecords = rs.getInt(1);
             }
+
+            rs.close();
+            ps.close();
+            con.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -518,7 +549,7 @@ public class OrderDAO {
             query += "AND o.created_at >= ? ";
         }
         if (toDate != null && !toDate.isEmpty()) {
-            
+
             query += "AND o.created_at <= ? ";
         }
         query += "Order by o.order_id DESC";
@@ -560,6 +591,9 @@ public class OrderDAO {
 
                 orders.add(order); // Thêm order vào danh sách kết quả
             }
+            rs.close();
+            con.close();
+            ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -629,6 +663,9 @@ public class OrderDAO {
             if (rs.next()) {
                 count = rs.getInt("total");
             }
+            rs.close();
+            con.close();
+            ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

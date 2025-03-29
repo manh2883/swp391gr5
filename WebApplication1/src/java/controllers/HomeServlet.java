@@ -55,7 +55,7 @@ public class HomeServlet extends HttpServlet {
         }
 
         // Product List
-        List<Map.Entry<Product, Map<Boolean, String>>> productList = ProductDAO.getProductListPublic(9);
+        List<Map.Entry<Product, Map<Boolean, String>>> productList = pDAO.getProductListPublic(9);
         if (productList != null && !productList.isEmpty()) {
             request.setAttribute("productList", productList);
         }
@@ -63,7 +63,8 @@ public class HomeServlet extends HttpServlet {
         // filter
         // phan trang
         // Slider
-        Map<Map<String, String>, Map<String, String>> sList = SliderDAO.getCurrentSliderList();
+        
+        Map<Map<String, String>, Map<String, String>> sList = sDAO.getCurrentSliderList();
         if (sList != null && !sList.isEmpty()) {
             // Tạo hai Map để tách dữ liệu
             Map<String, String> sliderContent = new LinkedHashMap<>(); // Giữ thứ tự

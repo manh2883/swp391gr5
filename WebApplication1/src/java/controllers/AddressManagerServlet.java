@@ -19,6 +19,7 @@ public class AddressManagerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AddressDAO addressDAO = new AddressDAO();
+        UserDAO uDAO = new UserDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         if (account == null) {
@@ -29,7 +30,7 @@ public class AddressManagerServlet extends HttpServlet {
 
         List<UserAddress> addressList = addressDAO.getUserAddresses(userId);
 
-        request.setAttribute("user", UserDAO.getUserById(userId));
+        request.setAttribute("user", uDAO.getUserById(userId));
         request.setAttribute("addressList", addressList);
         request.getRequestDispatcher("/Login/AddressManager.jsp").forward(request, response);
     }
@@ -38,6 +39,7 @@ public class AddressManagerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AddressDAO addressDAO = new AddressDAO();
+        UserDAO uDAO = new UserDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
 
@@ -45,9 +47,9 @@ public class AddressManagerServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
-        
-        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
-        
+
+        int userId = uDAO.getUserIDByAccountID(account.getAccountId());
+
         String action = request.getParameter("action");
         if ("add".equals(action)) {
             String newAddress = request.getParameter("newAddress");
@@ -64,7 +66,7 @@ public class AddressManagerServlet extends HttpServlet {
             String updatedAddress = request.getParameter("updatedAddress");
             addressDAO.updateAddress(addressId, updatedAddress);
         }
-        
+
         response.sendRedirect(request.getContextPath() + "/AddressManager");
     }
 

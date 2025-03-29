@@ -65,7 +65,8 @@
                 <div class="panel-body">
                     <ul>
 
-                        <li><a href="#">Customer List</a></li>
+                        
+                        <li><a href="${pageContext.request.contextPath}/customerlist">Customer List</a></li>
 
                     </ul>
                 </div>
@@ -86,6 +87,7 @@
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/OrderList">Order List</a></li>
                         <li><a href="${pageContext.request.contextPath}/SaleStatistic">Sale Statistic</a></li>
+                       
                     </ul>
                 </div>
             </div>

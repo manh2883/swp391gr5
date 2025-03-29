@@ -100,29 +100,30 @@ public class PurchaseProductServlet extends HttpServlet {
         if (account != null) {
 
             // Lấy userId từ accountId
+            UserDAO uDAO = new UserDAO();
+            ProductDAO pDAO = new ProductDAO();
             int accountId = account.getAccountId();
-            int userId = UserDAO.getUserIDByAccountID(accountId);
+            int userId = uDAO.getUserIDByAccountID(accountId);
             if (userId > 0) {
                 List<CartDetail> checkoutItems = new ArrayList<>();
                 // Kiểm tra color & size trước khi thêm vào giỏ hàng
                 List<CartDetail> cartItems = new ArrayList<>();
                 if (!color.isEmpty() || !size.isEmpty()) {
-                    int variantId = ProductDAO.getVariantByColorAndSize(idIn, color, size);
+                    int variantId = pDAO.getVariantByColorAndSize(idIn, color, size);
                     if (variantId > 0) {
-                        int stock = ProductDAO.getStockByProductAndVariant(idIn, variantId);
+                        int stock = pDAO.getStockByProductAndVariant(idIn, variantId);
                         if (stock > 0) {
-                            Product pro = ProductDAO.getProductById(idIn);
-                            pro.setPrice(ProductDAO.getCurrentPriceForProductVariant(idIn, variantId));
+                            Product pro = pDAO.getProductById(idIn);
+                            pro.setPrice(pDAO.getCurrentPriceForProductVariant(idIn, variantId));
                             CartDetail cd = new CartDetail(-1, -1, idIn, variantId, 1, null, pro);
                             checkoutItems.add(cd);
-
                         }
                     }
 
                     // Lấy danh sách địa chỉ của user
                     UserDAO userDAO = new UserDAO();
                     List<UserAddress> userAddresses = userDAO.getUserAddresses(userId);
-                    User user = UserDAO.getUserById(userId);
+                    User user = userDAO.getUserById(userId);
 
                     session.setAttribute("checkoutItems", checkoutItems);
                     session.setAttribute("user", user);

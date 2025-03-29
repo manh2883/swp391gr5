@@ -89,12 +89,14 @@ public class ProductCreatorServlet extends HttpServlet {
             role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
+                SettingDAO sDAO = new SettingDAO();
+                ProductDAO proDAO = new ProductDAO();
                 if (!pDAO.checkPermissionForRole("AddProducts", role)) {
                     request.setAttribute("message", "no permission");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
-                    List<String> sizeNList = SettingDAO.getNumbericSizeList(20, 45);
-                    List<String> sizeCList = SettingDAO.getLetterSizelist("S", "XXL");
+                    List<String> sizeNList = sDAO.getNumbericSizeList(20, 45);
+                    List<String> sizeCList = sDAO.getLetterSizelist("S", "XXL");
 
                     String[] nList = new String[sizeNList.size()];
                     for (int i = 0; i < sizeNList.size(); i++) {
@@ -106,9 +108,9 @@ public class ProductCreatorServlet extends HttpServlet {
                         cList[i] = sizeCList.get(i);
                     }
 
-                    Map<Integer, String> categoryList = ProductDAO.getAllProductCategory();
-                    List<Object[]> brandList = ProductDAO.getAllBrand();
-                    List<String> colorList = ProductDAO.getAllColor();
+                    Map<Integer, String> categoryList = proDAO.getAllProductCategory();
+                    List<Object[]> brandList = proDAO.getAllBrand();
+                    List<String> colorList = proDAO.getAllColor();
 
                     request.setAttribute("sizeNList", nList);
                     request.setAttribute("sizeCList", cList);

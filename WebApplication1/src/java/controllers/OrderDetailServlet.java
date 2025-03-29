@@ -74,7 +74,8 @@ public class OrderDetailServlet extends HttpServlet {
         int role = -1;
         if (account != null) {
             role = account.getRoleId();
-
+            UserDAO uDAO = new UserDAO();
+            OrderDAO oDAO = new OrderDAO();
             if (role != -1) {
                 PermissionDAO pDAO = new PermissionDAO();
 
@@ -104,12 +105,12 @@ public class OrderDetailServlet extends HttpServlet {
                 }
 
                 if (order != null) {
-                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+                    int userId = uDAO.getUserIDByAccountID(account.getAccountId());
 
                     if (pDAO.checkPermissionForRole("ViewOrderDetail", role) || userId == order.getUserId()) {
 
                         //Main Process
-                        ArrayList<Object[]> obj = OrderDAO.getOrderDetailViewByOrderId(oId);
+                        ArrayList<Object[]> obj = oDAO.getOrderDetailViewByOrderId(oId);
                         request.setAttribute("orderDetailList", obj);
                         request.setAttribute("orderInformation", order);
 

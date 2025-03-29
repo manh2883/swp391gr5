@@ -72,12 +72,13 @@ public class SettingsListServlet extends HttpServlet {
 
             String search = request.getParameter("search");
             String type = request.getParameter("type");
-
-            List<Object[]> settings = SettingDAO.getSettings(page, pageSize, search, type);
-            int totalRecords = SettingDAO.countSettings(search, type);
+            SettingDAO sDAO = new SettingDAO();
+            
+            List<Object[]> settings = sDAO.getSettings(page, pageSize, search, type);
+            int totalRecords = sDAO.countSettings(search, type);
             int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
             // Lấy danh sách type từ database
-            List<String> types = SettingDAO.getAllSettingTypes();
+            List<String> types = sDAO.getAllSettingTypes();
 
             request.setAttribute("settings", settings);
             request.setAttribute("currentPage", page);

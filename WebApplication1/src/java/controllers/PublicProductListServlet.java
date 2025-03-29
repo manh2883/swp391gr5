@@ -58,15 +58,16 @@ public class PublicProductListServlet extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO pDAO = new ProductDAO();
         SliderDAO sDAO = new SliderDAO();
-
+        SettingDAO setDAO = new SettingDAO();
+        
         // Left side brand
-        List<Object[]> bList = SettingDAO.getPublicBrandList();
+        List<Object[]> bList = setDAO.getPublicBrandList();
         if (bList != null && !bList.isEmpty()) {
             request.setAttribute("brandList", bList);
         }
 
         // Left side category
-        Map<Integer, String> cList = SettingDAO.getPublicProductCategory();
+        Map<Integer, String> cList = setDAO.getPublicProductCategory();
         if (cList != null && !cList.isEmpty()) {
             request.setAttribute("categoryList", cList);
         }
@@ -89,13 +90,13 @@ public class PublicProductListServlet extends HttpServlet {
 
         List<Product> productFilter = new ArrayList<>();
         try {
-            productFilter = ProductDAO.productFilterList(null, null, brand, category, null, null, null, null, null, null);
+            productFilter = pDAO.productFilterList(null, null, brand, category, null, null, null, null, null, null);
 
         } catch (SQLException ex) {
             Logger.getLogger(PublicProductListServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        productList = ProductDAO.productFilterView(productFilter);
+        productList = pDAO.productFilterView(productFilter);
 
         // Truyền currentLink về JSP
         if (category != null) {
@@ -110,7 +111,7 @@ public class PublicProductListServlet extends HttpServlet {
         // phan trang start
         // Tính toán số lượng trang
         int totalProducts = productList.size();
-        int productPerPage = SettingDAO.getPublicProductPerPage();
+        int productPerPage = setDAO.getPublicProductPerPage();
         int totalPages = (int) Math.ceil((double) totalProducts / productPerPage);
 
         // Lấy số trang hiện tại từ tham số yêu cầu
@@ -145,8 +146,9 @@ public class PublicProductListServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("currentLink", currentLink);
+        request.setAttribute("currentFunction", "PublicProductList");
 
-        request.setAttribute("maxQuan", SettingDAO.getMaxQuantityInCart());
+        request.setAttribute("maxQuan", setDAO.getMaxQuantityInCart());
 
         if (productList != null && !productList.isEmpty()) {
             request.setAttribute("productList", subProductList);

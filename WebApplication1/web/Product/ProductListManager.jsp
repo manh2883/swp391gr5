@@ -75,7 +75,7 @@
                                 <c:when test="${not empty ProductList}">
                                     <c:forEach var="product" items="${ProductList}">
                                         <tr onclick="window.location.href = '${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}'">
-                                            
+
                                             <td class="cart_product">
                                                 <a href="${pageContext.request.contextPath}/ProductDetail?productId=${product.productId}"><img src="${pageContext.request.contextPath}/Images/cart/one.png" alt=""></a>
                                             </td>
@@ -95,7 +95,7 @@
                                             </td>
                                             <td>
                                                 <div> 
-                                                   <p>${product.categoryName}</p> 
+                                                    <p>${product.categoryName}</p> 
                                                 </div>
                                             </td>
                                             <td >
@@ -130,4 +130,5 @@
         <script src="js/main.js"></script>
         <c:import url="/Template/footer1.jsp" />
     </body>
+
 </html>

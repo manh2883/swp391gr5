@@ -113,14 +113,16 @@
                                             <c:forEach var="index" begin="2" end="${fn:length(row) - 1}">
                                                 <td>
                                                     <form class="permission-form">
-
                                                         <input type="hidden" name="permissionId" value="${row[0]}">
                                                         <input type="hidden" name="roleId" value="${index-1}">
-                                                        <button type="button" class="btn btn-sm ${row[index] ? 'btn-success' : 'btn-danger'}">
+                                                        <button type="button" 
+                                                                class="btn btn-sm ${row[index] ? 'btn-success' : 'btn-danger'}"
+                                                                <c:if test="${index-1 == 1}">disabled</c:if>>
                                                             ${row[index] ? 'ON' : 'OFF'}
                                                         </button>
                                                     </form>
                                                 </td>
+
                                             </c:forEach>
                                         </tr>
                                     </c:forEach>

@@ -81,9 +81,9 @@ public class UserListServlet extends HttpServlet {
 // Gọi DAO để lấy dữ liệu
         UserDAO dao = new UserDAO();
         ArrayList<Object[]> list;
-        list = UserDAO.getFilterUserView(searchQuery, name, email, phone, username, roleName, roleId);
+        list = dao.getFilterUserView(searchQuery, name, email, phone, username, roleName, roleId);
         
-        int totalUserCount = UserDAO.getTotalUserCount(searchQuery,name, email, phone, username, roleName, roleId);
+        int totalUserCount = dao.getTotalUserCount(searchQuery,name, email, phone, username, roleName, roleId);
 
 // Truyền dữ liệu xuống JSP
         request.setAttribute("users", list);

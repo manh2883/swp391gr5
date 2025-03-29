@@ -30,9 +30,11 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 
 /**
@@ -86,6 +88,9 @@ public class ProductDAO extends DBContext {
 
 //                System.out.println("Result String: " + st);
             }
+            rs.close();
+            stm.close();
+            con.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -166,7 +171,7 @@ public class ProductDAO extends DBContext {
         ArrayList<Product> products = new ArrayList<>();
         String query = """
                        SELECT distinct product.product_id,product.description, product.name, price, brand.name, 
-                       product_category.category_name,  product.created_at 
+                       product_category.category_name,  product.created_at ,product.is_visible 
                        FROM tpfshopwearv2.product 
                         left join brand on product.brand_id = brand.brand_id 
                         left join product_category on product.category_id = product_category.category_id
@@ -190,6 +195,7 @@ public class ProductDAO extends DBContext {
                 product.setDescription(rs.getString("description"));
                 product.setCategoryName(rs.getString(6));
                 product.setCreateAt(rs.getTimestamp("created_at"));
+                product.setIsVisible(rs.getBoolean("is_visible"));
                 product.setImgUrl(getImgUrlForProductID(rs.getString("product_Id")));
 
                 products.add(product);
@@ -462,6 +468,10 @@ public class ProductDAO extends DBContext {
                 variant.put("stock", rs.getInt("stock"));
                 variants.add(variant);
             }
+
+            rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -708,15 +718,14 @@ public class ProductDAO extends DBContext {
 
             int variantId = getVariantByColorAndSize(productId, color, size);
 
-
             if (variantId > 0) {
                 int cartDetailId = CheckProductExistInCart(productId, variantId, ca);
 //                System.out.println("cartDetailId " + cartDetailId);
                 if (cartDetailId > 0) {
                     CartDetail cd = CartDAO.getCartDetailByID(cartDetailId);
-                    if(cd.getQuantity() < SettingDAO.getMaxQuantityInCart()){
+                    if (cd.getQuantity() < SettingDAO.getMaxQuantityInCart()) {
                         cartdao.editCartDetailByID(userId, cartDetailId, "increment");
-                    }    
+                    }
                 } else {
 //                    System.out.println("getStockForVariantProduct " + getStockForVariantProduct(productId, color, size));
                     if (getStockForVariantProduct(productId, color, size) > 0) {
@@ -1146,6 +1155,61 @@ public class ProductDAO extends DBContext {
                 product.setImgUrl(getImgUrlForProductID(rs.getString("product_id")));
                 productList.add(product);
             }
+            rs.close();
+            ps.close();
+            con.close();
+        }
+        return productList;
+    }
+
+    public static List<Product> productSearchList(String searchKey) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        Set<String> productIds = new HashSet<>();
+        String query = """
+        SELECT p.product_id, p.name AS product_name, p.description, b.name AS brand_name, 
+               pc.category_name, pv.color, 
+               COALESCE((SELECT MIN(pp.price) FROM product_price pp 
+                        WHERE pp.product_id = p.product_id 
+                        AND NOW() BETWEEN pp.start_price_date AND pp.end_price_date), p.price) AS current_price, 
+               p.created_at, p.price as net_price
+        FROM product p
+        JOIN product_category pc ON p.category_id = pc.category_id
+        JOIN brand b ON p.brand_id = b.brand_id
+        LEFT JOIN product_variant pv ON p.product_id = pv.product_id
+        WHERE LOWER(p.product_id) LIKE ? 
+           OR LOWER(p.name) LIKE ? 
+           OR LOWER(b.name) LIKE ? 
+           OR LOWER(pc.category_name) LIKE ? 
+           OR LOWER(pv.color) LIKE ?""";
+
+        DBContext db = new DBContext();
+        java.sql.Connection con = db.getConnection();
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            String searchPattern = "%%" + searchKey.toLowerCase() + "%%";
+            for (int i = 1; i <= 5; i++) {
+                ps.setString(i, searchPattern);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String productId = rs.getString("product_id");
+                if (!productIds.contains(productId)) {
+                    Product product = new Product();
+                    product.setProductId(productId);
+                    product.setName(rs.getString("product_name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setBrandName(rs.getString("brand_name"));
+                    product.setCategoryName(rs.getString("category_name"));
+
+                    product.setPrice(rs.getDouble("net_price"));
+                    product.setCreateAt(rs.getTimestamp("created_at"));
+                    product.setImgUrl(getImgUrlForProductID(productId));
+                    productList.add(product);
+                    productIds.add(productId);
+                }
+                rs.close();
+                ps.close();
+                con.close();
+            }
         }
         return productList;
     }
@@ -1175,7 +1239,11 @@ public class ProductDAO extends DBContext {
                 if (rs.next()) {
                     return rs.getInt("stock");
                 }
+                rs.close();
             }
+
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1354,6 +1422,9 @@ public class ProductDAO extends DBContext {
                 stmt.execute();
 
                 System.out.println("sql: " + stmt);
+                conn.close();
+                stmt.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -1405,6 +1476,10 @@ public class ProductDAO extends DBContext {
             while (rs.next()) {
                 insertedIds.add(rs.getInt(1));
             }
+            stmt.close();
+            rs.close();
+            conn.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1437,6 +1512,9 @@ public class ProductDAO extends DBContext {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+
+            stmt.close();
+            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1452,6 +1530,9 @@ public class ProductDAO extends DBContext {
             if (rs.next()) {
                 return rs.getInt(1);
             }
+            stmt.close();
+            rs.close();
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1471,6 +1552,9 @@ public class ProductDAO extends DBContext {
             if (affectedRows > 0) {
                 return getLastInsertedId("product_category", "category_id");
             }
+            stmt.close();
+
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1489,6 +1573,9 @@ public class ProductDAO extends DBContext {
             if (affectedRows > 0) {
                 return getLastInsertedId("brand", "brand_id");
             }
+            stmt.close();
+           
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1526,39 +1613,41 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    public static void main(String[] args) throws SQLException {
-        List<Map<String, String>> varListList = new ArrayList<>();
+    public static boolean toggleProductVisibility(String productId) {
+        String selectQuery = "SELECT is_visible FROM product WHERE product_id = ?";
+        String updateQuery = "UPDATE product SET is_visible = ? WHERE product_id = ?";
 
-        Map<String, String> map1 = new HashMap<String, String>();
-        map1.put("color", "red");
-        map1.put("images", "red.png");
-        System.out.println(map1);
-        varListList.add(map1);
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection connection = db.getConnection();
 
-        Map<String, String> map2 = new HashMap<String, String>();
-        map2.put("color", "blue");
-        map2.put("images", "blue.png");
-        System.out.println(map2);
-        varListList.add(map2);
+            PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
 
-        Map<String, String> map3 = new HashMap<String, String>();
-        map3.put("color", "yellow");
-        map3.put("images", "yellow.png");
-        System.out.println(map3);
-        varListList.add(map3);
+            selectStmt.setString(1, productId);
+            ResultSet rs = selectStmt.executeQuery();
 
-        List<String> sizeList = new ArrayList<>();
-        sizeList.add("X");
-        sizeList.add("XXL");
-        sizeList.add("XXXL");
+            if (rs.next()) {
+                int currentVisibility = rs.getInt("is_visible");
+                int newVisibility = (currentVisibility == 1) ? 0 : 1;
 
-        System.out.println(varListList);
-//          System.out.println(createProductVariantsAndGetIds("P012", varListList, sizeList));
-        addImagesToVariant("P012",
-                createProductVariantsAndGetIds("P012", varListList, sizeList),
-                varListList,
-                sizeList.size());
-
-        System.out.println(productCreator("Test Product", "des test", "1", "testBrand", 1000, "1", null, varListList, sizeList));
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+                    updateStmt.setInt(1, newVisibility);
+                    updateStmt.setString(2, productId);
+                    int rowsUpdated = updateStmt.executeUpdate();
+                    return rowsUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
+
+//    public static void main(String[] args) throws SQLException {
+//        System.out.println(productSearchList("Nike").size());
+//        for (Product pro : productSearchList("Áo")) {
+//            System.out.println(pro);
+//        }
+//        System.out.println(productSearchList("nike").size());
+//    }
 }

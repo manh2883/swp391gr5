@@ -47,6 +47,9 @@ public class MKTDAO extends DBContext {
                 product.put("end_price_date", rs.getDate("end_price_date"));
                 productList.add(product);
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,45 +92,53 @@ public class MKTDAO extends DBContext {
                 insertStm.executeUpdate();
                 System.out.println("Giá mới đã được thêm!");
             }
+            rs.close();
+            checkStm.close();
+            updateStm.close();
+            insertStm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    public List<Object> getProductStatsLast7Days(String productId) {
-    List<Object> stats = new ArrayList<>();
-    String query = "SELECT d.date AS day, " +
-                 "COALESCE(SUM(od.quantity), 0) AS total_quantity, " +
-                 "COALESCE(SUM(od.quantity * od.price), 0) AS total_revenue " +
-                 "FROM (SELECT CURDATE() - INTERVAL n DAY AS date " +
-                 "      FROM (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 " +
-                 "            UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) AS days) d " +
-                 "LEFT JOIN orders o ON DATE(o.completed_at) = d.date AND o.status_id = 8 " +
-                 "LEFT JOIN order_detail od ON o.order_id = od.order_id AND od.product_id = ? " +
-                 "GROUP BY d.date ORDER BY d.date ASC";
 
-    try  {
-         DBContext db = new DBContext();
+    public List<Object> getProductStatsLast7Days(String productId) {
+        List<Object> stats = new ArrayList<>();
+        String query = "SELECT d.date AS day, "
+                + "COALESCE(SUM(od.quantity), 0) AS total_quantity, "
+                + "COALESCE(SUM(od.quantity * od.price), 0) AS total_revenue "
+                + "FROM (SELECT CURDATE() - INTERVAL n DAY AS date "
+                + "      FROM (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 "
+                + "            UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) AS days) d "
+                + "LEFT JOIN orders o ON DATE(o.completed_at) = d.date AND o.status_id = 8 "
+                + "LEFT JOIN order_detail od ON o.order_id = od.order_id AND od.product_id = ? "
+                + "GROUP BY d.date ORDER BY d.date ASC";
+
+        try {
+            DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();  // Giả sử DBContext cung cấp phương thức này
             PreparedStatement stm = con.prepareStatement(query);
-        stm.setString(1, productId);
-        ResultSet rs = stm.executeQuery();
-        while (rs.next()) {
-            Date date = rs.getDate("day");
-            int quantity = rs.getInt("total_quantity");
-            double revenue = rs.getDouble("total_revenue");
-            Object[] obj = new Object[3];
-            obj[0] = date;
-            obj[1] = quantity;
-            obj[2] = revenue;
-            stats.add(obj);
+            stm.setString(1, productId);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                Date date = rs.getDate("day");
+                int quantity = rs.getInt("total_quantity");
+                double revenue = rs.getDouble("total_revenue");
+                Object[] obj = new Object[3];
+                obj[0] = date;
+                obj[1] = quantity;
+                obj[2] = revenue;
+                stats.add(obj);
+            }
+            rs.close();
+            stm.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return stats;
     }
-    return stats;
-}
-    
+
     public static void main(String[] args) {
         MKTDAO dao = new MKTDAO();
         System.out.println(dao.searchProductById("P001"));

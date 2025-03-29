@@ -97,22 +97,26 @@ public class AddToCartServlet extends HttpServlet {
 
             // Lấy userId từ accountId
             int accountId = account.getAccountId();
-            int userId = UserDAO.getUserIDByAccountID(accountId);
+            UserDAO uDAO = new UserDAO();
+            CartDAO cDAO = new CartDAO();
+            SettingDAO sDAO = new SettingDAO();
+            ProductDAO pDAO = new ProductDAO();
+            int userId = uDAO.getUserIDByAccountID(accountId);
             if (userId > 0) {
                 // Kiểm tra color & size trước khi thêm vào giỏ hàng
                 String addStatus = null;
                 String addMessage = null;
                 if (!color.isEmpty() || !size.isEmpty()) {
-                    int quanBef = CartDAO.getCartItemQuantityForUserId(userId);
+                    int quanBef = cDAO.getCartItemQuantityForUserId(userId);
                     
-                    int itemNumber = CartDAO.getCartItemNumberForUserId(userId);
+                    int itemNumber = cDAO.getCartItemNumberForUserId(userId);
                     
-                    int maxItemNumber = SettingDAO.getMaxQuantityItemInCart();
+                    int maxItemNumber = sDAO.getMaxQuantityItemInCart();
                     System.out.println(maxItemNumber);
                     if (itemNumber < maxItemNumber) {
                         
-                        ProductDAO.addToCart(idIn.toUpperCase(), color, size, userId);
-                        int quanAf = CartDAO.getCartItemQuantityForUserId(userId);
+                        pDAO.addToCart(idIn.toUpperCase(), color, size, userId);
+                        int quanAf = cDAO.getCartItemQuantityForUserId(userId);
                         addStatus = (quanAf > quanBef) ? "true" : "false";
                     } else {
                         addStatus = "out";

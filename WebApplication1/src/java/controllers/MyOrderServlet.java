@@ -98,6 +98,8 @@ public class MyOrderServlet extends HttpServlet {
 
         Account account = (Account) session.getAttribute("account");
         String currentUrl = "MyOrder";
+        UserDAO uDAO = new UserDAO();
+        OrderDAO oDAO = new OrderDAO();
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
@@ -119,7 +121,7 @@ public class MyOrderServlet extends HttpServlet {
                         }
                     }
 
-                    int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+                    int userId = uDAO.getUserIDByAccountID(account.getAccountId());
                     Long abc = Long.valueOf(userId);
                     System.out.println("user id: " + userId);
                     if (userId != -1) {
@@ -127,7 +129,7 @@ public class MyOrderServlet extends HttpServlet {
                         List<Order> orders = null;
                         try {
 
-                            orders = OrderDAO.filterOrder(abc, null, null, null,
+                            orders = oDAO.filterOrder(abc, null, null, null,
                                     statusId, null, null, null, null, null, null, null, null);
                         } catch (SQLException ex) {
                             Logger.getLogger(MyOrderServlet.class.getName()).log(Level.SEVERE, null, ex);

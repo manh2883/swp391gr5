@@ -54,6 +54,9 @@ public class CartDAO extends DBContext {
             if (affectedRows == 0) {
                 throw new Exception("Creating cart failed, no rows affected.");
             }
+
+            stm.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
             // Xử lý ngoại lệ tùy theo yêu cầu của ứng dụng
@@ -97,13 +100,13 @@ public class CartDAO extends DBContext {
                 cartDetail.setProduct(product);
                 switch (isVisible) {
                     case 1:
-                        
+
                         if (ProductDAO.getIsVisibleForProductId(cartDetail.getProductID())) {
                             cartDetails.add(cartDetail);
                         }
                         break;
                     case 0:
-                        
+
                         if (!ProductDAO.getIsVisibleForProductId(cartDetail.getProductID())) {
                             cartDetails.add(cartDetail);
                         }
@@ -112,9 +115,11 @@ public class CartDAO extends DBContext {
                         cartDetails.add(cartDetail);
                         break;
                 }
-                
 
             }
+            rs.close();
+            con.close();
+            stm.close();
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exceptions appropriately
@@ -192,12 +197,16 @@ public class CartDAO extends DBContext {
                 updateStm.close();
                 System.out.println("Cập nhật giỏ hàng thành công.");
 
+                con.close();
+
             } catch (Exception e) {
                 con.rollback();  // 🔴 Rollback nếu có lỗi
                 e.printStackTrace();
             } finally {
                 con.setAutoCommit(true);  // ✅ Bật lại autoCommit sau khi xong
             }
+            con.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -224,6 +233,7 @@ public class CartDAO extends DBContext {
                 System.out.println("Xóa cart detail thành công.");
                 return true;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -296,7 +306,12 @@ public class CartDAO extends DBContext {
                 ProductDAO productDAO = new ProductDAO();
                 Product product = productDAO.getProductById(rs.getString("product_id"));
                 cartDetail.setProduct(product);
+
             }
+            rs.close();
+            stm.close();
+            con.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -304,12 +319,12 @@ public class CartDAO extends DBContext {
     }
 
     public static int getCartItemNumberForUserId(int userId) {
-        return getAllCartDetailByUserID(userId,1).size();
+        return getAllCartDetailByUserID(userId, 1).size();
     }
 
     public static int getCartItemQuantityForUserId(int userId) {
         int quantity = 0;
-        for (CartDetail c : getAllCartDetailByUserID(userId,1)) {
+        for (CartDetail c : getAllCartDetailByUserID(userId, 1)) {
             quantity += c.getQuantity();
         }
         return quantity;
@@ -317,7 +332,7 @@ public class CartDAO extends DBContext {
 
     public static List<Object[]> getAllCartDetailViewForUser(int userId, int isVisible) {
         List<Object[]> list = new ArrayList<>();
-        List<CartDetail> detailList = getAllCartDetailByUserID(userId,isVisible);
+        List<CartDetail> detailList = getAllCartDetailByUserID(userId, isVisible);
 
         for (CartDetail cd : detailList) {
             Object[] obj = new Object[6];
@@ -335,12 +350,13 @@ public class CartDAO extends DBContext {
             list.add(obj);
 
         }
+        
 
         return list;
     }
 
     public static void main(String[] args) {
-        for (Object[] obj : getAllCartDetailViewForUser(1,1)) {
+        for (Object[] obj : getAllCartDetailViewForUser(1, 1)) {
             for (int i = 0; i < 6; i++) {
                 System.out.println(obj[i]);
             }

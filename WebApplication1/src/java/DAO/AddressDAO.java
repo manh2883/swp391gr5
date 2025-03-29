@@ -20,6 +20,9 @@ public class AddressDAO {
             while (rs.next()) {
                 addresses.add(new UserAddress(rs.getInt("address_id"), userId, rs.getString("address_content")));
             }
+            rs.close();
+            stm.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

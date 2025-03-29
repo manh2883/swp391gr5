@@ -364,7 +364,7 @@
                                                             <button class="btn btn-primary get-manh" 
                                                                     onclick="submitOrderUpdate(${orderInformation.orderId}, 'pay')"
                                                                     ${!( orderInformation.paymentStatus == 2 
-                                                                      && (orderInformation.statusId == 4 || orderInformation.statusId == 3)) ? 'disabled' : ''}>
+                                                                      && (orderInformation.statusId == 4 )) ? 'disabled' : ''}>
                                                                 Paid Confirm
                                                             </button>
                                                         </c:when>

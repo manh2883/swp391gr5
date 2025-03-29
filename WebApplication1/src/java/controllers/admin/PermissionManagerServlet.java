@@ -66,17 +66,17 @@ public class PermissionManagerServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         Account account = (Account) session.getAttribute("account");
-        String currentUrl = "MyOrder";
+        String currentUrl = "PermissionManager";
         int role = 0;
         if (account != null) {
             role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
-                if (!pDAO.checkPermissionForRole("MyOrderList", role) && !pDAO.checkPermissionForRole("OrderManager", role)) {
+                if (!pDAO.checkPermissionForRole("PermissionManager", role)) {
                     request.setAttribute("message", "no permission");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
-                    int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ config hoặc DB
+                    int[] roleIds = {1, 2, 3, 4}; // Nhận từ config hoặc DB
 
                     PermissionDAO perDAO = new PermissionDAO();
 //          List<String> roles = perDAo.get
@@ -125,7 +125,7 @@ public class PermissionManagerServlet extends HttpServlet {
             role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
-                if (!pDAO.checkPermissionForRole("PermissionManager", role) ) {
+                if (!pDAO.checkPermissionForRole("PermissionManager", role)) {
                     request.setAttribute("message", "no permission");
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
@@ -134,7 +134,7 @@ public class PermissionManagerServlet extends HttpServlet {
 
                     try {
                         // Gọi DAO để cập nhật quyền trong database
-                        PermissionDAO.togglePermission(permissionId, roleId);
+                        pDAO.togglePermission(permissionId, roleId);
                     } catch (SQLException ex) {
                         Logger.getLogger(PermissionManagerServlet.class.getName()).log(Level.SEVERE, null, ex);
                     }

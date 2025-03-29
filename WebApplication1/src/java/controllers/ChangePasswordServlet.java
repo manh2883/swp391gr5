@@ -69,13 +69,13 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-
+        UserDAO uDAO = new UserDAO();
         if (session != null) {
             Account acc = (Account) session.getAttribute("account");
 
             if (acc != null) {
-                int userId = UserDAO.getUserIDByAccountID(acc.getAccountId());
-                User user = UserDAO.getUserById(userId);
+                int userId = uDAO.getUserIDByAccountID(acc.getAccountId());
+                User user = uDAO.getUserById(userId);
                 boolean otpSent = false;
 
                 request.setAttribute("email", user.getEmail());

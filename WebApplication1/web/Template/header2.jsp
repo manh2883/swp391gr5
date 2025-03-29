@@ -81,7 +81,7 @@
                     </div>
                     <form class="col-sm-4" method="post" action="Search">
                         <div class="search_box d-flex flex-row pull-right align-items-center  " >
-                            <input type="text" placeholder="Search" name="searchKey" />
+                            <input type="text" placeholder="Search" name="searchKey" value="${searchKey}"/>
                             <button type="button submit" class="btn btn-default get-manh" >Search</button>
                         </div>
 

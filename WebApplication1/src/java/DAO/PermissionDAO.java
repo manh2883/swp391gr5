@@ -203,6 +203,9 @@ public class PermissionDAO extends DBContext {
             stmt.setInt(1, roleId);
             stmt.setInt(2, permissionId);
             stmt.executeUpdate();
+
+            stmt.close();
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -226,6 +229,7 @@ public class PermissionDAO extends DBContext {
             deleteStmt.setInt(1, permissionId);
             deleteStmt.setInt(2, roleId);
             deleteStmt.executeUpdate();
+            deleteStmt.close();
         } else {
             // Nếu chưa có, thêm quyền (toggle ON)
             String insertQuery = "INSERT INTO role_permission (permission_id, role_id) VALUES (?, ?)";
@@ -233,14 +237,16 @@ public class PermissionDAO extends DBContext {
             insertStmt.setInt(1, permissionId);
             insertStmt.setInt(2, roleId);
             insertStmt.executeUpdate();
+            insertStmt.close();
         }
-
+        rs.close();
+        checkStmt.close();
         conn.close();
     }
 
     public static void main(String[] args) {
         int[] roleIds = {1, 2, 3, 4, 5}; // Nhận từ tham số bên ngoài
-        for(int i: roleIds){
+        for (int i : roleIds) {
             System.out.println(checkPermissionForRole("ViewOrderDetail", i));
         }
     }

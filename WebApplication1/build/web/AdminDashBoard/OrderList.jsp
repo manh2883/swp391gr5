@@ -9,16 +9,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="true" %>
 
-<c:if test="${empty sessionScope.account or sessionScope.account.roleId != 1}">
-    <c:redirect url="/Home/Error404.jsp" />
-</c:if>
 
 <!DOCTYPE html>
 <html lang="en">
 
     <head>
         <meta charset="utf-8" />
-        <title>${title}</title>
+        <title>Order List</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -156,8 +153,8 @@
             <div class="container">
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
-                        <li><a href="#">Home</a></li>
-                        <li class="active">${breadcrumbs}</li>
+                        <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
+                        <li class="active">Order List</li>
                     </ol>
                 </div>
                 <div class="row" >

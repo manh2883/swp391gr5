@@ -68,13 +68,16 @@ public class ProductDetailServlet extends HttpServlet {
         String productId = request.getParameter("productId");
 
         // Left side brand
-        List<Object[]> bList = SettingDAO.getPublicBrandList();
+        SettingDAO sDAO = new SettingDAO();
+        List<Object[]> bList = sDAO.getPublicBrandList();
+        PermissionDAO perDAO = new PermissionDAO();
+        
         if (bList != null && !bList.isEmpty()) {
             request.setAttribute("brandList", bList);
         }
 
         // Left side category
-        Map<Integer, String> cList = SettingDAO.getPublicProductCategory();
+        Map<Integer, String> cList = sDAO.getPublicProductCategory();
         if (cList != null && !cList.isEmpty()) {
             request.setAttribute("categoryList", cList);
         }
@@ -89,7 +92,7 @@ public class ProductDetailServlet extends HttpServlet {
                 Account acc = (Account) session.getAttribute("account");
                 Boolean validAcc = false;
                 if (acc != null) {
-                    validAcc = PermissionDAO.checkPermissionForRole("ViewProducts", acc.getRoleId());
+                    validAcc = perDAO.checkPermissionForRole("ViewProducts", acc.getRoleId());
                 }
                 Boolean isVisiblePro = productDAO.getIsVisibleForProductId(productId);
 
@@ -128,17 +131,17 @@ public class ProductDetailServlet extends HttpServlet {
                         request.getRequestDispatcher("Home/test.jsp").forward(request, response);
                     }
 
-                    ArrayList<Object[]> imgList = ProductDAO.getImageListByProduct(productId);
+                    ArrayList<Object[]> imgList = productDAO.getImageListByProduct(productId);
                     if (imgList != null && !imgList.isEmpty()) {
                         request.setAttribute("imgList", imgList);
                     }
 
-                    ArrayList<Object[]> varList = ProductDAO.getVariantListForProductId(productId);
+                    ArrayList<Object[]> varList = productDAO.getVariantListForProductId(productId);
                     if (varList != null && !varList.isEmpty()) {
                         request.setAttribute("variantList", varList);
                     }
 
-                    List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = ProductDAO.getRecommendedProductList(3);
+                    List<Map.Entry<Product, Map<Boolean, String>>> recommendedtList = productDAO.getRecommendedProductList(3);
                     if (recommendedtList != null && !recommendedtList.isEmpty()) {
                         request.setAttribute("recommendedtList", recommendedtList);
                     }

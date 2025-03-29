@@ -69,10 +69,10 @@ public class RedirectDashBoardServlet extends HttpServlet {
                     case 1:
                         response.sendRedirect(request.getContextPath() + "/AdminDashBoard");
                         break;
-                    case 3:
+                    case 4:
                         response.sendRedirect(request.getContextPath() + "/SaleDashBoard");
                         break;
-                    case 4:
+                    case 3:
                         response.sendRedirect(request.getContextPath() + "/MarketingDashBoard");
                         break;
                     default:

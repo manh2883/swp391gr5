@@ -318,6 +318,9 @@ public class SettingDAO {
                 };
                 settings.add(setting);
             }
+            stmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -361,6 +364,9 @@ public class SettingDAO {
                     rs.getString("setting_type")
                 };
             }
+            stmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -380,6 +386,9 @@ public class SettingDAO {
             while (rs.next()) {
                 types.add(rs.getString("setting_type"));
             }
+            stmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -415,6 +424,9 @@ public class SettingDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
+            stmt.close();
+            rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

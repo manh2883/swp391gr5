@@ -6,6 +6,7 @@ package controllers;
 
 import DAO.CartDAO;
 import DAO.OrderDAO;
+import DAO.PermissionDAO;
 import DAO.ProductDAO;
 import DAO.SettingDAO;
 import DAO.UserDAO;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import models.Permission;
 
 /**
  *
@@ -82,10 +84,15 @@ public class CheckoutServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
+        PermissionDAO perDAO = new PermissionDAO();
+        SettingDAO sDAO = new SettingDAO();
         if (account == null) {
             session.setAttribute("prevLink", "ViewCart");
             response.sendRedirect(request.getContextPath() + "/Login");
+            return;
+        } else if (!perDAO.checkPermissionForRole("CreateOrder", account.getRoleId())) {
+            request.setAttribute("message", "No permission");
+            request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
             return;
         }
 
@@ -93,23 +100,28 @@ public class CheckoutServlet extends HttpServlet {
         List<UserAddress> userAddresses = (List<UserAddress>) session.getAttribute("userAddresses");
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         List<CartDetail> checkoutItems = new ArrayList<>();
-
-        for (CartDetail cd : cartDetails) {
-            if (cd.getQuantity() <= SettingDAO.getMaxQuantityInCart()) {
-                checkoutItems.add(cd);
+        if (cartDetails != null) {
+            for (CartDetail cd : cartDetails) {
+                if (cd.getQuantity() <= sDAO.getMaxQuantityInCart()) {
+                    checkoutItems.add(cd);
+                }
             }
         }
 
         if (user == null || checkoutItems == null || checkoutItems.isEmpty()) {
             response.sendRedirect("ViewCart");
             return;
+        } else {
+            request.setAttribute("user", user);
+            request.setAttribute("userAddresses", userAddresses);
+            request.setAttribute("checkoutItemList", checkoutItems);
+
+            session.setAttribute("checkoutItems", null);
+            session.setAttribute("checkoutItems", checkoutItems);
+
+            request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
         }
 
-        request.setAttribute("user", user);
-        request.setAttribute("userAddresses", userAddresses);
-        request.setAttribute("checkoutItems", checkoutItems);
-
-        request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
     }
 
     /**
@@ -125,12 +137,20 @@ public class CheckoutServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
+        PermissionDAO perDAO = new PermissionDAO();
+        UserDAO uDAO = new UserDAO();
         if (account == null) {
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
+        } else {
+            if (!perDAO.checkPermissionForRole("CreateOrder", account.getRoleId())) {
+                request.setAttribute("messagea", "No permission");
+                request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
+                return;
+            }
         }
-        int userId = UserDAO.getUserIDByAccountID(account.getAccountId());
+
+        int userId = uDAO.getUserIDByAccountID(account.getAccountId());
         // 2. Lấy thông tin từ request
         String selectedAddress = request.getParameter("address");
         String newAddress = request.getParameter("newAddress");
@@ -141,17 +161,17 @@ public class CheckoutServlet extends HttpServlet {
         String contact = request.getParameter("contact");
         // Kiểm tra và lưu địa chỉ mới nếu cần
         if (selectedAddress.equals("Other")) {
-            UserDAO userDAO = new UserDAO();
+            
 
             // Kiểm tra xem địa chỉ mới đã tồn tại chưa
-            if (userDAO.checkAddressExist(userId, newAddress)) {
+            if (uDAO.checkAddressExist(userId, newAddress)) {
                 request.setAttribute("message", "Địa chỉ này đã tồn tại.");
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
             }
 
             // Lưu địa chỉ mới vào database
-            if (!userDAO.saveNewAddress(userId, newAddress)) {
+            if (!uDAO.saveNewAddress(userId, newAddress)) {
                 request.setAttribute("message", "Lỗi khi lưu địa chỉ mới.");
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
@@ -160,8 +180,7 @@ public class CheckoutServlet extends HttpServlet {
         // 3. Lấy giỏ hàng từ session
         List<CartDetail> cartDetails = (List<CartDetail>) session.getAttribute("checkoutItems");
         if (cartDetails == null || cartDetails.isEmpty()) {
-            request.setAttribute("message", "Giỏ hàng trống! Vui lòng chọn sản phẩm.");
-            request.getRequestDispatcher("Cart/Cart.jsp").forward(request, response);
+            response.sendRedirect("ViewCart");
             return;
         }
 
@@ -175,7 +194,7 @@ public class CheckoutServlet extends HttpServlet {
             int variantId = item.getProductVariantID();
             int quantity = item.getQuantity();
             int stock = productDAO.getStockByProductAndVariant(productId, variantId);
-            double price = ProductDAO.getCurrentPriceForProductVariant(productId, variantId);
+            double price = productDAO.getCurrentPriceForProductVariant(productId, variantId);
 //            int maxQuantity = SettingDAO.getMaxQuantityInCart();
 
             if (quantity > stock) {
@@ -183,14 +202,14 @@ public class CheckoutServlet extends HttpServlet {
                 request.getRequestDispatcher("Cart/Checkout.jsp").forward(request, response);
                 return;
             }
-        
+
             OrderDetail orderDetail = new OrderDetail(item.getCartDetailID(), 0, productId, variantId, quantity, (int) price);
 
             orderDetails.add(orderDetail);
             totalAmount += (int) (price * quantity);
             // xoa khoi gio hang
             CartDAO.deleteCartDetailByID(userId, item.getCartDetailID());
-            
+
         }
 
         // Create Order object

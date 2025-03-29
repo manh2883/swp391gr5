@@ -68,7 +68,7 @@
                     </div>
 
                     <div class="col-sm-9 padding-right" >
-                        <div class="padding-right"   >
+<!--                        <div class="padding-right"   >
                             <div class="row">
                                 <div class="col-sm-12">
                                     <form>
@@ -82,7 +82,7 @@
                                                         <select>
                                                             <option>-- Country --</option>
                                                             <option>United States</option>
-                                                        </select><!-- comment -->
+                                                        </select> comment 
                                                     </td>
                                                     <td>
                                                         <select>
@@ -111,7 +111,7 @@
                                                         <select>
                                                             <option>-- Country --</option>
                                                             <option>United States</option>
-                                                        </select><!-- comment -->
+                                                        </select> comment 
                                                     </td>
                                                     <td>
                                                         <a class="btn btn-primary" href="">Get Quotes</a>
@@ -125,7 +125,7 @@
 
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="features_items">
                             <h2 class="title text-center">New Products</h2>
@@ -192,7 +192,7 @@
                                 <c:if test="${totalPages > 0}">
                                     <c:forEach var="i" begin="1" end="${totalPages}">
                                         <li class=" ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
+                                            <a class="page-link" href="${pageContext.request.contextPath}/${currentFunction}?${currentLink}page=${i}">${i}</a>
                                         </li>
                                     </c:forEach>
                                 </c:if>

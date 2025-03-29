@@ -5,6 +5,7 @@
 package controllers;
 
 import DAO.ProductDAO;
+import DAO.SettingDAO;
 import Models.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,7 +66,89 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect("Home");
+
+        String key = request.getParameter("searchKey");
+
+        String searchString = "";
+        String searchSQL = "";
+        System.out.println(key);
+        if (key == null || key.isEmpty()) {
+            response.sendRedirect("PublicProductList");
+            return;
+        }
+
+        if (key != null && !key.isEmpty()) {
+            searchString = key.trim().replaceAll("\\s+", "+");
+            searchSQL = key.replace("+", "%");  // Thay '+' bằng '%' cho SQL LIKE
+        }
+//        request.setAttribute("message", key);
+//        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
+        ProductDAO pDAO = new ProductDAO();
+        SettingDAO sDAO = new SettingDAO();
+        List<Product> products;
+        try {
+            products = pDAO.productSearchList(searchSQL);
+            List<Map.Entry<Product, Map<Boolean, String>>> productList = pDAO.productFilterView(products);
+            //Category, Brand, ProductName, ProductId.
+
+            // Tính toán số lượng trang
+            int totalProducts = productList.size();
+            int productPerPage = sDAO.getPublicProductPerPage();
+            int totalPages = (int) Math.ceil((double) totalProducts / productPerPage);
+
+            // Lấy số trang hiện tại từ tham số yêu cầu
+            String pageParam = request.getParameter("page");
+            int currentPage = 1;
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    currentPage = Integer.parseInt(pageParam);
+                    if (currentPage < 1) {
+                        currentPage = 1;
+                    } else if (currentPage > totalPages) {
+                        currentPage = totalPages;
+                    }
+                } catch (NumberFormatException e) {
+                    currentPage = 1;
+                }
+            }
+//        currentLink += "page=" + currentPage + "&";
+
+            // Tính toán chỉ số cho subList
+            int startIndex = (currentPage - 1) * productPerPage;
+            int endIndex = Math.min(startIndex + productPerPage, totalProducts);
+
+            // Lấy subList cho trang hiện tại 
+            List<Map.Entry<Product, Map<Boolean, String>>> subProductList = new ArrayList<>();
+            if (!productList.isEmpty()) {
+                subProductList = productList.subList(startIndex, endIndex);
+            }
+
+            // Left side brand
+            List<Object[]> bList = sDAO.getPublicBrandList();
+            if (bList != null && !bList.isEmpty()) {
+                request.setAttribute("brandList", bList);
+            }
+
+            // Left side category
+            Map<Integer, String> cList = sDAO.getPublicProductCategory();
+            if (cList != null && !cList.isEmpty()) {
+                request.setAttribute("categoryList", cList);
+            }
+
+            request.setAttribute("productList", subProductList);
+
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("currentFunction", "Search");
+            request.setAttribute("currentLink", "searchKey=" + searchString + "&");
+            request.setAttribute("searchKey", key);
+            request.getRequestDispatcher("Home/ViewPublicProductList.jsp").forward(request, response);
+
+//                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -78,44 +162,20 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
         String key = request.getParameter("searchKey");
-//        request.setAttribute("message", key);
-//        request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-        ProductDAO pDAO = new ProductDAO();
-        List<Product> products;
-        try {
-            products = ProductDAO.productFilterList(key, key, null,
-                    null, null, null, null,
-                    null, null, null);
-            List<Map.Entry<Product, Map<Boolean, String>>> productList = pDAO.productFilterView(products);
-            //Category, Brand, ProductName, ProductId.
-            if (products == null || products.isEmpty()) {
-                request.setAttribute("message", "khong co san pham");
-                request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-            } else {
+        String searchString = "";
+        String searchSQL = "";
+        System.out.println(key);
 
-                Iterator<Product> iterator = products.iterator();
-                while (iterator.hasNext()) {
-                    Product p = iterator.next();
-                    if (!p.getCategoryName().contains(key)
-                            && !p.getBrandName().toLowerCase().contains(key)
-                            && !p.getProductId().toLowerCase().contains(key)
-                            && !p.getName().toLowerCase().contains(key)) {
-                        iterator.remove();
-                    }
-                }
-
-                if (products == null || products.isEmpty()) {
-                    request.setAttribute("message", "khong co san pham");
-                    request.getRequestDispatcher("Home/test.jsp").forward(request, response);
-                } else {
-                    request.setAttribute("ProductList", products);
-                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+        if (key != null) {
+            searchString = key.trim().replaceAll("\\s+", "+");
+            searchSQL = key.replace("+", "%");  // Thay '+' bằng '%' cho SQL LIKE
         }
+
+        response.sendRedirect("Search?searchKey=" + searchString);
 
     }
 

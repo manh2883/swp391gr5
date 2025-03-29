@@ -154,8 +154,7 @@ public class SliderDAO extends DBContext {
         String query = "SELECT * FROM slider_detail WHERE slider_id = ? ORDER BY slider_order";
 
         try (
-                java.sql.Connection con = db.getConnection(); 
-                PreparedStatement stm = con.prepareStatement(query)) {
+                java.sql.Connection con = db.getConnection(); PreparedStatement stm = con.prepareStatement(query)) {
 
             stm.setInt(1, getCurrentSlidetId());
             ResultSet rs = stm.executeQuery();
@@ -167,6 +166,9 @@ public class SliderDAO extends DBContext {
                 // Thêm dữ liệu vào Map sliderLink
                 sliderLink.put(rs.getString("sliderTitle"), rs.getString("slider_img_link"));
             }
+            stm.close();
+            rs.close();
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -201,37 +203,34 @@ public class SliderDAO extends DBContext {
     public static void delateSliderDetailForSlider(int sliderId, SliderDetail SliderDetail) {
 
     }
-    
+
     public static void printSliderList(Map<Map<String, String>, Map<String, String>> sliderData) {
-    // Duyệt qua Map chính
-    sliderData.forEach((contentMap, linkMap) -> {
-        System.out.println("=== SLIDER DETAILS ===");
+        // Duyệt qua Map chính
+        sliderData.forEach((contentMap, linkMap) -> {
+            System.out.println("=== SLIDER DETAILS ===");
 
-        // In dữ liệu từ sliderContent
-        System.out.println("Slider Content:");
-        contentMap.forEach((title, content) -> {
-            System.out.println("  - Title: " + title);
-            System.out.println("    Content: " + content);
+            // In dữ liệu từ sliderContent
+            System.out.println("Slider Content:");
+            contentMap.forEach((title, content) -> {
+                System.out.println("  - Title: " + title);
+                System.out.println("    Content: " + content);
+            });
+
+            // In dữ liệu từ sliderLink
+            System.out.println("Slider Links:");
+            linkMap.forEach((title, imgLink) -> {
+                System.out.println("  - Title: " + title);
+                System.out.println("    Image Link: " + imgLink);
+            });
+
+            System.out.println("=======================");
         });
+    }
 
-        // In dữ liệu từ sliderLink
-        System.out.println("Slider Links:");
-        linkMap.forEach((title, imgLink) -> {
-            System.out.println("  - Title: " + title);
-            System.out.println("    Image Link: " + imgLink);
-        });
-
-        System.out.println("=======================");
-    });
-}
-
-    
     public static void main(String[] args) {
         SliderDAO sDAO = new SliderDAO();
 
         printSliderList(getCurrentSliderList());
-       
-        
-        
+
     }
 }

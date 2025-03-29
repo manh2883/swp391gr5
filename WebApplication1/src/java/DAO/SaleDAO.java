@@ -65,6 +65,9 @@ public class SaleDAO extends DBContext {
 
                 statistics.add(row);
             }
+            rs.close();
+            con.close();
+            stm.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,6 +113,9 @@ public class SaleDAO extends DBContext {
                 row.put("revenue", rs.getBigDecimal("revenue"));
                 topProducts.add(row);
             }
+            rs.close();
+            con.close();
+            stm.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

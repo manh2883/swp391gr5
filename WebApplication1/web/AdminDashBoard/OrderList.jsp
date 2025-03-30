@@ -58,6 +58,41 @@
 
         <style>
 
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .pagination {
+                list-style: none;
+                display: flex;
+                padding: 0;
+            }
+
+            .pagination .page-item {
+                margin: 0 5px;
+            }
+
+            .pagination .page-link {
+                padding: 8px 12px;
+                border-radius: 5px;
+                text-decoration: none;
+                color: #ff7f00;
+                border: 1px solid #ff7f00;
+            }
+
+            .pagination .page-link:hover {
+                background-color: #ff7f00;
+                color: white;
+            }
+
+            .pagination .active .page-link {
+                background-color: #ff7f00;
+                color: white;
+            }
+
+
             .productinfo .btn {
                 display: inline-block; /* Đảm bảo các nút được xếp thành dòng ngang */
 
@@ -141,6 +176,8 @@
                 background-color: #e2e3e5;
                 color: #383d41;
             }
+
+            
         </style>
     </head>
     <body>
@@ -237,21 +274,31 @@
                             </tbody>
                         </table>
 
-                        <!-- Pagination -->
-                        <div class="pagination">
-                            <c:if test="${currentPage > 1}">
-                                <a href="OrderList?page=${currentPage - 1}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}">Previous</a>
-                            </c:if>
+                        <div class="pagination-container">
+                            <ul class="pagination">
 
-                            <c:forEach var="i" begin="1" end="${totalPages}">
-                                <a href="OrderList?page=${i}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}" 
-                                   class="${currentPage == i ? 'active' : ''}">${i}</a>
-                            </c:forEach>
+                                <c:if test="${currentPage > 1}">
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=${currentPage - 1}">Previous</a>
+                                    </li>
+                                </c:if>
 
-                            <c:if test="${currentPage < totalPages}">
-                                <a href="OrderList?page=${currentPage + 1}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}">Next</a>
-                            </c:if>
+
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="?page=${i}">${i}</a>
+                                    </li>
+                                </c:forEach>
+
+
+                                <c:if test="${currentPage < totalPages}">
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=${currentPage + 1}">Next</a>
+                                    </li>
+                                </c:if>
+                            </ul>
                         </div>
+
 
                     </div>
                 </div>

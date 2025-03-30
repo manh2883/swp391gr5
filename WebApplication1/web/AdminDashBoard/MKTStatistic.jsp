@@ -78,8 +78,8 @@
                 <div class="breadcrumbs">
                     <ol class="breadcrumb">
                         <li><a href="${pageContext.request.contextPath}/Home">Home</a></li>
-                        <li><a href="${pageContext.request.contextPath}/SaleStatistic">Sale Statistic</a></li>
-                        <li class="active">MKT Dashboard</li>
+                        <li><a href="${pageContext.request.contextPath}/MarketingDashBoard">MKT Statistic</a></li>
+                        <li class="active">${productId}</li>
                     </ol>
                 </div>
 
@@ -97,6 +97,7 @@
 
                         <br>
                         <br>
+<!--                        
                         <c:if test="${not empty productList}">
                             <h3 class="text-center">Sales Stats (Last 7 Days)</h3>
                             <canvas id="salesChart" width="800" height="400"></canvas>
@@ -138,8 +139,10 @@
                                     </form>
                                     </tr>
                                 </c:forEach>
+                                    
                             </table>
                         </c:if>
+                            -->
                     </div>
                 </div>
             </div>

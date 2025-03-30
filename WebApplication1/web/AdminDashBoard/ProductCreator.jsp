@@ -295,11 +295,9 @@
             document.getElementById("confirmBtn").addEventListener("click", function () {
                 document.getElementById("productForm").submit();
             });
-
             document.getElementById("productForm").addEventListener("submit", function (event) {
                 event.preventDefault();
                 let isValid = true;
-
                 // Lấy danh sách các giá trị trong dropdown
                 function getDropListValues(selectId) {
                     return Array.from(document.getElementById(selectId).options)
@@ -311,7 +309,6 @@
                     let inputElement = document.getElementById(inputId);
                     let errorElement = document.getElementById(errorId);
                     let value = inputElement.value.trim();
-
                     if (value === "") {
                         errorElement.textContent = fieldName + " không được để trống.";
                         isValid = false;
@@ -343,7 +340,6 @@
                 validateInput("name", "nameError", "Tên sản phẩm");
                 validateInput("description", "descriptionError", "Mô tả");
                 validateInput("price", "priceError", "Giá");
-
                 // Kiểm tra brand nếu nhập mới
                 let brandSelect = document.getElementById("brand");
                 if (brandSelect.value === "Other") {
@@ -365,9 +361,8 @@
                     openModal();
                 }
 
-
+                
             });
-
             function toggleBrandInput(selectElement) {
                 let newAddressInput = document.getElementById("newBrand");
                 if (selectElement.value === "Other") {
@@ -395,7 +390,6 @@
                 if (selectElement.value === "Other") {
                     newAddressInput.style.display = "block";
                     newAddressInput.required = true;
-
                 } else {
                     newAddressInput.style.display = "none";
                     newAddressInput.required = false;
@@ -406,7 +400,6 @@
                     location.reload();
                 }
             });
-
             let variantIndex = 0;
             function addVariant() {
                 let colorList = JSON.parse('${colorList}');
@@ -450,16 +443,13 @@
                         '<tr> <td>' +
                         '<label>Ảnh:</label>' +
                         '</td><td>' +
-                        '<input type="file" name="variant[' + variantIndex + '][images]" multiple>' +
+                        '<input type="file" id="imageUpload' + variantIndex + '" name="variant[' + variantIndex + '][images]" multiple onchange="validateImage(' + variantIndex + ')">' +
                         '<div class="text-danger" id="imageError' + variantIndex + '"></div>' +
                         '</td></tr>' +
                         '</table>' +
                         '</div>  ';
-
                 console.log(variantHTML);
                 $('#variantContainer').append(variantHTML);
-
-
             }
 
 
@@ -469,21 +459,28 @@
             // Kiểm tra input color mới
 
 // Kiểm tra định dạng file ảnh
+
             function validateImage(variantIndex) {
-                let fileInput = document.getElementById('imageUpload'+variantIndex);
-                let errorElement = document.getElementById('imageError'+variantIndex);
+                let fileInput = document.getElementById('imageUpload' + variantIndex);
+                let errorElement = document.getElementById('imageError' + variantIndex);
                 let allowedExtensions = ["jpg", "jpeg", "png", "gif"];
+                if (!fileInput || !fileInput.files.length) {
+                    errorElement.textContent = ""; // Xóa lỗi nếu không có file
+                    return;
+                }
 
                 for (let file of fileInput.files) {
                     let fileExtension = file.name.split('.').pop().toLowerCase();
                     if (!allowedExtensions.includes(fileExtension)) {
                         errorElement.textContent = "Chỉ chấp nhận file ảnh (.jpg, .jpeg, .png, .gif)";
                         fileInput.value = ""; // Xóa file không hợp lệ
+                        
                         return;
                     }
                 }
-                errorElement.textContent = "";
+                errorElement.textContent = ""; // Xóa thông báo lỗi nếu file hợp lệ
             }
+
             function updateSizeOptions() {
                 let sizeType = document.getElementById("sizeType").value;
                 let sizeRange = document.getElementById("sizeRange");

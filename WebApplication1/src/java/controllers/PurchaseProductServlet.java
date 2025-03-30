@@ -126,6 +126,7 @@ public class PurchaseProductServlet extends HttpServlet {
                     User user = userDAO.getUserById(userId);
 
                     session.setAttribute("checkoutItems", checkoutItems);
+                    session.setAttribute("checkoutItemList", checkoutItems);
                     session.setAttribute("user", user);
                     session.setAttribute("userAddresses", userAddresses);
 

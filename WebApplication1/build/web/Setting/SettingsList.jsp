@@ -149,11 +149,12 @@
                                     <th>Value</th>
                                     <th>Type</th>
                                     <th>Actions</th>
-                                    <th>Product Category</th>
-                                    <th>Account Status</th>
+                                    <!--                                    <th>Product Category</th>
+                                                                        <th>Account Status</th>-->
                                 </tr>
                             </thead>
                             <tbody>
+
                                 <c:forEach var="setting" items="${settings}">
                                     <tr>
                                         <td>${setting[0]}</td>
@@ -163,12 +164,12 @@
                                             <form method="post" action="SettingsListServlet">
                                                 <input type="hidden" name="action" value="saveSetting">
                                                 <input type="hidden" name="settingId" value="${setting[0]}">
-
+                                                <input type="hidden" name="page" value="${currentPage}">
                                                 <input type="text" name="settingValue" value="${setting[2]}" class="form-control">
                                                 </td>
 
                                                 <td>${setting[3]}</td>
-                                                <input type="hidden" name="page" value="${currentPage}">
+
 
 
                                                 <td>
@@ -176,7 +177,7 @@
 
                                                 </td>
 
-                                                <td>
+<!--                                                <td>
                                                     <c:forEach var="category" items="${categories}">
                                                         <c:if test="${category[0] == setting[0]}">
                                                             <form method="post" action="SettingsListServlet">
@@ -191,7 +192,7 @@
                                                 </td>
 
 
-                                                <!-- Account Status -->
+                                                 Account Status 
                                                 <td>
                                                     <c:forEach var="account" items="${accounts}">
                                                         <c:if test="${account[0] == setting[0]}">
@@ -204,7 +205,7 @@
                                                             </form>
                                                         </c:if>
                                                     </c:forEach>
-                                                </td>
+                                                </td>-->
                                     </tr>
                                 </c:forEach>
                             </tbody>

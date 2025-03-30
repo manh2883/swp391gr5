@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -147,6 +148,7 @@ public class SearchServlet extends HttpServlet {
 //                    request.getRequestDispatcher("Product/ProductListManager.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+            response.sendRedirect("Home");
         }
 
     }
@@ -168,15 +170,14 @@ public class SearchServlet extends HttpServlet {
         String key = request.getParameter("searchKey");
         String searchString = "";
         String searchSQL = "";
-        System.out.println(key);
 
         if (key != null) {
-            searchString = key.trim().replaceAll("\\s+", "+");
-            searchSQL = key.replace("+", "%");  // Thay '+' bằng '%' cho SQL LIKE
+            key = key.trim().replaceAll("\\s+", "+");
+            searchString = URLEncoder.encode(key, StandardCharsets.UTF_8.toString()); // Mã hóa URL
+            searchSQL = key.replace("+", "%"); // Thay '+' bằng '%' cho SQL LIKE
         }
 
         response.sendRedirect("Search?searchKey=" + searchString);
-
     }
 
     /**

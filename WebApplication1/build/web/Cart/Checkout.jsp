@@ -99,9 +99,9 @@
                                     </div>    
                                     <div class="order-message">
                                         <p>Shipping Order</p>
-<!--                                        <input   type="text" name="orderNote" id="orderNote" class="form-control mt-2"
-                                                 style="height: 45px;margin-bottom: 10px;"
-                                                 placeholder="" />-->
+                                        <!--                                        <input   type="text" name="orderNote" id="orderNote" class="form-control mt-2"
+                                                                                         style="height: 45px;margin-bottom: 10px;"
+                                                                                         placeholder="" />-->
 
                                         <textarea name="orderNote" id="orderNote" placeholder="Notes about your order, Special Notes for Delivery" rows="6"></textarea>
                                         <!--<label><input type="checkbox"> Shipping to bill address</label>-->
@@ -150,10 +150,10 @@
                                 <div class="row" style="height: 50px; vertical-align: middle;">
                                     <div class="payment-options col-sm-9">
                                         <span>
-                                            <label><input type="radio" name="paymentMethod" value="1" required checked> Bank Transfer</label>
+                                            <label><input type="radio" name="paymentMethod" value="1" required > Bank Transfer</label>
                                         </span>
                                         <span>
-                                            <label><input type="radio" name="paymentMethod" value="2" required> COD</label>
+                                            <label><input type="radio" name="paymentMethod" value="2" required checked> COD</label>
                                         </span>
                                     </div>
 

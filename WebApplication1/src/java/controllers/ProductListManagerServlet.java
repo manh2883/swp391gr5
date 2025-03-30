@@ -109,14 +109,18 @@ public class ProductListManagerServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-       
+        String action = request.getParameter("action");
+        String productId = request.getParameter("productId");
+        ProductDAO pDAO = new ProductDAO();
+        boolean success = pDAO.toggleProductVisibility(productId);
+        int newState = pDAO.getIsVisibleForProductId(productId) == true ? 1 : 0;
 
 //            response.setContentType("application/json");
 //            response.getWriter().write("{\"success\": " + success + ", \"newState\": " + newState + "}");
         response.sendRedirect("ProductListManager");
 
     }
-
+ 
     /**
      * Returns a short description of the servlet.
      *

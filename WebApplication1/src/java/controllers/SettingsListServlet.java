@@ -4,6 +4,8 @@
  */
 package controllers;
 
+import DAO.AccountDAO;
+import DAO.ProductDAO;
 import DAO.SettingDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -72,13 +74,14 @@ public class SettingsListServlet extends HttpServlet {
 
             String search = request.getParameter("search");
             String type = request.getParameter("type");
-            SettingDAO sDAO = new SettingDAO();
-            
-            List<Object[]> settings = sDAO.getSettings(page, pageSize, search, type);
-            int totalRecords = sDAO.countSettings(search, type);
-            int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-            // Lấy danh sách type từ database
-            List<String> types = sDAO.getAllSettingTypes();
+
+            List<Object[]> settings = SettingDAO.getSettings(page, pageSize, search, type);
+            int totalRecords = SettingDAO.countSettings(search, type);
+            int totalPages = (totalRecords + pageSize - 1) / pageSize; // Tính toán tổng trang chính xác hơn
+
+            List<String> types = SettingDAO.getAllSettingTypes();
+            List<Object[]> categories = SettingDAO.getProductCategories();
+            List<Object[]> accounts = SettingDAO.getAccounts();
 
             request.setAttribute("settings", settings);
             request.setAttribute("currentPage", page);
@@ -86,6 +89,8 @@ public class SettingsListServlet extends HttpServlet {
             request.setAttribute("search", search);
             request.setAttribute("type", type);
             request.setAttribute("types", types);
+            request.setAttribute("categories", categories);
+            request.setAttribute("accounts", accounts);
 
             request.getRequestDispatcher("Setting/SettingsList.jsp").forward(request, response);
         } catch (Exception e) {
@@ -105,24 +110,45 @@ public class SettingsListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
+        String action = request.getParameter("action");
 
-        try {
-            int settingId = Integer.parseInt(request.getParameter("settingId"));
-            String settingName = request.getParameter("settingName");
-            int settingValue = Integer.parseInt(request.getParameter("settingValue"));
+        if ("toggleCategory".equals(action)) {
+            String categoryId = request.getParameter("categoryId");
+            if (categoryId != null) {
+                try {
+                    ProductDAO dao = new ProductDAO();
+                    dao.toggleCategoryVisibility(Long.parseLong(categoryId));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else if ("toggleAccount".equals(action)) {
+            String accountId = request.getParameter("accountId");
+            if (accountId != null) {
+                try {
+                    long id = Long.parseLong(accountId);
+                    AccountDAO.toggleAccountStatus(id);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else if ("saveSetting".equals(action)) {
+            String settingId = request.getParameter("settingId");
+            String settingValue = request.getParameter("settingValue");
 
-            boolean success = SettingDAO.updateSetting(settingId, settingName, settingValue);
-            out.print("{\"success\": " + success + "}");
-        } catch (NumberFormatException e) {
-            out.print("{\"success\": false, \"error\": \"Invalid input format\"}");
-        } catch (Exception e) {
-            e.printStackTrace();
-            out.print("{\"success\": false, \"error\": \"Internal server error\"}");
-        } finally {
-            out.flush();
+            if (settingId != null && settingValue != null) {
+                try {
+                    long id = Long.parseLong(settingId);
+                    int value = Integer.parseInt(settingValue);
+                    SettingDAO.updateSetting(id, value);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+        response.sendRedirect("SettingsListServlet");
+
     }
 
     /**

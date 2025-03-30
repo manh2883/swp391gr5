@@ -1613,34 +1613,17 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-    public static boolean toggleProductVisibility(String productId) {
-        String selectQuery = "SELECT is_visible FROM product WHERE product_id = ?";
-        String updateQuery = "UPDATE product SET is_visible = ? WHERE product_id = ?";
-
+   public static void toggleCategoryVisibility(long categoryId) {
+        String sql = "UPDATE product_category SET is_visible = NOT is_visible WHERE category_id = ?";
         try {
             DBContext db = new DBContext();
-            java.sql.Connection connection = db.getConnection();
-
-            PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
-
-            selectStmt.setString(1, productId);
-            ResultSet rs = selectStmt.executeQuery();
-
-            if (rs.next()) {
-                int currentVisibility = rs.getInt("is_visible");
-                int newVisibility = (currentVisibility == 1) ? 0 : 1;
-
-                try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
-                    updateStmt.setInt(1, newVisibility);
-                    updateStmt.setString(2, productId);
-                    int rowsUpdated = updateStmt.executeUpdate();
-                    return rowsUpdated > 0;
-                }
-            }
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, categoryId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
 //    public static void main(String[] args) throws SQLException {

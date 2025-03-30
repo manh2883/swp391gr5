@@ -283,30 +283,39 @@ public class SettingDAO {
         List<Object[]> settings = new ArrayList<>();
         String sql = "SELECT setting_id, setting_name, setting_value, setting_type FROM setting WHERE 1=1";
 
-        if (searchValue != null && !searchValue.isEmpty()) {
-            sql += " AND (setting_value LIKE ? OR setting_name LIKE ?)";
+        List<String> conditions = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            conditions.add("(setting_value LIKE ? OR setting_name LIKE ?)");
+            String searchPattern = "%" + searchValue.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
         }
-        if (filterType != null && !filterType.isEmpty()) {
-            sql += " AND setting_type = ?";
+        if (filterType != null && !filterType.trim().isEmpty()) {
+            conditions.add("setting_type = ?");
+            params.add(filterType.trim());
+        }
+
+        if (!conditions.isEmpty()) {
+            sql += " AND " + String.join(" AND ", conditions);
         }
 
         sql += " LIMIT ? OFFSET ?";
+        params.add(pageSize);
+        params.add((page - 1) * pageSize);
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
 
-            int paramIndex = 1;
-            if (searchValue != null && !searchValue.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + searchValue + "%");
-                stmt.setString(paramIndex++, "%" + searchValue + "%");
+            for (int i = 0; i < params.size(); i++) {
+                if (params.get(i) instanceof String) {
+                    stmt.setString(i + 1, (String) params.get(i));
+                } else if (params.get(i) instanceof Integer) {
+                    stmt.setInt(i + 1, (Integer) params.get(i));
+                }
             }
-            if (filterType != null && !filterType.isEmpty()) {
-                stmt.setString(paramIndex++, filterType);
-            }
-
-            stmt.setInt(paramIndex++, pageSize);
-            stmt.setInt(paramIndex, (page - 1) * pageSize);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -318,9 +327,6 @@ public class SettingDAO {
                 };
                 settings.add(setting);
             }
-            stmt.close();
-            rs.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -328,21 +334,20 @@ public class SettingDAO {
     }
 
     // Cập nhật setting
-    public static boolean updateSetting(int settingId, String name, int value) {
-        String sql = "UPDATE setting SET setting_name = ?, setting_value = ? WHERE setting_id = ?";
+    public static void updateSetting(long settingId, int settingValue) {
+        String sql = "UPDATE setting SET setting_value = ? WHERE setting_id = ?";
         try {
+
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, name);
-            stmt.setInt(2, value);
-            stmt.setInt(3, settingId);
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
+
+            stmt.setInt(1, settingValue);
+            stmt.setLong(2, settingId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     // Lấy thông tin setting theo ID
@@ -364,9 +369,6 @@ public class SettingDAO {
                     rs.getString("setting_type")
                 };
             }
-            stmt.close();
-            rs.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -386,9 +388,6 @@ public class SettingDAO {
             while (rs.next()) {
                 types.add(rs.getString("setting_type"));
             }
-            stmt.close();
-            rs.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -424,14 +423,58 @@ public class SettingDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             }
-            stmt.close();
-            rs.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
 
+    }
+
+    public static List<Object[]> getProductCategories() {
+        List<Object[]> categories = new ArrayList<>();
+        String sql = "SELECT category_id, category_name, is_visible FROM product_category";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Object[] category = {
+                    rs.getLong("category_id"),
+                    rs.getString("category_name"),
+                    rs.getInt("is_visible")
+                };
+                categories.add(category);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
+    public static List<Object[]> getAccounts() {
+        List<Object[]> accounts = new ArrayList<>();
+        String sql = "SELECT account_id, username, status FROM account";
+
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection con = db.getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Object[] account = {
+                    rs.getLong("account_id"),
+                    rs.getString("username"),
+                    rs.getInt("status")
+                };
+                accounts.add(account);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accounts;
     }
 
     public static void main(String[] args) throws MessagingException, SQLException {

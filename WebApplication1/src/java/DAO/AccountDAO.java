@@ -752,6 +752,20 @@ public class AccountDAO extends DBContext {
 
         return true;
     }
+    
+    public static void toggleAccountStatus(long accountId) {
+        String sql = "UPDATE account SET status = NOT status WHERE account_id = ?";
+        try {
+            DBContext db = new DBContext();
+            java.sql.Connection conn = db.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, accountId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
 //        System.out.println(AccountDAO.getOtpLastSendTimeByEmail("manhnhhe172630@fpt.edu.vn"));

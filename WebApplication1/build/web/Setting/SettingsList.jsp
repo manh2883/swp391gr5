@@ -141,8 +141,6 @@
                             </select>
                             <button type="submit" class="btn btn-primary">Search</button>
                         </form>
-
-                        <!-- Settings Table -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -151,20 +149,62 @@
                                     <th>Value</th>
                                     <th>Type</th>
                                     <th>Actions</th>
+                                    <th>Product Category</th>
+                                    <th>Account Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <c:forEach var="setting" items="${settings}">
                                     <tr>
                                         <td>${setting[0]}</td>
-                                        <td><input type="text" id="name${setting[0]}" value="${setting[1]}" readonly class="form-control"></td>
-                                        <td><input type="text" id="value${setting[0]}" value="${setting[2]}" readonly class="form-control"></td>
-                                        <td>${setting[3]}</td>
+                                        <td>${setting[1]}</td>
+
                                         <td>
-                                            <button id="editBtn${setting[0]}" class="btn btn-warning" onclick="enableEdit(${setting[0]})">Edit</button>
-                                            <button id="saveBtn${setting[0]}" class="btn btn-success" style="display:none;" onclick="saveSetting(${setting[0]})">Save</button>
-                                            <button id="cancelBtn${setting[0]}" class="btn btn-secondary" style="display:none;" onclick="cancelEdit(${setting[0]})">Cancel</button>
-                                        </td>
+                                            <form method="post" action="SettingsListServlet">
+                                                <input type="hidden" name="action" value="saveSetting">
+                                                <input type="hidden" name="settingId" value="${setting[0]}">
+
+                                                <input type="text" name="settingValue" value="${setting[2]}" class="form-control">
+                                                </td>
+
+                                                <td>${setting[3]}</td>
+                                                <input type="hidden" name="page" value="${currentPage}">
+
+
+                                                <td>
+                                                    <button type="submit" class="btn btn-success">Save</button>
+
+                                                </td>
+
+                                                <td>
+                                                    <c:forEach var="category" items="${categories}">
+                                                        <c:if test="${category[0] == setting[0]}">
+                                                            <form method="post" action="SettingsListServlet">
+                                                                <input type="hidden" name="action" value="toggleCategory">
+                                                                <input type="hidden" name="categoryId" value="${category[0]}">
+                                                                <button type="submit" class="btn ${category[2] == 1 ? 'btn-success' : 'btn-danger'}">
+                                                                    ${category[2] == 1 ? 'Visible' : 'Hidden'}
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </td>
+
+
+                                                <!-- Account Status -->
+                                                <td>
+                                                    <c:forEach var="account" items="${accounts}">
+                                                        <c:if test="${account[0] == setting[0]}">
+                                                            <form method="post" action="SettingsListServlet">
+                                                                <input type="hidden" name="action" value="toggleAccount">
+                                                                <input type="hidden" name="accountId" value="${account[0]}">
+                                                                <button type="submit" class="btn ${account[2] == 1 ? 'btn-success' : 'btn-danger'}">
+                                                                    ${account[2] == 1 ? 'Active' : 'Inactive'}
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>

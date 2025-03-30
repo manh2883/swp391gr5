@@ -12,15 +12,13 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Cart/Checkout.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/SearchServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Cart/Cart.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/CheckoutServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/controllers/ViewCartServlet.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/web/Template/header2.jsp</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/OrderDAO.java</file>
-            <file>file:/C:/Users/Acer/Documents/GitHub/swp391gr5/WebApplication1/src/java/DAO/CartDAO.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/src/java/controllers/OrderListServlet.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/src/java/controllers/SettingsListServlet.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/web/Setting/SettingsList.jsp</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/src/java/DAO/ProductDAO.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/src/java/DAO/SettingDAO.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/src/java/DAO/OrderDAO.java</file>
+            <file>file:/C:/Spring%202025/SWP391/swp391gr5/WebApplication1/web/AdminDashBoard/OrderList.jsp</file>
         </group>
     </open-files>
 </project-private>

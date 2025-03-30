@@ -43,8 +43,8 @@
             <div id="productManager" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">Product List</a></li>
-                        <li><a href="#">Displayed Category</a></li>
+                        <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
+                        <!--<li><a href="#">Displayed Category</a></li>-->
                     </ul>
                 </div>
             </div>
@@ -83,8 +83,8 @@
             <div id="saleDashboard" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">Order List</a></li>
-                        <li><a href="#">Sale Statistic</a></li>
+                        <!--<li><a href="${pageContext.request.contextPath}/OrderList">Order List</a></li>-->
+                        <li><a href="${pageContext.request.contextPath}/SaleStatistic">Sale Statistic</a></li>
                     </ul>
                 </div>
             </div>
@@ -102,8 +102,8 @@
             <div id="marketingDashboard" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">Marketing Campaigns</a></li>
-                        <li><a href="#">Statistics</a></li>
+                        <!--<li><a href="#">Marketing Campaigns</a></li>-->
+                        <li><a href="${pageContext.request.contextPath}/MarketingDashBoard">Statistics</a></li>
                     </ul>
                 </div>
             </div>

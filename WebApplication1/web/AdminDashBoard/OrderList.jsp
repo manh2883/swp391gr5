@@ -195,9 +195,13 @@
                     </ol>
                 </div>
                 <div class="row" >
+                    
                     <div class="col-sm-3">
-                        <%@ include file="/Template/left_side_bar_admin.jspf" %>
+                        <%@ include file="/Template/auto_left_side_bar.jspf" %>
                     </div>
+                    
+                    
+                    
                     <div class="col-sm-9">
                         <!-- Search and Filter Form -->
                         <form method="GET" action="OrderList" class="row g-3 mb-3">

@@ -49,7 +49,7 @@
                 <div class="panel-body">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/ProductListManager">Product List</a></li>
-                        <li><a href="#">Displayed Category</a></li>
+                        <!--<li><a href="#">Displayed Category</a></li>-->
                         <li><a href="${pageContext.request.contextPath}/ProductCreator">Add New Product</a></li>
                     </ul>
                 </div>
@@ -70,7 +70,7 @@
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/UserList">User List</a></li>
                         <li><a href="${pageContext.request.contextPath}/customerlist">Customer List</a></li>
-                        <li><a href="#">Create New User</a></li>
+                        <!--<li><a href="#">Create New User</a></li>-->
 
                     </ul>
                 </div>
@@ -108,7 +108,7 @@
             <div id="marketingDashboard" class="panel-collapse collapse">
                 <div class="panel-body">
                     <ul>
-                        <li><a href="#">Marketing Campaigns</a></li>
+                        <!--<li><a href="#">Marketing Campaigns</a></li>-->
                         <li><a href="${pageContext.request.contextPath}/MarketingDashBoard">Statistics</a></li>
                     </ul>
                 </div>

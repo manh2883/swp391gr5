@@ -238,17 +238,21 @@
                         </table>
 
                         <!-- Pagination -->
-                        <nav aria-label="Page navigation" style="text-align: center; margin-top: 20px;">
-                            <ul class="pagination" style="justify-content: center;font-size: 14px">
-                                <c:if test="${totalPages > 0}">
-                                    <c:forEach var="i" begin="1" end="${totalPages}">
-                                        <li class=" ${i == currentPage ? 'active' : ''}">
-                                            <a class="page-link" href="${pageContext.request.contextPath}/PublicProductList?${currentLink}page=${i}">${i}</a>
-                                        </li>
-                                    </c:forEach>
-                                </c:if>
-                            </ul>
-                        </nav>
+                        <div class="pagination">
+                            <c:if test="${currentPage > 1}">
+                                <a href="OrderList?page=${currentPage - 1}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}">Previous</a>
+                            </c:if>
+
+                            <c:forEach var="i" begin="1" end="${totalPages}">
+                                <a href="OrderList?page=${i}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}" 
+                                   class="${currentPage == i ? 'active' : ''}">${i}</a>
+                            </c:forEach>
+
+                            <c:if test="${currentPage < totalPages}">
+                                <a href="OrderList?page=${currentPage + 1}&search=${param.search}&status=${param.status}&fromDate=${param.fromDate}&toDate=${param.toDate}">Next</a>
+                            </c:if>
+                        </div>
+
                     </div>
                 </div>
             </div>

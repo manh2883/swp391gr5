@@ -531,9 +531,9 @@ public class OrderDAO {
     }
 
     // Lấy danh sách đơn hàng có phân trang
-    public static List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate) {
+    public static List<Order> getFilteredOrders(String search, String status, String fromDate, String toDate, int page, int pageSize) {
         List<Order> orders = new ArrayList<>();
-//        int offset = (page - 1) * pageSize; // Tính offset cho phân trang
+        int offset = (page - 1) * pageSize; // Tính toán vị trí bắt đầu của trang
 
         String query = "SELECT DISTINCT o.*, a.username FROM orders o "
                 + "LEFT JOIN account a ON o.user_id = a.user_id "
@@ -549,12 +549,11 @@ public class OrderDAO {
             query += "AND o.created_at >= ? ";
         }
         if (toDate != null && !toDate.isEmpty()) {
-
             query += "AND o.created_at <= ? ";
         }
-        query += "Order by o.order_id DESC";
 
-//        query += "ORDER BY o.created_at DESC LIMIT ? OFFSET ?"; // Thêm phân trang
+        query += "ORDER BY o.order_id DESC LIMIT ? OFFSET ?"; // Thêm phân trang
+
         try {
             DBContext db = new DBContext();
             java.sql.Connection con = db.getConnection();
@@ -575,8 +574,9 @@ public class OrderDAO {
                 ps.setString(index++, toDate);
             }
 
-//            ps.setInt(index++, pageSize);
-//            ps.setInt(index++, offset);
+            ps.setInt(index++, pageSize);
+            ps.setInt(index++, offset);
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Order order = new Order();
@@ -585,11 +585,7 @@ public class OrderDAO {
                 order.setTotalamount(rs.getInt("total_amount"));
                 order.setStatusId(rs.getInt("status_id"));
                 order.setCreateAt(rs.getTimestamp("created_at"));
-
-                // Set username từ bảng account
-                String usernameResult = rs.getString("username");
-
-                orders.add(order); // Thêm order vào danh sách kết quả
+                orders.add(order);
             }
             rs.close();
             con.close();
@@ -602,12 +598,12 @@ public class OrderDAO {
         return orders;
     }
 
-    public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate) {
+    public static ArrayList<Object[]> getFilterOrderView(String search, String status, String fromDate, String toDate, int page, int pageSize) {
         ArrayList<Object[]> list = new ArrayList<>();
-        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate);
+        List<Order> orders = getFilteredOrders(search, status, fromDate, toDate, page, pageSize);
 
         for (Order order : orders) {
-            Object[] row = new Object[6]; // Thêm 1 cột để lưu username
+            Object[] row = new Object[6];
             row[0] = order.getOrderId();
             row[1] = order.getTotalamount();
             row[2] = order.getStatusId();
@@ -617,61 +613,6 @@ public class OrderDAO {
         }
 
         return list;
-    }
-
-    public static int countFilteredOrders(String search, String status, String fromDate, String toDate) {
-        int count = 0;
-
-        String query = "SELECT COUNT(*) AS total FROM orders o "
-                + "LEFT JOIN account a ON o.user_id = a.user_id "
-                + "WHERE 1=1 ";
-
-        if (search != null && !search.isEmpty()) {
-            query += "AND (o.order_id LIKE ? OR a.username LIKE ?) ";
-        }
-        if (status != null && !status.isEmpty()) {
-            query += "AND o.status_id = ? ";
-        }
-        if (fromDate != null && !fromDate.isEmpty()) {
-            query += "AND o.created_at >= ? ";
-        }
-        if (toDate != null && !toDate.isEmpty()) {
-            query += "AND o.created_at <= ? ";
-        }
-
-        try {
-            DBContext db = new DBContext();
-            java.sql.Connection con = db.getConnection();
-            PreparedStatement ps = con.prepareStatement(query);
-
-            int index = 1;
-            if (search != null && !search.isEmpty()) {
-                ps.setString(index++, "%" + search + "%");
-                ps.setString(index++, "%" + search + "%");
-            }
-            if (status != null && !status.isEmpty()) {
-                ps.setString(index++, status);
-            }
-            if (fromDate != null && !fromDate.isEmpty()) {
-                ps.setString(index++, fromDate);
-            }
-            if (toDate != null && !toDate.isEmpty()) {
-                ps.setString(index++, toDate);
-            }
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt("total");
-            }
-            rs.close();
-            con.close();
-            ps.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return count;
     }
 
     // Cập nhật trạng thái đơn hàng
@@ -817,7 +758,7 @@ public class OrderDAO {
 //            System.out.println(oj[2]);
 //        }
 
-        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null);
+        ArrayList<Object[]> list = getFilterOrderView(null, null, null, null, 1, 10);
         for (Object[] o : list) {
             System.out.println(o[0]);
             System.out.println(o[1]);

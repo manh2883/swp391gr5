@@ -105,11 +105,11 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach var="customer" items="${customers}">
-                                        <tr onclick="handleRowClick('${customer[0]}')"> <!-- customer[0] là ID của khách hàng -->
-                                            <td>${customer[1]}</td> <!-- full_name -->
-                                            <td>${customer[2]}</td> <!-- username -->
-                                            <td>${customer[3]}</td> <!-- order_count -->
-                                            <td>${customer[4]}</td> <!-- total_spent -->
+                                        <tr onclick="handleRowClick('${customer[0]}')">  customer[0]
+                                            <td>${customer[1]}</td>  full_name 
+                                            <td>${customer[2]}</td>  username 
+                                            <td>${customer[3]}</td>  order_count 
+                                            <td>${customer[4]}</td>  total_spent 
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${customer[3] > 0}">

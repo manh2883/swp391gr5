@@ -66,24 +66,33 @@ public class OrderListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy tham số từ request
-        String searchQuery = request.getParameter("search"); // Tìm theo order ID, customer name
-        String status = request.getParameter("status"); // Lọc theo trạng thái đơn hàng
-        String fromDate = request.getParameter("fromDate"); // Lọc từ ngày
-        String toDate = request.getParameter("toDate"); // Lọc đến ngày
+        String searchQuery = request.getParameter("search");
+        String status = request.getParameter("status");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
 
-//        int page = 1;
-//        int pageSize = 10;
-        ArrayList<Object[]> list;
+        int page = 1;
+        int pageSize = 10; // Số lượng đơn hàng trên mỗi trang
+
+        // Kiểm tra nếu có tham số page từ request
+        String pageStr = request.getParameter("page");
+        if (pageStr != null && !pageStr.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageStr);
+                if (page < 1) {
+                    page = 1;
+                }
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
         OrderDAO oDAO = new OrderDAO();
-        SettingDAO sDAO = new SettingDAO();
         HttpSession session = request.getSession();
-
         Account account = (Account) session.getAttribute("account");
-        String currentUrl = "OrderList";
-        int role = 0;
+
         if (account != null) {
-            role = account.getRoleId();
+            int role = account.getRoleId();
             if (role != 0) {
                 PermissionDAO pDAO = new PermissionDAO();
                 if (!pDAO.checkPermissionForRole("OrderManager", role)) {
@@ -91,22 +100,18 @@ public class OrderListServlet extends HttpServlet {
                     request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
                 } else {
                     try {
-                        list = oDAO.getFilterOrderView(searchQuery, status, fromDate, toDate);
+                        ArrayList<Object[]> list = oDAO.getFilterOrderView(searchQuery, status, fromDate, toDate, page, pageSize);
+                        int totalRecords = oDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate);
+                        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+                        request.setAttribute("orders", list);
+                        request.setAttribute("currentPage", page);
+                        request.setAttribute("totalPages", totalPages);
+                        request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
                     } catch (Exception ex) {
-                        Logger.getLogger(OrderListServlet.class.getName()).log(Level.SEVERE, null, ex);
                         request.setAttribute("message", "Có lỗi khi tải danh sách đơn hàng.");
                         request.getRequestDispatcher("Home/Error404.jsp").forward(request, response);
-                        return;
                     }
-                    // Lấy tổng số đơn hàng sau khi lọc
-                    int totalRecords = oDAO.getTotalOrderCount(searchQuery, status, fromDate, toDate);
-
-//        // Lấy danh sách đơn hàng
-//        List<Order> orders = OrderDAO.getFilteredOrders(search, status, fromDate, toDate, page, pageSize);
-                    request.setAttribute("orders", list);
-                    request.setAttribute("defaultDropdown", "saleDashboard");
-
-                    request.getRequestDispatcher("AdminDashBoard/OrderList.jsp").forward(request, response);
                 }
             } else {
                 session.setAttribute("prevLink", "OrderList");

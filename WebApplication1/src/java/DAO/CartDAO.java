@@ -324,6 +324,7 @@ public class CartDAO extends DBContext {
 
     public static int getCartItemQuantityForUserId(int userId) {
         int quantity = 0;
+        
         for (CartDetail c : getAllCartDetailByUserID(userId, 1)) {
             quantity += c.getQuantity();
         }

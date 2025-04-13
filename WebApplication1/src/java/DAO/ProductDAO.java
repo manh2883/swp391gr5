@@ -1658,6 +1658,58 @@ public class ProductDAO extends DBContext {
         }
     }
 
+//    public ArrayList<Product> getProductsPerPage(int startIndex, int productsPerPage) {
+//        ArrayList<Product> list = new ArrayList<>();
+//       String sql = "SELECT p.ProductID, p.Name, p.Description, p.Price, b.BrandName, c.CategoryName, p.CategoryID, p.CreateAt, p.ImgUrl, p.IsVisible " +
+//                     "FROM Product p " +
+//                     "JOIN Category c ON p.CategoryID = c.CategoryID " +
+//                     "JOIN Brand b ON p.BrandID = b.BrandID " +
+//                     "ORDER BY p.ProductID " +
+//                     "LIMIT ?, ?";
+//        try {
+//            DBContext db = new DBContext();
+//            java.sql.Connection conn = db.getConnection();
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            ps.setInt(1, startIndex); // OFFSET
+//            ps.setInt(2, productsPerPage); // LIMIT
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()) {
+//                Product product = new Product();
+//                product.setProductId(rs.getString("ProductID"));
+//                product.setName(rs.getString("Name"));
+//                product.setDescription(rs.getString("Description"));
+//                product.setPrice(rs.getDouble("Price"));
+//                product.setBrandName(rs.getString("BrandName"));
+//                product.setCategoryName(rs.getString("CategoryName"));
+//                product.setCategoryId(rs.getInt("CategoryID"));
+//                product.setCreateAt(rs.getDate("CreateAt"));
+//                product.setImgUrl(rs.getString("ImgUrl"));
+//                product.setIsVisible(rs.getBoolean("IsVisible"));
+//                list.add(product);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
+//
+//    public int getTotalProductCount() {
+//        String sql = "SELECT COUNT(*) FROM Product";
+//        try {
+//            DBContext db = new DBContext();
+//            java.sql.Connection conn = db.getConnection();
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            ResultSet rs = ps.executeQuery();
+//
+//            if (rs.next()) {
+//                return rs.getInt(1);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
+
     public static void main(String[] args) throws SQLException {
         System.out.println(productSearchList("Nike").size());
         for (Product pro : productSearchList("Áo")) {

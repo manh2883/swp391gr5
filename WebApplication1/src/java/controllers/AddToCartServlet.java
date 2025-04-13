@@ -136,7 +136,7 @@ public class AddToCartServlet extends HttpServlet {
                         addMessage = "Add to cart fail";
                         break;
                     case "out":
-                        addMessage = "Your Cart is full. Please remove some items!!";
+                        addMessage = "Your Cart is full. Please remove some items or payment!!";
                         break;
                     default:
                         addMessage = null;

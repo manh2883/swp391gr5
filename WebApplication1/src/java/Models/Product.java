@@ -123,9 +123,4 @@ public class Product {
         return "Product{" + "productId=" + productId + ", name=" + name + ", description=" + description + ", price=" + price + ", brandName=" + brandName + ", categoryName=" + categoryName + ", categoryId=" + categoryId + ", createAt=" + createAt + ", imgUrl=" + imgUrl + '}';
     }
 
-    
-
-
-
-    
 }

@@ -193,7 +193,7 @@
                                     </c:forEach>
                                 </c:if>
                             </ul>
-                        </nav>
+                        </nav>f
                     </div>
                 </div>
         </section> <!--/#cart_items-->
